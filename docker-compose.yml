@@ -1,0 +1,35 @@
+version: '3.8'  # Specify the docker-compose version
+
+services:
+  auth:
+    build:
+        context: .
+        dockerfile: ./Host/Auth/Dockerfile
+    container_name: auth_container  # Build the image from the current directory (context)# Build the image from the current directory (context)
+    ports:
+      - "8080:8080"  # Map container port 8080 to host port 8080
+      - "8081:8081"  # Map container port 8081 to host port 8081
+      - "8082:8082"
+    #depends_on:  # This service depends on no other services
+
+  hub:
+    build:
+      context: .
+      dockerfile: ./Host/Hub/Dockerfile
+    container_name: hub_container  # Build the image from the current directory (context)
+    ports:
+      - "7080:7080"  # Map container port 8082 to host port 8082
+      - "7081:7081"  # Map container port 8083 to host port 8083
+      - "7082:7082"
+    #depends_on:  # This service depends on no other services
+
+  till:
+    build:   # Build the image from the current directory (context)
+        context: .
+        dockerfile: ./Host/Till/Dockerfile
+    container_name: till_container  # Build the image from the current directory (context)
+    ports:
+      - "6080:6080"  # Map container port 8083 to host port 8083 (different port than hub)
+      - "6081:6081"  # Map container port 8084 to host port 8084
+      - "6082:6082"
+    #depends_on:  # This service depends on no other services
