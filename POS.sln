@@ -5,35 +5,37 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Host", "Host", "{6E501335-CDBC-4B41-AE47-07684B2AB287}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "Host\Auth\Auth.csproj", "{CC2BC517-1412-417F-A657-C78148B440AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth", "Host\Auth\Auth.csproj", "{CC2BC517-1412-417F-A657-C78148B440AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Till", "Host\Till\Till.csproj", "{63770B76-E1C0-4048-A7AB-B0458FCA6AF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Till", "Host\Till\Till.csproj", "{63770B76-E1C0-4048-A7AB-B0458FCA6AF4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{B029BECA-721F-4C20-8063-863E8F8F6978}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthInfra", "Infrastructure\AuthInfra\AuthInfra.csproj", "{148D10A1-8DB7-458B-A517-F0ACB83F459C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthInfra", "Infrastructure\AuthInfra\AuthInfra.csproj", "{148D10A1-8DB7-458B-A517-F0ACB83F459C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TillInfra", "Infrastructure\TillInfra\TillInfra.csproj", "{E617CC50-251D-405A-8D70-7D27D6B2379F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TillInfra", "Infrastructure\TillInfra\TillInfra.csproj", "{E617CC50-251D-405A-8D70-7D27D6B2379F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubInfra", "Infrastructure\HubInfra\HubInfra.csproj", "{F327AF56-8725-40DF-B9FD-09727315D7E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubInfra", "Infrastructure\HubInfra\HubInfra.csproj", "{F327AF56-8725-40DF-B9FD-09727315D7E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub", "Host\Hub\Hub.csproj", "{871ABED2-A654-4407-B12F-FC01B18A7F75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hub", "Host\Hub\Hub.csproj", "{871ABED2-A654-4407-B12F-FC01B18A7F75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utility", "Utility", "{C15D9C1E-C389-4382-8166-0ADF64DE4EFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomHTTP", "Utility\CustomHTTP\CustomHTTP.csproj", "{340F13AD-5C04-4A58-9039-F53675AF6902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomHTTP", "Utility\CustomHTTP\CustomHTTP.csproj", "{340F13AD-5C04-4A58-9039-F53675AF6902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Utility\Helpers\Helpers.csproj", "{A958F485-0A53-4AAC-888D-F8336CE7DD6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Utility\Helpers\Helpers.csproj", "{A958F485-0A53-4AAC-888D-F8336CE7DD6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Utility\Logger\Logger.csproj", "{89240240-FEFD-4233-B6F7-372BCC606C4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger", "Utility\Logger\Logger.csproj", "{89240240-FEFD-4233-B6F7-372BCC606C4B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0D51561-88DB-47C8-A691-B3DBE33F3F03}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{CC2BC517-1412-417F-A657-C78148B440AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -73,6 +75,9 @@ Global
 		{89240240-FEFD-4233-B6F7-372BCC606C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89240240-FEFD-4233-B6F7-372BCC606C4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CC2BC517-1412-417F-A657-C78148B440AA} = {6E501335-CDBC-4B41-AE47-07684B2AB287}
 		{63770B76-E1C0-4048-A7AB-B0458FCA6AF4} = {6E501335-CDBC-4B41-AE47-07684B2AB287}
@@ -83,5 +88,8 @@ Global
 		{340F13AD-5C04-4A58-9039-F53675AF6902} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
 		{A958F485-0A53-4AAC-888D-F8336CE7DD6D} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
 		{89240240-FEFD-4233-B6F7-372BCC606C4B} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FDBB5A72-8894-422F-AE01-5D42AF7B7EAD}
 	EndGlobalSection
 EndGlobal
