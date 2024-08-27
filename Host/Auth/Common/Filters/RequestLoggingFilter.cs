@@ -1,3 +1,4 @@
+using Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Auth.Common.Filters
 {
-    public class RequestLoggingFilter(ILogger<RequestLoggingFilter> logger) : IEndpointFilter
+    public class RequestLoggingFilter(ICustomLogger logger) : IEndpointFilter
     {
         public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
         {

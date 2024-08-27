@@ -8,5 +8,6 @@ namespace Auth.Common.JWT
     public class UserPayload
     {
        public required string Id {get;set;} 
+       public string[] RoleIds { get;set;}=new string[0];
     }
 }

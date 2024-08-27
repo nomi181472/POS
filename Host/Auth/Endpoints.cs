@@ -37,7 +37,7 @@ public static class Endpoints
             .WithTags("Authentication");
             
         endpoints.MapPublicGroup()
-            //.MapEndpoint<Signup>()
+            .MapEndpoint<SignUp>()
             .MapEndpoint<Login>();
     }
 

@@ -14,7 +14,7 @@ namespace Auth.Features.AuthManagement
    public class Login : IFeature
 {
     public static void Map(IEndpointRouteBuilder app) => app
-        .MapPost("/login", Handle)
+        .MapPost($"/{nameof(Login)}", Handle)
         .WithSummary("Login a user")
         .WithRequestValidation<Request>();
 

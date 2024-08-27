@@ -1,4 +1,5 @@
 using Auth;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace MapConfig
 {
@@ -16,7 +17,9 @@ namespace MapConfig
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
         }
-
+        public static async Task GlobalExceptionHandler(this WebApplication app)
+        {
+        }
         private static async Task EnsureDatabaseCreated(this WebApplication app)
         {
             // using var scope = app.Services.CreateScope();

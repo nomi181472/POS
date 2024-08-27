@@ -4,11 +4,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using PaymentGateway.API.Common;
 using System;
 using System.Xml.Linq;
+using static Auth.Features.AuthManagement.Login;
 
 namespace AttendanceService.Common
 {
@@ -24,7 +26,7 @@ namespace AttendanceService.Common
         }
     }
 
-    public class ApiResponseModel:IActionResult
+    public class ApiResponseModel: IResult 
     {
          
 
@@ -35,15 +37,18 @@ namespace AttendanceService.Common
         public Object Data { get; set; }=new object();
         public Object Exception { get; set; } = new List<string>();
 
-        public async Task ExecuteResultAsync(ActionContext context)
+
+        public async  Task ExecuteAsync(HttpContext httpContext)
         {
-            var response = context.HttpContext.Response;
+            var response = httpContext.Response;
             response.StatusCode = StatusCode;
             response.ContentType = "application/json";
-           
-            var json = JsonConvert.SerializeObject(this,new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+
+            var json = JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             await response.WriteAsync(json);
         }
+
+      
     }
     public class ApiResponseToken : ApiResponseModel
     {
