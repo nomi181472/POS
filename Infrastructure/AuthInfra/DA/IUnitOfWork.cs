@@ -8,13 +8,10 @@ namespace DA
 
     public interface IUnitOfWork
     {
-        IGenericRepository<Allowance, string> allowanceRepo { get;  }
-        IGenericRepository<WorkingProfile, string> workingProfileRepo { get; }
-        IGenericRepository<Shift, string> shiftRepo { get; }
-        IGenericRepository<FiscalYear, string> fiscalYearRepo { get; }
-        IGenericRepository<Leave, string> leaveRepo { get; }
-        IGenericRepository<Deduction,string> deductionRepo { get; }
-        IGenericRepository<ShiftWorkingProfile, string> shiftWorkingProfileRepo { get; }
+        IGenericRepository<Role, string> role { get;  }
+        IGenericRepository<Policy, string> policy { get;  }
+        IGenericRepository<RolePolicy, string> rolePolicy { get;  }
+      
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);
         Task CommitAsync();

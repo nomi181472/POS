@@ -1,4 +1,5 @@
 ﻿using DA.AppDbContexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,12 @@ namespace DA
             services.AddDbContext<AppDbContext>(
                 options => options.UseNpgsql(configuration.GetSection("ConnectionStrings:db").Value)
                 );
+
+            services.AddIdentityCore<IdentityUser>()
+                .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>();
+            
+            
             return services;
         }
         public static IServiceCollection AddUOW(this IServiceCollection services)

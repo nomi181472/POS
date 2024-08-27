@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class LeaveConfiguration : IEntityTypeConfiguration<Leave>
+    public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
-        public void Configure(EntityTypeBuilder<Leave> builder)
+
+        public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.HasMany(x => x.LeaveWorkingProfileManagements)
-                .WithOne(x => x.Leave)
-                .HasForeignKey(x => x.LeaveId);
+            builder.HasMany(x => x.RolePolicies)
+                .WithOne(x => x.Role)
+                .HasForeignKey(x => x.RoleId);
         }
     }
 }
