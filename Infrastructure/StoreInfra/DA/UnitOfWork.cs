@@ -4,6 +4,7 @@
 using DA.AppDbContexts;
 
 using DA.Repositories.CommonRepositories;
+using DM.DomainModels;
 
 namespace DA
 {
@@ -16,7 +17,8 @@ namespace DA
             _db = db;
         }
 
-       
+        public IGenericRepository<CashManagement, string> CashManagementRepo => new GenericRepository<CashManagement, string>(_db);
+
         public void Commit()
         {
             _db.SaveChanges();

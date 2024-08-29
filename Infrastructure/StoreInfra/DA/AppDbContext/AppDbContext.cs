@@ -13,18 +13,8 @@ namespace DA.AppDbContexts
 {
     public class AppDbContext:DbContext
     {
-        public DbSet<Allowance> Allowances { get; set; }
-        public DbSet<Shift> Shifts { get; set; }
-        public DbSet<Deduction> Deductions { get; set; }
-        public DbSet<DeductionRule> DeductionRules { get; set; }
-        public DbSet<ShiftDeductionScheduler> ShiftDeductionSchedulers { get; set; }
-        public DbSet<AllowanceWorkingProfileManagement> AllowanceWorkingProfileManagements { get; set; }
-        public DbSet<Leave> Leaves { get; set; }   
-        public DbSet<LeaveWorkingProfileManagement> LeaveWorkingProfileManagements { get; set; }
-        public DbSet<WorkingProfile> WorkingProfiles { get; set; }
-        public DbSet<FiscalYear> FiscalYears { get; set; }
-        public DbSet<ShiftWorkingProfile> shiftWorkingProfiles { get; set; }
-
+        public DbSet<CashManagement> CashManagements { get; set; }
+        
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
