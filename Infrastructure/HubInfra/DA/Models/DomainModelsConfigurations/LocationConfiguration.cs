@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class ShiftConfiguration : IEntityTypeConfiguration<Shift>
+    public class LocationConfiguration : IEntityTypeConfiguration<Location>
     {
-        public void Configure(EntityTypeBuilder<Shift> builder)
+        public void Configure(EntityTypeBuilder<Location> builder)
         {
-            builder.HasMany(x => x.ShiftDeductionScheduler)
-                .WithOne(x => x.Shift)
-                .HasForeignKey(x => x.ShiftId);
+
         }
     }
 }

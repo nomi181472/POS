@@ -3,6 +3,7 @@
 
 using DA.AppDbContexts;
 using DA.Repositories.CommonRepositories;
+using DM.DomainModels;
 
 namespace DA
 {
@@ -14,6 +15,9 @@ namespace DA
         {
             _db = db;
         }
+
+        public IGenericRepository<Location, string> LocationRepo => new GenericRepository<Location, string>(_db);
+
 
 
 
