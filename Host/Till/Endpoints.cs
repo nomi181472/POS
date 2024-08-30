@@ -3,6 +3,7 @@ using Till.Common;
 using Till.Common.Filters;
 using Microsoft.OpenApi.Models;
 using Till.Features.CashManagement;
+using Till.Feature.OrderManagement;
 
 namespace Till;
 
@@ -26,17 +27,26 @@ public static class Endpoints
                            .AddEndpointFilter<RequestLoggingFilter>()
                            .WithOpenApi();
 
-        endpoints.MapAuthenticationEndpoints();
-
+        endpoints.MapCashManagementEndpoints();
+        endpoints.MapOrderManagementEndpoints();
     }
 
-    private static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
+    private static void MapCashManagementEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup("/CashManagement")
                            .WithTags("CashManagement");
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddCash>();
+    }
+
+    private static void MapOrderManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup("/OrderManagement")
+                           .WithTags("OrderManagement");
+
+        endpoints.MapPublicGroup()
+                 .MapEndpoint<AddOrderDetails>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
