@@ -34,14 +34,17 @@ namespace BS.Services.CashManagementService
                 throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
             }
 
-            //entity.UpdatedBy = userId;
-            //entity.CreatedDate = DateTime.Now;
-            //entity.UpdatedDate = DateTime.Now;
-            //entity.IsArchived = false;
-            //entity.IsActive = true;
+            entity.Id = Guid.NewGuid().ToString();
+            entity.UpdatedBy = userId;
+            entity.CreatedDate = DateTime.Now;
+            entity.UpdatedDate = DateTime.Now;
+            entity.IsArchived = false;
+            entity.IsActive = true;
 
             await _unitOfWork.CashManagementRepo.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
+
+            
 
             return true;
         }

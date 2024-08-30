@@ -46,7 +46,7 @@ namespace Till.Features.CashManagement
             string message = "Success";
             try
             {
-                var result = cash.AddCash(request, "", cancellationToken);
+                var result = await cash.AddCash(request, "", cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddCash();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
