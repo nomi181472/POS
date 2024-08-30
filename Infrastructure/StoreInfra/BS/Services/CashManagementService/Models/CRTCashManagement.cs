@@ -14,6 +14,7 @@ namespace BS.Services.CashManagementService.Models
         {
             return new CashManagement
             {
+                //Id = Guid.NewGuid().ToString(),
                 Currency = request.Currency,
                 Type = request.Type,
                 Count = request.Count,
