@@ -47,7 +47,7 @@ public static class Endpoints
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup($"/{nameof(IRouteFeature)}")
+        var endpoints = app.MapGroup($"/{nameof(IActionController)}")
             .WithTags("Routes");
 
         endpoints.MapPublicGroup()

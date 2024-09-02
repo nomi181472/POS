@@ -38,7 +38,7 @@ namespace Logger
 
             var jsonPayload = JsonConvert.SerializeObject(payload);
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-            await httpClient.PostAsync(_webhookUrl, content);
+           await httpClient.PostAsync(_webhookUrl, content);
         }
     }
 }

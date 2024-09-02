@@ -5,15 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-	<ItemGroup>
-		<Protobuf Include="Protos\*.proto" GrpcServices="Server" />
-	</ItemGroup>
-  <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.65.0" />
+  </ItemGroup>
+  <ItemGroup>
+	  <Protobuf Include="..\..\Protos\*.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

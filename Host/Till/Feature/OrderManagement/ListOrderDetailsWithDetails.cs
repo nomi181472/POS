@@ -5,10 +5,11 @@ using BS.Services.OrderService.Models.Response;
 using Logger;
 using PaymentGateway.API.Common;
 using Till.Common;
+using Till.Feature.CashManagement;
 
 namespace Till.Feature.OrderManagement
 {
-    public class ListOrderDetailsWithDetails : IFeature
+    public class ListOrderDetailsWithDetails : IOrderFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(ListOrderDetailsWithDetails)}", Handle)

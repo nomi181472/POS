@@ -27,9 +27,7 @@ namespace ConfigResource
             //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
-            .AddHelpers(configuration)
-            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(),
-            typeof(IFeature));
+            .AddHelpers(configuration);
 
 
 
