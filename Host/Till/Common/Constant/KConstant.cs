@@ -2,7 +2,7 @@
 {
     public static class KConstant
     {
-        public const string ApiName = "Auth";
+        public const string ApiName = "Store";
     }
     public static class KConstantEnvironments
     {

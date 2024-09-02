@@ -10,7 +10,7 @@ using Till.Common;
 
 namespace Till.Feature.CashManagement
 {
-    public class UpdateCash : IFeature
+    public class UpdateCash : ICashFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(UpdateCash)}", Handle)

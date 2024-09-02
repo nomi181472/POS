@@ -11,7 +11,7 @@ using Till.Extensions.RouteHandler;
 
 namespace Till.Feature.OrderManagement
 {
-    public class AddOrderDetails : IFeature
+    public class AddOrderDetails : IOrderFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddOrderDetails)}", Handle)
