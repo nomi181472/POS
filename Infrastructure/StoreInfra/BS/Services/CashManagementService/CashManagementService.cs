@@ -44,9 +44,36 @@ namespace BS.Services.CashManagementService
             await _unitOfWork.CashManagementRepo.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            
-
             return true;
         }
+
+        public async Task<List<ResponseListCash>> ListCashWithDetails(string userId, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.CashManagementRepo.GetAllAsync(cancellationToken);
+            List<ResponseListCash> response = new List<ResponseListCash>();
+
+            if (result.Status)
+            {
+                foreach (var record in result.Data)
+                {
+                    if (record.IsActive == true)
+                    {
+                        response.Add(new ResponseListCash()
+                        {
+                            Currency = record.Currency,
+                            Type = record.Type,
+                            Count = record.Count
+                        });
+                    }
+                }
+                return response;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to retrieve cash data.");
+            }
+        }
+
+
     }
 }

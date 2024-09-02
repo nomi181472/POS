@@ -14,7 +14,8 @@ namespace DA.AppDbContexts
     public class AppDbContext:DbContext
     {
         public DbSet<CashManagement> CashManagements { get; set; }
-        
+        public DbSet<OrderDetails> OrderDetails { get; set; }
+
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
