@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using MapConfig;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Till.Extensions
 {
@@ -12,6 +13,7 @@ namespace Till.Extensions
             app.UseHttpsRedirection();
             //app.UseAuthentication();
             //app.UseAuthorization();
+            app.MapEndpointsExposed();
             app.MapEndpoints();
             //TODO: Add migration await app.EnsureDatabaseCreated();
 

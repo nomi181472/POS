@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Till.Features.CashManagement;
 using Till.Feature.OrderManagement;
 using Till.Feature.CashManagement;
+using Till.Common.Constant;
 
 namespace Till;
 
@@ -24,32 +25,35 @@ public static class Endpoints
 
     public static void MapEndpoints(this WebApplication app)
     {
-        var endpoints = app.MapGroup("")
+        var endpoints = app.MapGroup(KConstant.ApiName)
                            .AddEndpointFilter<RequestLoggingFilter>()
                            .WithOpenApi();
 
         endpoints.MapCashManagementEndpoints();
         endpoints.MapOrderManagementEndpoints();
+        //endpoints.MapToExposedRoutes();
     }
 
     private static void MapCashManagementEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup("/CashManagement")
+        var endpoints = app.MapGroup($"/{nameof(ICashFeature)}")
                            .WithTags("CashManagement");
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddCash>()
-                 .MapEndpoint<ListCashWithDetails>();
+                 .MapEndpoint<ListCashWithDetails>()
+                 .MapEndpoint<UpdateCash>();
     }
 
     private static void MapOrderManagementEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup("/OrderManagement")
+        var endpoints = app.MapGroup($"/{nameof(IOrderFeature)}")
                            .WithTags("OrderManagement");
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddOrderDetails>()
-                 .MapEndpoint<ListOrderDetailsWithDetails>();
+                 .MapEndpoint<ListOrderDetailsWithDetails>()
+                 .MapEndpoint<UpdateOrderDetails>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
