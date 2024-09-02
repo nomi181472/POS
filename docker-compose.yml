@@ -92,7 +92,7 @@ services:
     image: redis:latest
     container_name: redis_container
     ports:
-      - "4080:4082"  # Expose Redis on the default port
+      - "6379:6379"  # Expose Redis on the default port
     networks:
       - app-network
 
