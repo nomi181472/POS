@@ -26,7 +26,7 @@ namespace BS.ExternalServices.GrpcClients
                 IsWorking = true,
                 Message="",
             });
-            var timeout = TimeSpan.FromSeconds(10); // Timeout duration
+            var timeout = TimeSpan.FromSeconds(5); // Timeout duration
 
             List<Task<Tuple<string, bool, ResponseGetAllActions>>> tasks = new List<Task<Tuple<string, bool, ResponseGetAllActions>>>();
 
@@ -46,14 +46,29 @@ namespace BS.ExternalServices.GrpcClients
 
             foreach (var result in results)
             {
-                response.Add(new ResponseGetAllActions
+                if (result.Item2)
                 {
-                    ApiName =  result.Item3.ApiName,
-                    Routes = result.Item3.Routes,
-                    IsWorking = result.Item2,
-                    Message = result.Item1,
+                    response.Add(new ResponseGetAllActions
+                    {
+                        ApiName = result.Item3.ApiName,
+                        Routes = result.Item3.Routes,
+                        IsWorking = result.Item2,
+                        Message = result.Item1,
 
-                });
+                    });
+                }
+                else
+                {
+                    response.Add(new ResponseGetAllActions
+                    {
+                        ApiName = result.Item3.ApiName,
+                        Routes = result.Item3.Routes,
+                        IsWorking = result.Item2,
+                        Message = result.Item1,
+
+                    });
+                }
+               
                 
             }
             

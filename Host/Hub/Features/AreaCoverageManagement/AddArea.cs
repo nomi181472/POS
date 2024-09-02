@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Hub.Features.AreaCoverageManagement
 {
-    public class AddArea: IFeature
+    public class AddArea: IAreaCoverageManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
 

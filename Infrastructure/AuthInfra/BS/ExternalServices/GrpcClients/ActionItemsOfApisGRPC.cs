@@ -40,7 +40,13 @@ public static class ActionItemsOfApisGRPC
             }
            
             message = result.Message + string.Join(",", result.Exceptions.ToArray());
-            return Tuple.Create<string, bool, ResponseGetAllActions?>(message, true, null);
+            return Tuple.Create<string, bool, ResponseGetAllActions?>(message, true, new ResponseGetAllActions()
+            {
+                ApiName= result.Data.ApiName,
+                IsWorking=false,
+                Message=message,
+                Routes= result.Data.Routes.ToList()
+            });
             
         }
         catch (Exception ex)
@@ -51,7 +57,13 @@ public static class ActionItemsOfApisGRPC
         }
 
 
-        return Tuple.Create<string, bool, ResponseGetAllActions?>(message, false, null);
+        return Tuple.Create<string, bool, ResponseGetAllActions?>(message, false, new ResponseGetAllActions()
+        {
+            ApiName = servername,
+            IsWorking = false,
+            Message = message,
+            Routes =new List<string>(),
+        });
        
 
 

@@ -1,4 +1,5 @@
-﻿using Hub.Common;
+﻿using Auth.Common.Constant;
+using Hub.Common;
 using Hub.Common.Filters;
 using Hub.Features.AreaCoverageManagement;
 
@@ -8,7 +9,7 @@ namespace Hub
     {
         public static void MapEndpoints(this WebApplication app)
         {
-            var endpoints = app.MapGroup("")
+            var endpoints = app.MapGroup($"{KConstant.ApiName}")
                 .AddEndpointFilter<RequestLoggingFilter>()
                 .WithOpenApi();
 
@@ -18,7 +19,7 @@ namespace Hub
 
         private static void MapAreaCoverageManagementEndpoints(this IEndpointRouteBuilder app)
         {
-            var endpoints = app.MapGroup("/AreaCoverageManagement")
+            var endpoints = app.MapGroup($"/{nameof(IAreaCoverageManagementFeature)}")
                 .WithTags("AreaCoverageManagement");
 
             endpoints.MapPublicGroup()
