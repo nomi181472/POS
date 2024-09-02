@@ -39,7 +39,7 @@ namespace Auth.Features.RouteManagement
                 string ApiBaseName = KConstant.ApiName;
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 var iFeature = typeof(IFeature);
-                Dictionary<string, List<string>> apiEndpoints = ExposedAllEndpoints.GetAllActions(ApiBaseName, assembly, iFeature);
+                var apiEndpoints = ExposedAllEndpoints.GetAllActions(ApiBaseName, assembly, iFeature);
 
                 return ApiResponseHelper.Convert(true, true, message, statusCode, apiEndpoints);
             }

@@ -9,7 +9,7 @@ namespace EndpointGRPC.Exposed
 {
     public class ExposedAllEndpoints
     {
-        public static Dictionary<string, List<string>> GetAllActions(string ApiBaseName, Assembly assembly, Type iFeature)
+        public static List<string> GetAllActions(string ApiBaseName, Assembly assembly, Type iFeature)
         {
             var featureInterfaces = assembly.GetTypes()
                                                             .Where(t => t.IsInterface && iFeature.IsAssignableFrom(t) && t != iFeature)
@@ -17,7 +17,7 @@ namespace EndpointGRPC.Exposed
                                                             .ToList();
 
             var routes = new List<string>();
-            var apiEndpoints = new Dictionary<string, List<string>>();
+
 
             foreach (var features in featureInterfaces)
             {
@@ -36,8 +36,7 @@ namespace EndpointGRPC.Exposed
 
 
             }
-            apiEndpoints[ApiBaseName] = routes;
-            return apiEndpoints;
+            return routes;
         }
     }
 }

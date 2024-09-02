@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using Auth.Common.Constant;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Auth.Common;
+using System.Reflection;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -25,9 +27,11 @@ namespace ConfigResource
             //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
-            .AddHelpers(configuration);
-            
-            
+            .AddHelpers(configuration)
+            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(),
+            typeof(IFeature));
+
+
 
 
             return services;
