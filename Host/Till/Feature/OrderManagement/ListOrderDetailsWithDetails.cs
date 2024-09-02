@@ -8,7 +8,7 @@ using Till.Common;
 
 namespace Till.Feature.OrderManagement
 {
-    public class ListOrderDetailsWithDetails : IFeature
+    public class ListOrderDetailsWithDetails : IOrderFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(ListOrderDetailsWithDetails)}", Handle)

@@ -14,6 +14,7 @@ namespace MapConfig
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapEndpoints();
+            app.MapEndpointsExposed();
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
         }

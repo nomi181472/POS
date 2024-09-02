@@ -10,7 +10,7 @@ using Till.Common;
 
 namespace Till.Feature.OrderManagement
 {
-    public class UpdateOrderDetails : IFeature
+    public class UpdateOrderDetails : IOrderFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(UpdateOrderDetails)}", Handle)

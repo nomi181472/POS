@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using Auth.Common.Constant;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Auth.Common;
+using System.Reflection;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -17,16 +19,19 @@ namespace ConfigResource
         public static IServiceCollection RegisterService(this IServiceCollection services, IConfiguration configuration)
         {
             services
-            
-            
+
+
             .AddCustomLogger(configuration)
             .AddSwagger(KConstant.ApiName)
             //TODO: AddServicesLayers
             //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
-            .AddHelpers(configuration);
-            
+            .AddHelpers(configuration)
+            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(),
+            typeof(IFeature));
+
+
 
 
             return services;

@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using Till.Common.Constant;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Reflection;
+using Till.Common;
 namespace Till.Extensions
 {
     public static class ConfigDI
@@ -23,9 +25,10 @@ namespace Till.Extensions
             services
                     .AddCustomLogger(configuration)
                     .AddSwagger(KConstant.ApiName)
-            //TODO: AddServicesLayers
-            //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
+                    //TODO: AddServicesLayers
+                    //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
                     //.AddAuthDI(configuration)
+                    .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature))
                     .AddBusinessLayer(configuration)
                     .AddHelpers(configuration);
 
