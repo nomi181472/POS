@@ -9,5 +9,6 @@ namespace BS.EnumsAndConstants.Constant
     public static class KConstantCommon
     {
         public const string UseNA = "NA";
+        public const int UseZero = 0;
     }
 }
