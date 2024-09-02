@@ -1,7 +1,10 @@
 
 using Auth.Common;
+using Auth.Common.Constant;
 using Auth.Common.Filters;
+
 using Auth.Features.AuthManagement;
+using Auth.Features.RouteManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
@@ -9,6 +12,7 @@ namespace Auth;
 
 public static class Endpoints
 {
+  
     private static readonly OpenApiSecurityScheme securityScheme = new()
     {
         Type = SecuritySchemeType.Http,
@@ -23,22 +27,31 @@ public static class Endpoints
 
     public static void MapEndpoints(this WebApplication app)
     {
-        var endpoints = app.MapGroup("")
+        var endpoints = app.MapGroup(KConstant.ApiName)
             .AddEndpointFilter<RequestLoggingFilter>()
             .WithOpenApi();
 
         endpoints.MapAuthenticationEndpoints();
+        endpoints.MapToExposedRoutes();
         
     }
 
     private static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup("/auth")
+        var endpoints = app.MapGroup($"/{nameof(IAuthFeature)}")
             .WithTags("Authentication");
-            
+
         endpoints.MapPublicGroup()
             .MapEndpoint<SignUp>()
             .MapEndpoint<Login>();
+    }
+    private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IRouteFeature)}")
+            .WithTags("Routes");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<GetAllEndpoints>();
     }
 
    
@@ -64,6 +77,7 @@ public static class Endpoints
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app) where TEndpoint : IFeature
     {
+        
         TEndpoint.Map(app);
         return app;
     }

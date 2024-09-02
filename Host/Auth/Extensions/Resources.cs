@@ -17,8 +17,8 @@ namespace ConfigResource
         public static IServiceCollection RegisterService(this IServiceCollection services, IConfiguration configuration)
         {
             services
-            
-            
+
+
             .AddCustomLogger(configuration)
             .AddSwagger(KConstant.ApiName)
             //TODO: AddServicesLayers
@@ -26,6 +26,7 @@ namespace ConfigResource
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
             .AddHelpers(configuration);
+            
             
 
 

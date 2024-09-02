@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Auth.Features.AuthManagement
 {
-   public class Login : IFeature
+   public class Login : IAuthFeature
 {
     public static void Map(IEndpointRouteBuilder app) => app
         .MapPost($"/{nameof(Login)}", Handle)
