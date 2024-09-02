@@ -1,5 +1,8 @@
 ﻿using Logger;
 using BS;
+using UserActivity;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Hub.Extensions
 {
@@ -10,6 +13,8 @@ namespace Hub.Extensions
             services
             .AddCustomLogger(configuration)
             .AddBusinessLayer(configuration)
+            .AddUserActivityLogging(configuration)
+            .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(UserActivityLogCommandHandler).Assembly))
             .AddSwagger();
             
 
