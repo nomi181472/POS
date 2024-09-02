@@ -1,4 +1,5 @@
-﻿using BS.Services.CashManagementService.Models;
+﻿using BS.EnumsAndConstants.Constant;
+using BS.Services.CashManagementService.Models;
 using BS.Services.CashManagementService.Models.Request;
 using BS.Services.CashManagementService.Models.Response;
 using DA;
@@ -72,6 +73,34 @@ namespace BS.Services.CashManagementService
             {
                 throw new InvalidOperationException("Failed to retrieve cash data.");
             }
+        }
+
+        public async Task<bool> UpdateCash(RequestUpdateCash request, string userId, CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request), "The request cannot be null.");
+            }
+
+            var setterResult = await _unitOfWork.CashManagementRepo.UpdateOnConditionAsync(
+                // 1st param: matching condition
+                x => x.IsActive == true && x.Currency == request.Currency && x.Type == request.Type,
+                // 2nd param: set the updated value
+                x => x.SetProperty(x => x.Count, request.Count)
+                .SetProperty(x => x.UpdatedBy, userId)
+                .SetProperty(x => x.UpdatedDate, DateTime.UtcNow)
+                , cancellationToken
+            );
+            
+
+            if (setterResult == null)
+            {
+                throw new InvalidOperationException("The update operation did not return a result.");
+            }
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
         }
 
 
