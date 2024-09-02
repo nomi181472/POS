@@ -1,4 +1,6 @@
-﻿namespace Hub.Extensions
+﻿using Hub.Middlewares;
+
+namespace Hub.Extensions
 {
     public static class ConfigureApp
     {
@@ -8,6 +10,7 @@
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
+            app.UseMiddleware<UserActivityLoggingMiddleware>();
             //app.UseAuthentication();
             //app.UseAuthorization();
             app.MapEndpoints();

@@ -8,6 +8,8 @@ using Logger;
 using BS.Services.AreaCoverageManagementService;
 using PaymentGateway.API.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
+using UserActivity;
+using System.Diagnostics;
 
 namespace Hub.Features.AreaCoverageManagement
 {
@@ -31,13 +33,18 @@ namespace Hub.Features.AreaCoverageManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddArea request, IAreaCoverageManagementService area, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddArea request, IAreaCoverageManagementService area, ICustomLogger _logger /*IUserActivity _activity*/, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
                 var result = await area.AddArea(request, "", cancellationToken);
+
+                //string userId = "SampleUser";
+                //string activity = $"User {userId} added a new area with name: {request.Name}";
+                //await _activity.LogActivityAsync(userId, activity);
+
                 var response = new ResponseAddArea();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
@@ -47,6 +54,11 @@ namespace Hub.Features.AreaCoverageManagement
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);
+
+                //string userId = "SampleUser";
+                //string activity = $"User {userId} failed to add a new area due to an error.";
+                //await _activity.LogActivityAsync(userId, activity);
+
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
         }
