@@ -2,7 +2,7 @@
 
 namespace Till.Feature.OrderManagement
 {
-    public interface IOrderFeature:IFeature
+    public interface IOrderFeature : IFeature
     {
     }
 }

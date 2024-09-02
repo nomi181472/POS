@@ -13,5 +13,7 @@ namespace BS.Services.CashManagementService
         public Task<bool> AddCash(RequestAddCash request, string userId, CancellationToken token);
 
         public Task<List<ResponseListCash>> ListCashWithDetails (string  userId, CancellationToken token);
+
+        public Task<bool> UpdateCash(RequestUpdateCash request, string userId, CancellationToken token);
     }
 }

@@ -31,6 +31,7 @@ public static class Endpoints
 
         endpoints.MapCashManagementEndpoints();
         endpoints.MapOrderManagementEndpoints();
+        //endpoints.MapToExposedRoutes();
     }
 
     private static void MapCashManagementEndpoints(this IEndpointRouteBuilder app)
@@ -40,7 +41,8 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddCash>()
-                 .MapEndpoint<ListCashWithDetails>();
+                 .MapEndpoint<ListCashWithDetails>()
+                 .MapEndpoint<UpdateCash>();
     }
 
     private static void MapOrderManagementEndpoints(this IEndpointRouteBuilder app)
@@ -50,7 +52,8 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddOrderDetails>()
-                 .MapEndpoint<ListOrderDetailsWithDetails>();
+                 .MapEndpoint<ListOrderDetailsWithDetails>()
+                 .MapEndpoint<UpdateOrderDetails>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

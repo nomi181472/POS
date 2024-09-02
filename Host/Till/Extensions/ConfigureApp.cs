@@ -13,6 +13,7 @@ namespace Till.Extensions
             app.UseHttpsRedirection();
             //app.UseAuthentication();
             //app.UseAuthorization();
+            app.MapEndpointsExposed();
             app.MapEndpoints();
             app.MapEndpointsExposed();
             //TODO: Add migration await app.EnsureDatabaseCreated();
