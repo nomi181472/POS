@@ -19,10 +19,11 @@ using BS.Services.CashManagementService.Models.Request;
 using BS.Services.CashManagementService.Models.Response;
 using BS.Services.CashManagementService;
 using BS.CustomExceptions.CustomExceptionMessage;
+using Till.Feature.CashManagement;
 
 namespace Till.Features.CashManagement
 {
-    public class AddCash : IFeature
+    public class AddCash : ICashFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddCash)}", Handle)
