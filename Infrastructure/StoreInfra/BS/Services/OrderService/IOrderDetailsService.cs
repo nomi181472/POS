@@ -12,5 +12,7 @@ namespace BS.Services.OrderService
     public interface IOrderDetailsService
     {
         public Task<ResponseAddOrderDetails> AddOrders(RequestAddOrderDetails request, string userId, CancellationToken token);
+
+        public Task<List<ResponseListOrderDetails>> ListOrderDetailsWithDetails(string userId, CancellationToken token);
     }
 }

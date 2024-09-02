@@ -1,4 +1,5 @@
-﻿using BS.Services.OrderService.Models;
+﻿using BS.Services.CashManagementService.Models.Response;
+using BS.Services.OrderService.Models;
 using BS.Services.OrderService.Models.Request;
 using BS.Services.OrderService.Models.Response;
 using DA;
@@ -50,5 +51,33 @@ namespace BS.Services.OrderService
             };
             return response;
         }
+
+        public async Task<List<ResponseListOrderDetails>> ListOrderDetailsWithDetails(string userId, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.OrderDetailsRepo.GetAllAsync(cancellationToken);
+            List<ResponseListOrderDetails> response = new List<ResponseListOrderDetails>();
+
+            if (result.Status)
+            {
+                foreach (var record in result.Data)
+                {
+                    if (record.IsActive == true)
+                    {
+                        response.Add(new ResponseListOrderDetails()
+                        {
+                            ItemName = record.ItemName,
+                            Price = record.Price,
+                            Quantity = record.Quantity
+                        });
+                    }
+                }
+                return response;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to retrieve orders data.");
+            }
+        }
+
     }
 }
