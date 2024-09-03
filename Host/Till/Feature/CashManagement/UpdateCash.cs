@@ -14,7 +14,7 @@ namespace Till.Feature.CashManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(UpdateCash)}", Handle)
-            .WithSummary("sign up a user")
+            .WithSummary("Update Cash Details")
             .Produces(200);
 
         public class RequestValidator : AbstractValidator<RequestUpdateCash>

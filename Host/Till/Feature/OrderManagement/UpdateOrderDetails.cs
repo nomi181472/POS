@@ -14,7 +14,7 @@ namespace Till.Feature.OrderManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(UpdateOrderDetails)}", Handle)
-            .WithSummary("sign up a user")
+            .WithSummary("Update Order Details")
             .Produces(200);
 
         public class RequestValidator : AbstractValidator<RequestUpdateOrderDetails>

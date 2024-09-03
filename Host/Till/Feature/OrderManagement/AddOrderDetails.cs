@@ -16,7 +16,7 @@ namespace Till.Feature.OrderManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddOrderDetails)}", Handle)
-            .WithSummary("sign up a user")
+            .WithSummary("Add Order Details")
             .WithRequestValidation<RequestAddOrderDetails>()
             .Produces(200)
             .Produces<ResponseAddOrderDetails>();
