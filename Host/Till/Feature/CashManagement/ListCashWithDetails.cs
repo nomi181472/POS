@@ -11,8 +11,8 @@ namespace Till.Feature.CashManagement
     public class ListCashWithDetails : ICashFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(ListCashWithDetails)}", Handle)
-            .WithSummary("sign up a user")
+            .MapGet($"/{nameof(ListCashWithDetails)}", Handle)
+            .WithSummary("List all Cash Details")
             .Produces(200)
             .Produces<ResponseListCash>();
 
