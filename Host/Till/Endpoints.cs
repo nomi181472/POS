@@ -7,6 +7,7 @@ using Till.Feature.OrderManagement;
 using Till.Feature.CashManagement;
 using Till.Common.Constant;
 using Till.Feature.InventoryManagement;
+using Till.Feature.CustomerManagement;
 
 namespace Till;
 
@@ -33,6 +34,7 @@ public static class Endpoints
         endpoints.MapCashManagementEndpoints();
         endpoints.MapOrderManagementEndpoints();
         endpoints.MapInventoryManagementEndpoints();
+        endpoints.MapCustomerManagementEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -66,6 +68,15 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<GetInventory>();
+    }
+
+    private static void MapCustomerManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(ICustomerFeature)}")
+                           .WithTags("CustomerManagement");
+
+        endpoints.MapPublicGroup()
+                 .MapEndpoint<AddCustomer>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
