@@ -1,4 +1,5 @@
-﻿using Hub.Middlewares;
+﻿using Hub.HubGrpc.Server;
+using Hub.Middlewares;
 using MapConfig;
 
 namespace Hub.Extensions
@@ -15,6 +16,7 @@ namespace Hub.Extensions
             //app.UseAuthentication();
             //app.UseAuthorization();
             app.MapEndpoints();
+            app.MapGrpcService<HubGrpcImpl>();
             app.MapEndpointsExposed();
             //TODO: Add migration await app.EnsureDatabaseCreated();
 

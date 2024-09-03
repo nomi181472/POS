@@ -1,0 +1,15 @@
+﻿syntax = "proto3";
+
+package HubService;
+
+service HubServiceGRPC {
+  rpc SendData (DataRequest) returns (DataResponse);
+}
+
+message DataRequest {
+  string data = 1;
+}
+
+message DataResponse {
+  string message = 1;
+}

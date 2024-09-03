@@ -1,45 +1,46 @@
 ﻿using AttendanceService.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
+using BS.Services.InventoryManagementService;
 using BS.Services.OrderService;
 using BS.Services.OrderService.Models.Request;
 using BS.Services.OrderService.Models.Response;
 using FluentValidation;
 using Logger;
+using Microsoft.AspNetCore.Mvc;
 using PaymentGateway.API.Common;
-using Till.Common;
+using System.Reflection.Metadata;
+using Till.Extensions.RouteHandler;
+using Till.Feature.OrderManagement;
 
-namespace Till.Feature.OrderManagement
+namespace Till.Feature.InventoryManagement
 {
-    public class UpdateOrderDetails : IOrderFeature
+    public class GetInventory : IInventoryFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(UpdateOrderDetails)}", Handle)
-            .WithSummary("Update Order Details")
+            .MapGet($"/{nameof(GetInventory)}", Handle)
+            .WithSummary("Fetches inventory")
             .Produces(200);
 
-        public class RequestValidator : AbstractValidator<RequestUpdateOrderDetails>
-        {
-            public RequestValidator()
-            {
-                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
-            }
-        }
+        //public class RequestValidator : AbstractValidator<RequestAddOrderDetails>
+        //{
+        //    public RequestValidator()
+        //    {
+        //        //RuleFor(x => x.Email).EmailAddress().NotEmpty();
+        //    }
+        //}
 
-        private static async Task<IResult> Handle(RequestUpdateOrderDetails request, IOrderDetailsService cash, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(string request, IInventoryManagementService inventory, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await cash.UpdateOrderDetails(request, "", cancellationToken);
-                //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
-                var response = new ResponseUpdateOrderDetails();
+                var result = await inventory.GetInventoryData(request, cancellationToken);
+                var response = new ResponseAddOrderDetails();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (Exception e)
             {
-
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);

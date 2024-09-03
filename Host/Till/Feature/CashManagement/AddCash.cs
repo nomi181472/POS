@@ -27,7 +27,7 @@ namespace Till.Features.CashManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddCash)}", Handle)
-            .WithSummary("sign up a user")
+            .WithSummary("Add Cash Details")
             .WithRequestValidation<RequestAddCash>()
             .Produces(200)
             .Produces<ResponseAddCash>();
