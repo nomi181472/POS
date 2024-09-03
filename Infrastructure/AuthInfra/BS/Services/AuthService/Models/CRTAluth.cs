@@ -11,16 +11,7 @@ namespace AttendanceServices.Services.AllowanceService.Models
 {
     public static class CRTAuth
     {
-        public static User ToDomain(this RequestSignUp request)
-        {
-            return new User
-            {
-                
-                Name = request.Name,
-                Email=request.Email,
-
-            };
-        }
+        
         
     }
 }

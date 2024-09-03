@@ -14,8 +14,8 @@ namespace DA.AppDbContexts
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Policy> Policies { get; set; }
-        public DbSet<RolePolicy> RolePolicies { get; set; }
+        public DbSet<Actions> Policies { get; set; }
+        public DbSet<RoleAction> RolePolicies { get; set; }
 
 
 

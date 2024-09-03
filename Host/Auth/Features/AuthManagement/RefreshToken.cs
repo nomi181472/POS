@@ -19,35 +19,37 @@ using PaymentGateway.API.Common;
 
 namespace Auth.Features.AuthManagement
 {
-    public class Login : IAuthFeature
+    public class RefreshToken : IAuthFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(Login)}", Handle)
-            .WithSummary("Login a user")
-            .WithRequestValidation<RequestLogin>();
+            .MapPost($"/{nameof(RefreshToken)}", Handle)
+            .WithSummary("refreshToken a user");
+            
 
 
-        public class RequestValidator : AbstractValidator<RequestLogin>
-        {
-            public RequestValidator()
-            {
-                RuleFor(x => x.Email).NotEmpty();
-                RuleFor(x => x.Password).NotEmpty();
-            }
-        }
+       
 
-        private static async Task<IResult> Handle(RequestLogin request, IAuthService _auth, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(AccessAndRefreshTokens request,Jwt jwt, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
+                var principal = jwt.GetPrincipalFromExpiredToken(request.RefreshToken);
+                if (principal == null)
+                {
+                    statusCode = HTTPStatusCode400.Unauthorized; 
+                    return ApiResponseHelper.Convert(true, false, message, statusCode, null);
+                }
 
-                var result = await _auth.Login(request, cancellationToken);
-              //  var token = jwt.GenerateToken(new UserPayload() { Id = "1", RoleIds = new[] { "a", "b" }, PolicyName = KPolicyDescriptor.SuperAdminPolicy });
-                //result.Token = token;//.Token;
-                return ApiResponseHelper.Convert(true, true, message, statusCode, result);
+                var username = principal.Identity.Name;
+              //  var newTokens = jwt.GenerateToken();
+                request.AccessToken= "";
+                return ApiResponseHelper.Convert(true, true, message, statusCode, request);
+
+               
+               
             }
             catch (Exception e)
             {
