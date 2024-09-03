@@ -3,7 +3,9 @@ using BS;
 using UserActivity;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-
+using Hub.Common;
+using Auth.Common.Constant;
+using Helpers;
 namespace Hub.Extensions
 {
     public static class Resources
@@ -15,7 +17,8 @@ namespace Hub.Extensions
             .AddBusinessLayer(configuration)
             .AddUserActivityLogging(configuration)
             .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(UserActivityLogCommandHandler).Assembly))
-            .AddSwagger();
+            .AddSwagger()
+            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature)); ;
             
 
 

@@ -1,4 +1,5 @@
 ﻿using Hub.Middlewares;
+using MapConfig;
 
 namespace Hub.Extensions
 {
@@ -14,6 +15,7 @@ namespace Hub.Extensions
             //app.UseAuthentication();
             //app.UseAuthorization();
             app.MapEndpoints();
+            app.MapEndpointsExposed();
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
         }

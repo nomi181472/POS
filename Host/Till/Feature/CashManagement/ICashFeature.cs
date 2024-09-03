@@ -2,8 +2,7 @@
 
 namespace Till.Feature.CashManagement
 {
-    public interface ICashFeature : IFeature
-    {
+   public interface ICashFeature:IFeature {
 
     }
 }

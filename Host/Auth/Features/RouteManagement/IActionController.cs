@@ -2,7 +2,7 @@
 
 namespace Auth.Features.RouteManagement
 {
-    public interface IRouteFeature:IFeature
+    public interface IActionController:IFeature
     {
 
     }

@@ -6,7 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Google.Protobuf" Version="3.28.0" />
+		<PackageReference Include="Grpc.Core" Version="2.46.6" />
+		<PackageReference Include="Grpc.Tools" Version="2.66.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<ProjectReference Include="..\..\..\Utility\EndpointExposerGRPC\EndpointGRPC.csproj" />
+		<ProjectReference Include="..\..\..\Utility\Helpers\Helpers.csproj" />
 		<ProjectReference Include="..\DA\DA.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Protobuf Include="..\..\..\Protos\*.proto" GrpcServices="Client" />
+	</ItemGroup>
 </Project>

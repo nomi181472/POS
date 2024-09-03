@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\Infrastructure\HubInfra\BS\BS.csproj" />
     <ProjectReference Include="..\..\UserActivity\UserActivity.csproj" />
     <ProjectReference Include="..\..\Utility\CustomHTTP\CustomHTTP.csproj" />
+    <ProjectReference Include="..\..\Utility\EndpointExposerGRPC\EndpointGRPC.csproj" />
     <ProjectReference Include="..\..\Utility\Helpers\Helpers.csproj" />
     <ProjectReference Include="..\..\Utility\Logger\Logger.csproj" />
   </ItemGroup>

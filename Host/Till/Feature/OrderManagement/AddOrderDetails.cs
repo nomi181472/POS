@@ -8,6 +8,7 @@ using Logger;
 using PaymentGateway.API.Common;
 using Till.Common;
 using Till.Extensions.RouteHandler;
+using Till.Feature.CashManagement;
 
 namespace Till.Feature.OrderManagement
 {

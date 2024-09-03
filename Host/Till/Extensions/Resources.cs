@@ -28,9 +28,10 @@ namespace Till.Extensions
                     //TODO: AddServicesLayers
                     //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
                     //.AddAuthDI(configuration)
-                    .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature))
+                   
                     .AddBusinessLayer(configuration)
-                    .AddHelpers(configuration);
+                    .AddHelpers(configuration)
+                    .AddEndpointGRPC(configuration,KConstant.ApiName,Assembly.GetExecutingAssembly(),typeof(IFeature));
 
             return services;
         }

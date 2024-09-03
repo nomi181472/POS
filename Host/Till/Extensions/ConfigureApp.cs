@@ -15,6 +15,7 @@ namespace Till.Extensions
             //app.UseAuthorization();
             app.MapEndpointsExposed();
             app.MapEndpoints();
+           
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
         }
