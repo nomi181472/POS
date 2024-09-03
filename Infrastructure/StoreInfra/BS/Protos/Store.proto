@@ -4,6 +4,7 @@ package HubService;
 
 service HubServiceGRPC {
   rpc SendData (DataRequest) returns (DataResponse);
+  rpc AddCustomer (CustomerAddRequest) returns (CustomerAddResponse);
 }
 
 message DataRequest {
@@ -12,4 +13,18 @@ message DataRequest {
 
 message DataResponse {
   string message = 1;
+}
+
+message CustomerAddRequest{
+	string Id = 1;
+	string Name = 2;
+	string PhoneNumber = 3;
+	string Email = 4;
+	string Cnic = 5;
+	string Billing = 6;
+	string Address = 7;
+}
+
+message CustomerAddResponse{
+	string message = 1;
 }
