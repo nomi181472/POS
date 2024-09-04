@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AttendanceService.Common;
 using Auth.Common;
+using Auth.Common.Auth;
 using Auth.Extensions.RouteHandler;
 using AuthJWT;
 using BS.CustomExceptions.CustomExceptionMessage;
@@ -12,6 +13,7 @@ using BS.Services.AuthService;
 using BS.Services.AuthService.Models.Request;
 using BS.Services.AuthService.Models.Response;
 using FluentValidation;
+using Helpers.Auth.Models;
 using Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,7 +28,7 @@ namespace Auth.Features.AuthManagement
             .WithSummary("sign up a user")
             .WithRequestValidation<RequestSignUp>()
             .Produces(200)
-            .Produces<ResponseSignUp>();
+            .Produces<ResponseAuthorizedUser>();
         public class RequestValidator : AbstractValidator<RequestSignUp>
         {  
             public RequestValidator()
@@ -43,7 +45,7 @@ namespace Auth.Features.AuthManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestSignUp request, IAuthService auth, ICustomLogger _logger, Jwt jwt, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestSignUp request, IAuthService _auth, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
@@ -51,9 +53,9 @@ namespace Auth.Features.AuthManagement
             try
             {
 
-                var result = await auth.SignUp(request, "", cancellationToken);
-                var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
-                var response = new ResponseSignUp();
+                var result = await _auth.SignUp(request, cancellationToken);
+              //var token = jwt.GenerateToken(new UserPayload() { Id = "1", RoleIds = new[] { "a", "b" }, PolicyName = KPolicyDescriptor.CustomPolicy });
+               // result.Token = token ;
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (Exception e)

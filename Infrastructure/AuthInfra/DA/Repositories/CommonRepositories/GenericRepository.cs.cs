@@ -28,11 +28,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-                var currentDate = DateTime.UtcNow;
-                entity.CreatedBy = createdBy;
-                entity.UpdatedBy = createdBy;
-                entity.UpdatedDate = currentDate;
-                entity.CreatedDate = currentDate;
+                
               /*  entity.IsActive = true;
                 entity.IsArchived = false;*/
 
@@ -51,11 +47,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-                var currentDate = DateTime.UtcNow;
-                entity.CreatedBy = createdBy;
-                entity.UpdatedBy = createdBy;
-                entity.UpdatedDate = currentDate;
-                entity.CreatedDate = currentDate;
+               
                 /*entity.IsActive = true;
                 entity.IsArchived = false;*/
                 await _dbSet.AddAsync(entity,cancellationToken);
@@ -327,8 +319,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-                entity.UpdatedDate = DateTime.UtcNow;
-                entity.UpdatedBy = updatedBy;
+                entity.UpdateRecordStatus(DateTime.UtcNow, updatedBy);
                 _dbSet.Update(entity);
                 return new SetterResult() { Message = CommonMessages.Success, Result = true, IsException = false };
             }
@@ -383,8 +374,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-                entity.UpdatedDate = DateTime.UtcNow;
-                entity.UpdatedBy = updatedBy;
+                entity.UpdateRecordStatus(DateTime.UtcNow, updatedBy);
                 _dbSet.Update(entity);
 
                 return new SetterResult() { IsException = false, Result = true, Message = CommonMessages.Success, };
@@ -461,6 +451,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
+
                 GetterResult<IEnumerable<TEntity>> getterResult = new GetterResult<IEnumerable<TEntity>>();
                 getterResult.Message = CommonMessages.Success;
                 getterResult.Status = true;

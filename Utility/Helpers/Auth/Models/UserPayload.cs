@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Helpers.Auth.Models
+{
+    public class UserPayload
+    {
+        public required string Email {  get; set; }
+        public required string UserId { get; set; }
+        public required string PolicyName { get; set; }
+        public string RoleIds { get; set; } 
+
+    }
+    public class AccessAndRefreshTokens
+    {
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+
+    }
+}

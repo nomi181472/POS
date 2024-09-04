@@ -1,5 +1,6 @@
 
 using Auth.Common;
+using Auth.Common.Auth;
 using Auth.Common.Constant;
 using Auth.Common.Filters;
 
@@ -43,14 +44,15 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<SignUp>()
-            .MapEndpoint<Login>();
+            .MapEndpoint<Login>()
+            .MapEndpoint<RefreshToken>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IActionController)}")
             .WithTags("Routes");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<GetAllEndpoints>();
     }
 
@@ -68,7 +70,7 @@ public static class Endpoints
     private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
-            .RequireAuthorization()
+            .RequireAuthorization(KPolicyDescriptor.CustomPolicy)
             .WithOpenApi(x => new(x)
             {
                 Security = [new() { [securityScheme] = [] }],
