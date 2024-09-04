@@ -43,10 +43,10 @@ namespace Auth.Features.AuthManagement
                     return ApiResponseHelper.Convert(true, false, message, statusCode, null);
                 }
 
-                var username = principal.Identity.Name;
-              //  var newTokens = jwt.GenerateToken();
-                request.AccessToken= "";
-                return ApiResponseHelper.Convert(true, true, message, statusCode, request);
+                
+                var newTokens = jwt.GenerateToken(jwt.GetUserPayloadFromClaims(principal));
+                
+                return ApiResponseHelper.Convert(true, true, message, statusCode, newTokens);
 
                
                

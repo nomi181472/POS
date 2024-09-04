@@ -15,7 +15,7 @@ using FluentValidation;
 using Helpers.Auth.Models;
 using Logger;
 using Microsoft.AspNetCore.Http.HttpResults;
-using PaymentGateway.API.Common;
+using PaymentGateway.API.Common; 
 
 namespace Auth.Features.AuthManagement
 {
