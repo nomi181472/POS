@@ -16,5 +16,25 @@ namespace Hub.HubGrpc.Server
             };
         }
 
+        public override async Task<CustomerAddResponse> AddCustomer(CustomerAddRequest request, ServerCallContext context)
+        {
+            return new CustomerAddResponse()
+            {
+                Message =  "True",
+                Id = request.Id,
+                Name = "Good",
+            };
+        }
+
+        public override async Task<CustomerUpdateResponse> UpdateCustomer(CustomerUpdateRequest request, ServerCallContext context)
+        {
+            return new CustomerUpdateResponse()
+            {
+                Message = "True",
+                Id = request.Id,
+                Name = "Good",
+            };
+        }
+
     }
 }

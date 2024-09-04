@@ -1,28 +1,24 @@
-﻿CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
-    "MigrationId" character varying(150) NOT NULL,
-    "ProductVersion" character varying(32) NOT NULL,
-    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
-);
+﻿START TRANSACTION;
 
-START TRANSACTION;
-
-CREATE TABLE "Locations" (
+CREATE TABLE "CustomerManagements" (
     "Id" text NOT NULL,
     "Name" text NOT NULL,
+    "PhoneNumber" text NOT NULL,
+    "Email" text NOT NULL,
+    "Cnic" text NOT NULL,
+    "Billing" text NOT NULL,
     "Address" text NOT NULL,
-    "City" text NOT NULL,
-    "Province" text NOT NULL,
     "CreatedBy" text NOT NULL,
     "UpdatedBy" text NOT NULL,
     "CreatedDate" timestamp with time zone NOT NULL,
     "UpdatedDate" timestamp with time zone NOT NULL,
     "IsActive" boolean NOT NULL,
     "IsArchived" boolean NOT NULL,
-    CONSTRAINT "PK_Locations" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_CustomerManagements" PRIMARY KEY ("Id")
 );
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20240829082501_initial_migration', '8.0.8');
+VALUES ('20240904063137_addedcustomermanagementtable', '8.0.8');
 
 COMMIT;
 
