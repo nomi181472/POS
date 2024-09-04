@@ -76,7 +76,8 @@ public static class Endpoints
                            .WithTags("CustomerManagement");
 
         endpoints.MapPublicGroup()
-                 .MapEndpoint<AddCustomer>();
+                 .MapEndpoint<AddCustomer>()
+                 .MapEndpoint<UpdateCustomer>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
