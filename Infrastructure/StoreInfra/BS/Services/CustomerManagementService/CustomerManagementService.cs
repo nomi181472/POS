@@ -46,8 +46,8 @@ namespace BS.Services.CustomerManagementService
             entity.IsArchived = false;
             entity.IsActive = true;
 
-            //await _unitOfWork.CustomerManagementRepo.AddAsync(entity, userId, cancellationToken);
-            //await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.CustomerManagementRepo.AddAsync(entity, userId, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
 
             try
