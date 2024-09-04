@@ -4,6 +4,7 @@ using BS.Services.AuthService.Models.Response;
 using DA;
 using DM.DomainModels;
 using Helpers.Auth.Models;
+using Helpers.StringsExtension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,51 +25,62 @@ namespace BS.Services.AuthService
         public async Task<ResponseAuthorizedUser> Login(RequestLogin request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
+            //TODO: ge user email and check exist or not
+            //
+            //compare password and login the user
+            //when fetching user, must fetch its roles then policiess and provide in return type where roleIds object is and make
+            //AccessAndReferesh tokens
+            
             return new ResponseAuthorizedUser() { UserId = Guid.NewGuid().ToString() };
         }
 
-        public async Task<ResponseAuthorizedUser> SignUp(RequestSignUp request , CancellationToken token)
+        public async Task<ResponseAuthorizedUser> SignUp(RequestSignUp request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
-            //TODO: check user should not exist with same email
-            string userId=Guid.NewGuid().ToString();
-            string refreshToken = "";
+           
+            string userId = Guid.NewGuid().ToString();
             
-            
+
+
             DateTime now = DateTime.UtcNow;
             List<UserRole> userRoles = new List<UserRole>();
             if (request.RoleIds.Count > 0)
             {
-               userRoles=request.RoleIds.Select(x=>new UserRole(userId,Guid.NewGuid().ToString(),userId,now)).ToList();
+                userRoles = request.RoleIds.Select(x => new UserRole(userId, Guid.NewGuid().ToString(), userId, now)).ToList();
             }
-            string passwordHash = "";
-            string passwordSalt = "";
-            Credential credential=new Credential(Guid.NewGuid().ToString(),userId,now,passwordSalt,passwordHash,userId);
+          
+            var hAndS = request.Password.CreateHashAndSalt();
+            string passwordHash = hAndS.Hash;
+            string passwordSalt=hAndS.Salt;
 
-            User user = new User(userId, userId, now, request.Name, request.Email, refreshToken,"", credential, userRoles);
 
-           /* var result=_uot.user.Add(user,userId);
+
+            Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
+
+            User user = new User(userId, userId, now, request.Name, request.Email, "", credential, userRoles);
+
+            var result = _uot.user.Add(user, userId);
             if (result.Result)
             {
                 _uot.Commit();
-            }*/
+            }
 
             var tokens = _generateToken(new UserPayload()
             {
                 UserId = userId,
                 PolicyName = request.UserType,
-                RoleIds =string.Join(";", request.RoleIds),
-                Email=request.Email,
+                RoleIds = string.Join(";", request.RoleIds),
+                Email = request.Email,
             });
 
             response.UserType = user.UserType;
             response.UserId = user.Id;
             response.RoleIds = request.RoleIds.ToArray();
             response.RefreshToken = tokens.RefreshToken;
-            response.Token= tokens.AccessToken;
-            
+            response.Token = tokens.AccessToken;
 
-            
+
+
             return response;
         }
 

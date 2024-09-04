@@ -10,17 +10,17 @@ namespace DM.DomainModels
     {
         public string Name { get;    set; }
         public string Email { get;  set; }   
-        public string RefreshToken { get; set; }
+       
         public string UserType { get; set; }
         public virtual Credential? Credential { get;  set; }
         public virtual ICollection<UserRole> UserRoles { get;  set; }=new List<UserRole>();
-        public User(string pId, string Createdby, DateTime pCreatedDate, string pName,string pEmail,string pRefreshedToken,string pUserType,Credential pCredential,List<UserRole> pUserRoles)         : base(pId, Createdby, pCreatedDate)
+        public User(string pId, string Createdby, DateTime pCreatedDate, string pName,string pEmail,string pUserType,Credential pCredential,List<UserRole> pUserRoles)         : base(pId, Createdby, pCreatedDate)
         {
             Name=pName;
             Email=pEmail;
             Credential = pCredential;
             UserRoles=pUserRoles;
-            RefreshToken = pRefreshedToken;
+           
             UserType = pUserType;
 
 
@@ -29,10 +29,7 @@ namespace DM.DomainModels
         {
             UserType = pUserType;
         }
-        void UpdateRefreshToken(string pRefreshToken)
-        {
-            RefreshToken=pRefreshToken;
-        }
+       
         void UpdateEmail(string PEmail)
         {
             Email = PEmail;
