@@ -8,5 +8,8 @@ namespace BS.Services.RoleService.Models.Response
 {
     public class ResponseGetAllUserRoles
     {
+        public string UserId { get; set; }
+
+        public string RoleId { get; set; }
     }
 }
