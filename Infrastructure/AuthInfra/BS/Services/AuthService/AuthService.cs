@@ -42,11 +42,11 @@ namespace BS.Services.AuthService
             
 
 
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             List<UserRole> userRoles = new List<UserRole>();
             if (request.RoleIds.Count > 0)
             {
-                userRoles = request.RoleIds.Select(x => new UserRole(userId, Guid.NewGuid().ToString(), userId, now)).ToList();
+                userRoles = request.RoleIds.Select(roleId => new UserRole(userId,roleId, Guid.NewGuid().ToString(), userId, now)).ToList();
             }
           
             var hAndS = request.Password.CreateHashAndSalt();

@@ -5,6 +5,7 @@ using Auth.Common.Constant;
 using Auth.Common.Filters;
 
 using Auth.Features.AuthManagement;
+using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
@@ -33,8 +34,8 @@ public static class Endpoints
             .WithOpenApi();
 
         endpoints.MapAuthenticationEndpoints();
-        endpoints.MapToExposedRoutes();
-        
+        endpoints.MapRoleManagementEndpoints();
+        endpoints.MapToExposedRoutes();   
     }
 
     private static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
@@ -46,6 +47,14 @@ public static class Endpoints
             .MapEndpoint<SignUp>()
             .MapEndpoint<Login>()
             .MapEndpoint<RefreshToken>();
+    }
+    private static void MapRoleManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IRoleFeature)}")
+            .WithTags("Role");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<AddRoleToUser>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {

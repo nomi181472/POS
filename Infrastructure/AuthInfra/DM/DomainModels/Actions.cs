@@ -11,6 +11,8 @@ namespace DM.DomainModels
       
         public string Name { get; set; }
         public ICollection<RoleAction> RoleActions { get; set; } = new List<RoleAction>();
+        public Actions(){}
+        
         public Actions(string pId,string Createdby,DateTime pCreatedDate,string pName, List<RoleAction> pRoleActions):base(pId,Createdby,pCreatedDate)
         {
             Name = pName;
