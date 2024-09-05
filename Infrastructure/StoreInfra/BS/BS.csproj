@@ -15,4 +15,8 @@
     <ProjectReference Include="..\DA\DA.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\TillManagementService\Response\" />
+  </ItemGroup>
+
 </Project>
