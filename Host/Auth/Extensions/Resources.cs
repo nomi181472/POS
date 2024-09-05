@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Auth.Common;
 using System.Reflection;
+using Auth.Common.Auth;
+using Auth.Common.Auth.Requirements;
+using Microsoft.AspNetCore.Authorization;
+using Helpers.Auth.Models;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -70,38 +74,54 @@ namespace ConfigResource
 
         private static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
         {
+
+            services.AddHttpContextAccessor();
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CustomPolicy", policy =>
-                {
-                    policy.RequireAssertion(context =>
-                    {
-                        // Ensure the Resource is an HttpContext
-                        if (context.Resource is HttpContext httpContext)
-                        {
-                            var roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
-                            var userRoles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
-
-                            foreach (var role in userRoles)
-                            {
-                                var roleEntity = roleManager.FindByNameAsync(role).Result;
-                                if (roleEntity != null)
-                                {
-                                    /*var rolePolicies = roleEntity.Policies; // Assuming roleEntity has a Policies property
-
-                                    if (rolePolicies.Any(p => p.Name == "RequiredPolicy"))
-                                    {
-                                        return true;
-                                    }*/
-                                    return true;
-                                }
-                            }
-                        }
-
-                        return false;
-                    });
-                });
+               // options.AddPolicy(KPolicyDescriptor.SuperAdminPolicy, policy=>policy.RequireAuthenticatedUser());
+                options.AddPolicy(KPolicyDescriptor.CustomPolicy, policy => policy.RequireAuthenticatedUser()
+                .AddRequirements(new CustomAuthorizationRequirement()));
             });
+
+            services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+            services.AddSingleton<Func<UserPayload, AccessAndRefreshTokens>>(sp =>
+            {
+                var jwt = sp.GetRequiredService<Jwt>();
+                return (user) => jwt.GenerateToken (user);
+            });
+            /* services.AddAuthorization(options =>
+             {
+                 options.AddPolicy(KPolicyDescriptor.SuperAdminPolicy, policy =>
+                 {
+                     policy.RequireAssertion(context =>
+                     {
+                         // Ensure the Resource is an HttpContext
+                         if (context.Resource is HttpContext httpContext)
+                         {
+                             var roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
+                             var userRoles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+
+                             foreach (var role in userRoles)
+                             {
+                                 var roleEntity = roleManager.FindByNameAsync(role).Result;
+                                 if (roleEntity != null)
+                                 {
+                                     *//*var rolePolicies = roleEntity.Policies; // Assuming roleEntity has a Policies property
+
+                                     if (rolePolicies.Any(p => p.Name == "RequiredPolicy"))
+                                     {
+                                         return true;
+                                     }*//*
+                                     return true;
+                                 }
+                             }
+                         }
+
+                         return false;
+                     });
+                 });
+             });*/
             return services;
         }
     }

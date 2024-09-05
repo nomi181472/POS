@@ -17,9 +17,16 @@ namespace DA
         }
 
         public IGenericRepository<Role, string> role => new GenericRepository<Role, string>(_db);
-        public IGenericRepository<Policy, string> policy => new GenericRepository<Policy, string>(_db);
-        public IGenericRepository<RolePolicy, string> rolePolicy => new GenericRepository<RolePolicy,string>(_db);
-      
+        public IGenericRepository<Actions, string> policy => new GenericRepository<Actions, string>(_db);
+        public IGenericRepository<RoleAction, string> rolePolicy => new GenericRepository<RoleAction,string>(_db);
+
+        public IGenericRepository<User, string> user => new GenericRepository<User, string>(_db);
+
+        public IGenericRepository<Credential, string> creadential => new GenericRepository<Credential, string>(_db);
+        public IGenericRepository<Actions, string> action => new GenericRepository<Actions, string>(_db);
+
+        public IGenericRepository<UserRole, string> userRole => new GenericRepository<UserRole, string>(_db);
+        public IGenericRepository<RoleAction, string> roleAction => new GenericRepository<RoleAction, string>(_db);
 
         public void Commit()
         {

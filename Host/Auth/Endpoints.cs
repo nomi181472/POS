@@ -1,9 +1,11 @@
 
 using Auth.Common;
+using Auth.Common.Auth;
 using Auth.Common.Constant;
 using Auth.Common.Filters;
 
 using Auth.Features.AuthManagement;
+using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
@@ -32,8 +34,8 @@ public static class Endpoints
             .WithOpenApi();
 
         endpoints.MapAuthenticationEndpoints();
-        endpoints.MapToExposedRoutes();
-        
+        endpoints.MapRoleManagementEndpoints();
+        endpoints.MapToExposedRoutes();   
     }
 
     private static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
@@ -43,14 +45,23 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<SignUp>()
-            .MapEndpoint<Login>();
+            .MapEndpoint<Login>()
+            .MapEndpoint<RefreshToken>();
+    }
+    private static void MapRoleManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IRoleFeature)}")
+            .WithTags("Role");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<AddRoleToUser>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IActionController)}")
             .WithTags("Routes");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<GetAllEndpoints>();
     }
 
@@ -68,7 +79,7 @@ public static class Endpoints
     private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
-            .RequireAuthorization()
+            .RequireAuthorization(KPolicyDescriptor.CustomPolicy)
             .WithOpenApi(x => new(x)
             {
                 Security = [new() { [securityScheme] = [] }],

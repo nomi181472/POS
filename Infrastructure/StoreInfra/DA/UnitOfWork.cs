@@ -20,6 +20,8 @@ namespace DA
         public IGenericRepository<CashManagement, string> CashManagementRepo => new GenericRepository<CashManagement, string>(_db);
         public IGenericRepository<OrderDetails, string> OrderDetailsRepo => new GenericRepository<OrderDetails, string>(_db);
         public IGenericRepository<Till, string> TillRepo => new GenericRepository<Till, string>(_db);
+        public IGenericRepository<CustomerManagement, string> CustomerManagementRepo => new GenericRepository<CustomerManagement, string>(_db);
+
         public void Commit()
         {
             _db.SaveChanges();

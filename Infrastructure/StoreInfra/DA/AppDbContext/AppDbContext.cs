@@ -17,6 +17,7 @@ namespace DA.AppDbContexts
         public DbSet<OrderDetails> OrderDetails { get; set; }
         public DbSet<Till> Till { get; set; }
 
+        public DbSet<CustomerManagement> CustomerManagements { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {

@@ -19,6 +19,7 @@ namespace MapConfig
         }
         public static async Task GlobalExceptionHandler(this WebApplication app)
         {
+
         }
         private static async Task EnsureDatabaseCreated(this WebApplication app)
         {

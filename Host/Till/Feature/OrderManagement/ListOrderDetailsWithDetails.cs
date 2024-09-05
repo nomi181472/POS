@@ -12,8 +12,8 @@ namespace Till.Feature.OrderManagement
     public class ListOrderDetailsWithDetails : IOrderFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(ListOrderDetailsWithDetails)}", Handle)
-            .WithSummary("sign up a user")
+            .MapGet($"/{nameof(ListOrderDetailsWithDetails)}", Handle)
+            .WithSummary("List All Order Details")
             .Produces(200)
             .Produces<ResponseListOrderDetails>();
 

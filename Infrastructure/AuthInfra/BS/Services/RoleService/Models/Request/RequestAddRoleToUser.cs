@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BS.Services.AuthService.Models.Response
+namespace BS.Services.RoleService.Models.Request
 {
-    public class ResponseSignUp
+    public class RequestAddRoleToUser
     {
         public string UserId { get; set; }
-        public string[] RoleIds { get; set; } = new string[0];
+
+        public string RoleId { get; set; } 
     }
 }
