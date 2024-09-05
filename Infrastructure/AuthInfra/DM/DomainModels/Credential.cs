@@ -13,6 +13,7 @@ namespace DM.DomainModels
         public string PasswordHash { get; set; }
         public string? UserId { get; set; }
         public virtual User? User { get; set; }
+        public Credential(){}
         public Credential(string pId, string Createdby, DateTime pCreatedDate,string pPasswordSalt,string pPasswordHash,string? pUserId):base(pId, Createdby, pCreatedDate)
         {
             PasswordHash = pPasswordHash;
