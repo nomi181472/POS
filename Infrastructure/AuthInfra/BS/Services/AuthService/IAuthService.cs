@@ -10,6 +10,7 @@ namespace BS.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<ResponseSignUp> SignUp(RequestSignUp request, string userId, CancellationToken token);
+        Task<ResponseAuthorizedUser> SignUp(RequestSignUp request, CancellationToken token);
+        Task<ResponseAuthorizedUser> Login(RequestLogin request, CancellationToken token);
     }
 }
