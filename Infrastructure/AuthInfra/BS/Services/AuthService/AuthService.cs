@@ -1,4 +1,5 @@
-﻿using BS.Delegate;
+﻿using BS.CustomExceptions.Common;
+using BS.Delegate;
 using BS.Services.AuthService.Models.Request;
 using BS.Services.AuthService.Models.Response;
 using DA;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 namespace BS.Services.AuthService
 {
     internal class AuthService : IAuthService
-
     {
         private readonly Func<UserPayload, AccessAndRefreshTokens> _generateToken;
         readonly IUnitOfWork _uot;
@@ -44,16 +44,24 @@ namespace BS.Services.AuthService
 
             DateTime now = DateTime.Now;
             List<UserRole> userRoles = new List<UserRole>();
-            if (request.RoleIds.Count > 0)
+            if (request.RoleIds != null && request.RoleIds.Count > 0)
             {
-                userRoles = request.RoleIds.Select(roleId => new UserRole(userId,roleId, Guid.NewGuid().ToString(), userId, now)).ToList();
+                var existingRoleIds = await _uot.role.GetAsync(token, r => request.RoleIds.Contains(r.Id));
+                var validRoleIds = existingRoleIds.Data.Select(r => r.Id).ToHashSet();
+                var invalidRoleIds = request.RoleIds.Except(validRoleIds).ToList();
+
+                if (invalidRoleIds.Any())
+                {
+                    throw new RecordNotFoundException($"The following role IDs do not exist: {string.Join(", ", invalidRoleIds)}");
+                }
+
+                List<UserRole> userRolesWithRoleId = request.RoleIds.Select(roleId => new UserRole(userId, roleId, Guid.NewGuid().ToString(), userId, now)).ToList();
+                userRoles = userRolesWithRoleId;
             }
-          
+
             var hAndS = request.Password.CreateHashAndSalt();
             string passwordHash = hAndS.Hash;
             string passwordSalt=hAndS.Salt;
-
-
 
             Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
 
