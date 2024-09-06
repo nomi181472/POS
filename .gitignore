@@ -3,3 +3,5 @@ bin
 .vs
 .fake
 logs
+/script.sql
+/Infrastructure/AuthInfra/DA/Migrations

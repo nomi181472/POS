@@ -8,6 +8,7 @@ using Auth.Common;
 using Auth.Common.Auth;
 using Auth.Extensions.RouteHandler;
 using AuthJWT;
+using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.AuthService;
 using BS.Services.AuthService.Models.Request;
@@ -55,12 +56,18 @@ namespace Auth.Features.AuthManagement
 
                 var result = await _auth.SignUp(request, cancellationToken);
               //var token = jwt.GenerateToken(new UserPayload() { Id = "1", RoleIds = new[] { "a", "b" }, PolicyName = KPolicyDescriptor.CustomPolicy });
-               // result.Token = token ;
+             // result.Token = token ;
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
+            }
+            catch(RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message; /*ExceptionMessage.NA;*/
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (Exception e)
             {
-
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);

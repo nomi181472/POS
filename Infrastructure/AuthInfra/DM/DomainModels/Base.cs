@@ -11,6 +11,7 @@ namespace DM.DomainModels
 {
     public abstract class Base<T>
     {
+        public Base() { }
         public Base(T pId, string pCreatedBy, DateTime pCreatedDate)
         {
             Id = pId;

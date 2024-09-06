@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DA;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using BS.Services.OrderService;
+using BS.Services.TillManagementService;
 using BS.Services.CustomerManagementService;
 using BS.Services.InventoryManagementService;
 
@@ -29,6 +30,7 @@ public static class DependencyInjection
     {
         services.TryAddScoped<ICashManagementService, CashManagementService>();
         services.TryAddScoped<IOrderDetailsService, OrderDetailsService>();
+        services.TryAddTransient<ITillManagementService, TillManagementService>();
         services.TryAddScoped<ICustomerManagementService, CustomerManagementService>();
         services.TryAddScoped<IInventoryManagementService, InventoryManagementService>();
 

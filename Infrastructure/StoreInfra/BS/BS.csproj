@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Services\TillManagementService\Response\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Protobuf Include="Protos\Store.proto" GrpcServices="Client" />
   </ItemGroup>
 

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace BS.Services.RoleService.Models.Response
 {
-    public class ResponseGetAllUserRoles
+    public class ResponseAddRoleToUser
     {
-        public string UserId { get; set; }
 
-        public string RoleId { get; set; }
     }
 }
