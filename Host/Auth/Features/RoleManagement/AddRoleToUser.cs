@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.RoleService.Models;
 using BS.Services.RoleService.Models.Request;
@@ -37,6 +38,13 @@ namespace Auth.Features.RoleManagement
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
+            }
+            catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (Exception e)
             {

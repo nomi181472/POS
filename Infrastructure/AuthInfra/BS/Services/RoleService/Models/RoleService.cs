@@ -60,6 +60,11 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> DetachUserRole(string roleId, string userId, CancellationToken cancellationToken)
         {
+            if (roleId == null)
+            {
+                throw new ArgumentNullException("roleId can not be null or empty");
+            }
+
             var setterResult = await _unitOfWork.userRole.UpdateOnConditionAsync(
             // 1st param: matching condition
             x => x.IsActive == true && x.RoleId == roleId,
@@ -77,8 +82,6 @@ namespace BS.Services.RoleService.Models
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return true;
-
-            throw new NotImplementedException();
         }
 
         public async Task<bool> DetachUserRoles(string[] roleId, string userId, CancellationToken cancellationToken)
@@ -112,8 +115,6 @@ namespace BS.Services.RoleService.Models
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return true;
-
-            throw new NotImplementedException();
         }
 
         public async Task<List<ResponseGetAllUserRoles>> GetAllUserRoles(string userId, CancellationToken cancellationToken)
@@ -125,7 +126,7 @@ namespace BS.Services.RoleService.Models
             {
                 foreach(var record in result.Data)
                 {
-                    if(record.IsActive == true)
+                    if(record.UserId != null && record.RoleId != null && record.IsActive == true)
                     {
                         response.Add(new ResponseGetAllUserRoles()
                         {
@@ -138,10 +139,8 @@ namespace BS.Services.RoleService.Models
             }
             else
             {
-                throw new InvalidOperationException("Failed to retrieve cash data.");
+                throw new InvalidOperationException("Failed to retrieve UserRoles data.");
             }
-
-            throw new NotImplementedException();
         }
 
         public async Task<ResponseGetAllUserRoles> GetUserRoleById(string roleId, CancellationToken cancellationToken)
@@ -160,13 +159,18 @@ namespace BS.Services.RoleService.Models
 
             var userRole = userRoles.Data.FirstOrDefault();
 
-            return new ResponseGetAllUserRoles
+            if (userRole != null && userRole.UserId != null && userRole.RoleId != null)
             {
-                UserId = userRole.UserId,
-                RoleId = userRole.RoleId
-            };
-
-            throw new NotImplementedException();
+                return new ResponseGetAllUserRoles()
+                {
+                    UserId = userRole.UserId,
+                    RoleId = userRole.RoleId
+                };
+            }
+            else
+            {
+                throw new RecordNotFoundException("UserId or RoleId not found");
+            }
         }
     }
 }
