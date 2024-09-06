@@ -63,7 +63,8 @@ public static class Endpoints
             .WithTags("Actions");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddActions>();
+            .MapEndpoint<AddActions>()
+            .MapEndpoint<AppendActionTag>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {

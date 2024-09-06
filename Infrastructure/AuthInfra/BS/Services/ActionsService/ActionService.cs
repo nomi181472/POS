@@ -5,6 +5,7 @@ using BS.Services.ActionsService.Models.Response;
 using BS.Services.RoleService.Models.Response;
 using DA;
 using DM.DomainModels;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,13 +61,13 @@ namespace BS.Services.ActionsService
                 throw new ArgumentNullException("actionId can not be null or empty");
             }
 
-            var setterResult = await _unitOfWork.userRole.UpdateOnConditionAsync(
+            var setterResult = await _unitOfWork.action.UpdateOnConditionAsync(
             // 1st param: matching condition
             x => x.IsActive == true && x.Id == actionId,
             // 2nd param: set the updated value
-            x => x.SetProperty((Func<UserRole, string?>)(y => y.Id), (string?)null)
-                  .SetProperty((Func<UserRole, string>)(y => y.UpdatedBy), userId)
-                  .SetProperty((Func<UserRole, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
+            x => x.SetProperty((Func<Actions, string?>)(y => y.Id), (string?)null)
+                  .SetProperty((Func<Actions, string>)(y => y.UpdatedBy), userId)
+                  .SetProperty((Func<Actions, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
                   , cancellationToken);
 
             if (setterResult == null)
@@ -166,6 +167,67 @@ namespace BS.Services.ActionsService
             }
         }
 
+        public async Task<bool> AppendActionTag(RequestAppendActionTag request, string userId, CancellationToken cancellationToken)
+        {
+            if (request.actionId == null || request.tagToAppend == null)
+            {
+                throw new ArgumentNullException("actionId or Tag to Append can not be null");
+            }
+
+            var existingAction = await _unitOfWork.action.GetByIdAsync(request.actionId, cancellationToken);
+            if(existingAction.Data == null)
+            {
+                throw new RecordNotFoundException(existingAction.Message);
+            }
+
+            var actionData = existingAction.Data;
+            var currentTags = actionData.GetActionTag();
+            // IF tag is empty then set it as tag in req ELSE append the tag after comma
+            var updatedTags = string.IsNullOrWhiteSpace(currentTags) ? request.tagToAppend : $"{currentTags},{request.tagToAppend}";
+
+            var updateStatus = await _unitOfWork.action.UpdateOnConditionAsync(
+                x => x.IsActive && x.Id == request.actionId,
+                x => x.SetProperty(y => y.Tags, updatedTags)
+                      .SetProperty(y => y.UpdatedBy, userId)
+                      .SetProperty(y => y.UpdatedDate, DateTime.UtcNow),
+                cancellationToken);
+
+            if(updateStatus.Result == false)
+            {
+                throw new InvalidOperationException("could not update tags");
+            }
+
+            return updateStatus.Result;
+        }
+
+
+        public async Task<bool> RemoveActionTag(RequestRemoveActionTag request, string userId, CancellationToken cancellationToken)
+        {
+            var existingAction = await _unitOfWork.action.GetByIdAsync(request.actionId, cancellationToken);
+            if (existingAction.Data == null)
+            {
+                throw new RecordNotFoundException("Action with such ID doesn't exist");
+            }
+
+            var actionData = existingAction.Data;
+            var individualTags = actionData.GetActionTag().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var individualTagsWithTagToTrimRemoved = individualTags.Where(tag => tag != request.tagToRemove);
+            var updatedTags = string.Join(",", individualTagsWithTagToTrimRemoved);
+
+            var updateStatus = await _unitOfWork.action.UpdateOnConditionAsync(
+                x => x.IsActive && x.Id == request.actionId,
+                x => x.SetProperty(y => y.Tags, updatedTags)
+                      .SetProperty(y => y.UpdatedBy, userId)
+                      .SetProperty(y => y.UpdatedDate, DateTime.UtcNow),
+                cancellationToken);
+
+            if (updateStatus.Result == false)
+            {
+                throw new InvalidOperationException("could not remove tags");
+            }
+
+            return updateStatus.Result;
+        }
 
     }
 }
