@@ -17,5 +17,6 @@ namespace BS.Services.ActionsService
         Task<ResponseGetAllActionDetails> GetActionById(string actionId, CancellationToken CancellationToken);
         Task<bool> DeleteAction(string actionId, string userId, CancellationToken CancellationToken);
         Task<bool> DeleteActions(string[] actionIds, string userId, CancellationToken CancellationToken);
+        Task<bool> AppendActionTag(RequestAppendActionTag request, string userId, CancellationToken cancellationToken);
     }
 }

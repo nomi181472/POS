@@ -16,7 +16,7 @@ namespace BS.Services.ActionsService.Models
             DateTime createdDate = DateTime.Now;
             string Id = Guid.NewGuid().ToString();
             List<RoleAction> emptyListOfRoleActions = new List<RoleAction>();
-            return new Actions(Id, userId, createdDate, request.Name, emptyListOfRoleActions);
+            return new Actions(Id, userId, createdDate, request.Name, request.Tag, emptyListOfRoleActions);
         }
     }
 }

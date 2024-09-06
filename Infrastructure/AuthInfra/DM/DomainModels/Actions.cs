@@ -10,19 +10,27 @@ namespace DM.DomainModels
     {
       
         public string Name { get; set; }
+        public string Tags { get; set; }
         public ICollection<RoleAction> RoleActions { get; set; } = new List<RoleAction>();
         public Actions(){}
         
-        public Actions(string pId,string Createdby,DateTime pCreatedDate,string pName, List<RoleAction> pRoleActions):base(pId,Createdby,pCreatedDate)
+        public Actions(string pId,string Createdby,DateTime pCreatedDate,string pName, string pTags, List<RoleAction> pRoleActions):base(pId,Createdby,pCreatedDate)
         {
             Name = pName;
+            Tags = pTags;
             RoleActions = pRoleActions;
         }
         public void UpdateActionName(string pName)
         {
             Name = pName;
         }
-
-
+        public void UpdateActionTag(string pTags)
+        {
+            Tags = pTags;
+        }
+        public string GetActionTag()
+        {
+            return Tags;
+        }
     }
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace BS.Services.ActionsService.Models.Request
 {
-    public class RequestAddAction
+    public class RequestRemoveActionTag
     {
-        public string Name { get; set; }
-        public string Tag { get; set; }
+        public string actionId { get; set; }
+
+        public string tagToRemove { get; set; }
     }
 }
