@@ -100,7 +100,7 @@ namespace BS.Services.RoleService.Models
 
             if (result == null || !result.Status || result.Data == null)
             {
-                return false;
+                throw new InvalidOperationException("Could not retrieve UserRoles list");
             }
 
             var affectedRoles = result.Data.ToList();
