@@ -6,6 +6,9 @@ using BS.Services.RoleService.Models.Response;
 using DA;
 using DM.DomainModels;
 using Microsoft.AspNetCore.Http;
+using NATS.Client.Core;
+using NATS.Client.JetStream.Models;
+using NATS.Client.JetStream;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +53,13 @@ namespace BS.Services.ActionsService
 
             await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
+
+            await using var nats = new NatsConnection();
+            var js = new NatsJSContext(nats);
+            await js.CreateStreamAsync(new StreamConfig(name: "orders", subjects: new[] { "dummy.*" }));
+            var ack = await js.PublishAsync(subject: "orders.new", data: "order 1");
+            ack.EnsureSuccess();
+            Console.WriteLine("Message published successfully.");
 
             return true;
         }

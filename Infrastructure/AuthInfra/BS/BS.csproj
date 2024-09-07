@@ -12,6 +12,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="NATS.Client.JetStream" Version="2.3.3" />
+		<PackageReference Include="NATS.Net" Version="2.3.3" />
 		<ProjectReference Include="..\..\..\Utility\EndpointExposerGRPC\EndpointGRPC.csproj" />
 		<ProjectReference Include="..\..\..\Utility\Helpers\Helpers.csproj" />
 		<ProjectReference Include="..\DA\DA.csproj" />
