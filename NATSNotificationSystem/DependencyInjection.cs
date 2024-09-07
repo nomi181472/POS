@@ -13,7 +13,15 @@ namespace NATSNotificationSystem
     {
         public static IServiceCollection AddNatsService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.TryAddSingleton<INatsService, NatsService>();
+            services.AddSingleton<NatsConnectionManager>();
+
+            services.AddSingleton<INatsService,NatsService>(provider =>
+            {
+                var connectionManager = provider.GetRequiredService<NatsConnectionManager>();
+                return new NatsService(connectionManager);
+            });
+
+            //services.TryAddSingleton<INatsService, NatsService>();
 
             return services;
         }
