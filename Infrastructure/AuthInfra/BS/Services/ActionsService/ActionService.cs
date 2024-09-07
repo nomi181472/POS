@@ -16,10 +16,13 @@ namespace BS.Services.ActionsService
 {
     public class ActionService : IActionService
     {
-        IUnitOfWork _unitOfWork;
-        public ActionService(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly INatsService _natsService;
+
+        public ActionService(IUnitOfWork unitOfWork, INatsService natsService)
         {
             _unitOfWork = unitOfWork;
+            _natsService = natsService ?? throw new ArgumentNullException(nameof(natsService));
         }
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
@@ -50,6 +53,9 @@ namespace BS.Services.ActionsService
 
             await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
+
+            var message = $"Action {request.Name} has been added by user {userId}.";
+            await _natsService.PublishAsync("action_updates", "action.added", message);
 
             return true;
         }
