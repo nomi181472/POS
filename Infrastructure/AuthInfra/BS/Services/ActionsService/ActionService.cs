@@ -6,6 +6,7 @@ using BS.Services.RoleService.Models.Response;
 using DA;
 using DM.DomainModels;
 using Microsoft.AspNetCore.Http;
+using NATS.Client.JetStream.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,8 +55,10 @@ namespace BS.Services.ActionsService
             await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
+            
+            /// NATS Publisher Usage
             var message = $"Action {request.Name} has been added by user {userId}.";
-            await _natsService.PublishAsync("action_updates", "action.added", message);
+            await _natsService.PublishAsync("action_updates", "action.*", message);
 
             return true;
         }
