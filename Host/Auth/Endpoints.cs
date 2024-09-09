@@ -3,7 +3,7 @@ using Auth.Common;
 using Auth.Common.Auth;
 using Auth.Common.Constant;
 using Auth.Common.Filters;
-
+using Auth.Features.ActionsManagement;
 using Auth.Features.AuthManagement;
 using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
@@ -35,6 +35,7 @@ public static class Endpoints
 
         endpoints.MapAuthenticationEndpoints();
         endpoints.MapRoleManagementEndpoints();
+        endpoints.MapActionsManagementEndpoints();
         endpoints.MapToExposedRoutes();   
     }
 
@@ -55,6 +56,15 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<AddRoleToUser>();
+    }
+    private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IActionsFeature)}")
+            .WithTags("Actions");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<AddActions>()
+            .MapEndpoint<AppendActionTag>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
