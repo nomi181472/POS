@@ -1,6 +1,8 @@
-﻿using Hub.HubGrpc.Server;
+﻿using DA.AppDbContexts;
+using Hub.HubGrpc.Server;
 using Hub.Middlewares;
 using MapConfig;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hub.Extensions
 {
@@ -18,7 +20,7 @@ namespace Hub.Extensions
             app.MapEndpoints();
             app.MapGrpcService<HubGrpcImpl>();
             app.MapEndpointsExposed();
-            //TODO: Add migration await app.EnsureDatabaseCreated();
+            await app.EnsureDatabaseCreated();
 
         }
 
@@ -27,6 +29,19 @@ namespace Hub.Extensions
             // using var scope = app.Services.CreateScope();
             // var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             // await db.Database.MigrateAsync();
+
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+            {
+                Console.WriteLine("Applying pending migrations...");
+                await dbContext.Database.MigrateAsync(); // Apply pending migrations
+            }
+            else
+            {
+                Console.WriteLine("No pending migrations found.");
+            }
         }
     }
 }

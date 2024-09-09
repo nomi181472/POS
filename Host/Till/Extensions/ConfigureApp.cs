@@ -1,5 +1,7 @@
-﻿using MapConfig;
+﻿using DA.AppDbContexts;
+using MapConfig;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Till.Extensions
 {
@@ -15,7 +17,8 @@ namespace Till.Extensions
             //app.UseAuthorization();
             app.MapEndpointsExposed();
             app.MapEndpoints();
-           
+            await app.EnsureDatabaseCreated();
+
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
         }
@@ -27,6 +30,20 @@ namespace Till.Extensions
             // using var scope = app.Services.CreateScope();
             // var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             // await db.Database.MigrateAsync();
+
+
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+            {
+                Console.WriteLine("Applying pending migrations...");
+                await dbContext.Database.MigrateAsync(); // Apply pending migrations
+            }
+            else
+            {
+                Console.WriteLine("No pending migrations found.");
+            }
         }
     }
 }
