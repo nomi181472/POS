@@ -21,6 +21,31 @@ namespace BS.Services.RoleService.Models
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request), "The request cannot be null.");
+            }
+
+            var entity = request.ToDomain(userId);
+
+            if (entity == null)
+            {
+                throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
+            }
+
+            entity.UpdatedBy = userId;
+            entity.UpdatedDate = DateTime.Now;
+            entity.IsArchived = false;
+            entity.IsActive = true;
+
+            await _unitOfWork.role.AddAsync(entity, userId, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+
         public async Task<bool> AddRoleToUser(RequestAddRoleToUser request, string userId, CancellationToken cancellationToken)
         {
             if (request == null)

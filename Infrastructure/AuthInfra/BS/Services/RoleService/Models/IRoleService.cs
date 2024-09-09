@@ -15,6 +15,6 @@ namespace BS.Services.RoleService.Models
         Task<ResponseGetAllUserRoles> GetUserRoleById(string roleId, CancellationToken CancellationToken);
         Task<bool> DetachUserRole (string roleId,string userId, CancellationToken CancellationToken);
         Task<bool> DetachUserRoles(string[] roleId, string userId, CancellationToken CancellationToken);
-       
+        Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken);
     }
 }

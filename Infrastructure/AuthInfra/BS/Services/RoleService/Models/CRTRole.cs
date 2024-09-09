@@ -11,6 +11,13 @@ namespace BS.Services.RoleService.Models
 {
     public static class CRTRole
     {
+        public static Role ToDomain(this RequestAddRole request, string userId)
+        {
+            DateTime createdDate = DateTime.Now;
+            string Id = Guid.NewGuid().ToString();
+            return new Role(Id, userId, createdDate, request.Name);
+        }
+
         public static UserRole ToDomain(this RequestAddRoleToUser request, string userId)
         {
             DateTime createdDate = DateTime.Now;

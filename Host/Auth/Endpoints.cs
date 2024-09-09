@@ -55,7 +55,8 @@ public static class Endpoints
             .WithTags("Role");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddRoleToUser>();
+            .MapEndpoint<AddRoleToUser>()
+            .MapEndpoint<AddRole>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {
