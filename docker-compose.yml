@@ -27,7 +27,7 @@ services:
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: TillDB
     ports:
-      - "0.0.0.0:5434:5432"
+      - "0.0.0.0:5437:5432"
     volumes:
       - till_db_data2:/var/lib/postgresql/data
 
