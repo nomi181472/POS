@@ -6,7 +6,7 @@ using BS.Services.RoleService.Models.Response;
 using DA;
 using DM.DomainModels;
 using Microsoft.AspNetCore.Http;
-using NATS.Client.JetStream.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
