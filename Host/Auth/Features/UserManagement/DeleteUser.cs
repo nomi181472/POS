@@ -17,8 +17,10 @@ namespace Auth.Features.UserManagement
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPatch($"/{nameof(DeleteUser)}", Handle)
             .WithSummary("Add Role Details")
-            .WithRequestValidation<RequestDeleteUser>()
-            .Produces(200)
+            .WithRequestValidation<RequestDeleteUser>().
+            Produces(HTTPStatusCode200.Ok)
+            .Produces(HTTPStatusCode400.NotFound)
+            .Produces(HTTPStatusCode400.Forbidden)
             .Produces<ResponseAddRoleToUser>();
 
         public class RequestValidator : AbstractValidator<RequestDeleteUser>
@@ -40,7 +42,7 @@ namespace Auth.Features.UserManagement
 
         private static async Task<IResult> Handle(RequestDeleteUser request, IUserService userService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

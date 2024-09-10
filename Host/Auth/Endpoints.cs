@@ -75,6 +75,7 @@ public static class Endpoints
             .MapEndpoint<AddRoleToUser>()
             .MapEndpoint<DeleteRole>()
             .MapEndpoint<GetRole>()
+            .MapEndpoint<ListRoles>()
             .MapEndpoint<UpdateRole>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)

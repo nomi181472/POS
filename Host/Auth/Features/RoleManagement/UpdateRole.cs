@@ -16,8 +16,10 @@ namespace Auth.Features.RoleManagement
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(UpdateRole)}", Handle)
             .WithSummary("Update Role Details")
-            .WithRequestValidation<RequestUpdateRole>()
-            .Produces(200)
+            .WithRequestValidation<RequestUpdateRole>().
+            Produces(HTTPStatusCode200.Ok)
+            .Produces(HTTPStatusCode400.BadRequest)
+            .Produces(HTTPStatusCode400.Forbidden)
             .Produces<ResponseAddRoleToUser>();
 
         public class RequestValidator : AbstractValidator<RequestUpdateRole>
@@ -29,7 +31,6 @@ namespace Auth.Features.RoleManagement
 
                 RuleFor(x => x.RoleName)
                     .NotEmpty().WithMessage("Role name is required.")
-                    .Must(IsRoleIdExist)
                     .Must(RoleNameNotExist).WithMessage("Role already exists.");
                 
                 RuleFor(x => x.RoleId)
@@ -50,7 +51,7 @@ namespace Auth.Features.RoleManagement
 
         private static async Task<IResult> Handle(RequestUpdateRole request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

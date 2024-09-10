@@ -17,7 +17,9 @@ namespace Auth.Features.UserManagement
             .MapPost($"/{nameof(AddUser)}", Handle)
             .WithSummary("Add User Details")
             .WithRequestValidation<RequestAddUser>()
-            .Produces(200)
+            .Produces(HTTPStatusCode200.Created)
+            .Produces(HTTPStatusCode400.BadRequest)
+            .Produces(HTTPStatusCode400.Forbidden)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<RequestAddUser>
@@ -49,7 +51,7 @@ namespace Auth.Features.UserManagement
 
         private static async Task<IResult> Handle(RequestAddUser request, IUserService UserService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

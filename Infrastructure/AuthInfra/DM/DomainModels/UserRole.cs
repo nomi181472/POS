@@ -13,7 +13,7 @@ namespace DM.DomainModels
         public virtual User? User { get; set; }
         public virtual Role? Role { get; set; }
         public UserRole(){}
-        public UserRole(string? pUserId, string pRoleId, string pId, string Createdby, DateTime pCreatedDate): base(pId, Createdby, pCreatedDate)
+        public UserRole(string? pUserId, string pRoleId, string pId, string Createdby, DateTime pCreatedDate): base(pId, Createdby, pCreatedDate, true)
         {
             UserId = pUserId;
             RoleId = pRoleId;

@@ -17,7 +17,9 @@ namespace Auth.Features.RoleManagement
             .MapPost($"/{nameof(AddRoleToUser)}", Handle)
             .WithSummary("Add Role Details")
             .WithRequestValidation<RequestAddRoleToUser>()
-            .Produces(200)
+            .Produces(HTTPStatusCode200.Created)
+            .Produces(HTTPStatusCode400.BadRequest)
+            .Produces(HTTPStatusCode400.Forbidden)
             .Produces<ResponseAddRoleToUser>();
 
         public class RequestValidator : AbstractValidator<RequestAddRoleToUser>

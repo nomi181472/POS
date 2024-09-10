@@ -14,7 +14,7 @@ namespace DM.DomainModels
         public string? UserId { get; set; }
         public virtual User? User { get; set; }
         public Credential(){}
-        public Credential(string pId, string Createdby, DateTime pCreatedDate,string pPasswordSalt,string pPasswordHash,string? pUserId):base(pId, Createdby, pCreatedDate)
+        public Credential(string pId, string Createdby, DateTime pCreatedDate,string pPasswordSalt,string pPasswordHash,string? pUserId):base(pId, Createdby, pCreatedDate, true)
         {
             PasswordHash = pPasswordHash;
             PasswordSalt = pPasswordSalt;

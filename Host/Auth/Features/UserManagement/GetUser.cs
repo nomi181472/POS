@@ -14,15 +14,17 @@ namespace Auth.Features.UserManagement
     public class GetUser : IUserManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(GetUser)}/" +"{Id}", Handle)
+            .MapGet($"/{nameof(GetUser)}/" +"{Id}", Handle)
             .WithSummary("Get user")
-            .Produces(200)
+            .Produces(HTTPStatusCode200.Ok)
+            .Produces(HTTPStatusCode400.Forbidden)
+            .Produces(HTTPStatusCode400.NotFound)
             .Produces<bool>();
 
 
         private static async Task<IResult> Handle(string Id, IUserService userService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
