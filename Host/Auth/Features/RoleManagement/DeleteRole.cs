@@ -11,40 +11,42 @@ using PaymentGateway.API.Common;
 
 namespace Auth.Features.RoleManagement
 {
-    public class AddRoleToUser : IRoleManagementFeature
+    public class DeleteRole : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(UpdateRole)}", Handle)
-            .WithSummary("Add Role Details")
-            .WithRequestValidation<RequestAddRoleToUser>()
+            .MapPatch($"/{nameof(DeleteRole)}", Handle)
+            .WithSummary("Delete Role Details")
+            .WithRequestValidation<RequestDeleteRole>()
             .Produces(200)
-            .Produces<ResponseAddRoleToUser>();
+            .Produces<bool>();
 
-        public class RequestValidator : AbstractValidator<RequestAddRoleToUser>
+        public class RequestValidator : AbstractValidator<RequestDeleteRole>
         {
-            public RequestValidator()
+            IRoleService _role;
+            public RequestValidator(IRoleService roleService)
             {
-                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
+                _role = roleService;
+
+                RuleFor(x => x.RoleId)
+                    .NotEmpty().WithMessage("Role name is required.")
+                    .Must(IsRoleIdExist).WithMessage("Role not found.");
+            }
+            private bool IsRoleIdExist(string roleId)
+            {
+                return _role.IsRoleExistByRoleId(roleId);
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddRoleToUser request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestDeleteRole request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await roleService.AddRoleToUser(request, "", cancellationToken);
+                var result = await roleService.DeleteRole(request, "", cancellationToken);
               
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
-            }
-            catch (RecordNotFoundException e)
-            {
-                statusCode = HTTPStatusCode400.NotFound;
-                message = e.Message;
-                _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (Exception e)
             {

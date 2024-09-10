@@ -51,11 +51,11 @@ public static class Endpoints
     }
     private static void MapRoleManagementEndpoints(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup($"/{nameof(IRoleFeature)}")
+        var endpoints = app.MapGroup($"/{nameof(IRoleManagementFeature)}")
             .WithTags("Role");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddRoleToUser>();
+            .MapEndpoint<UpdateRole>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {
@@ -68,7 +68,7 @@ public static class Endpoints
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup($"/{nameof(IActionController)}")
+        var endpoints = app.MapGroup($"/{nameof(IActionFeature)}")
             .WithTags("Routes");
 
         endpoints.MapAuthorizedGroup()

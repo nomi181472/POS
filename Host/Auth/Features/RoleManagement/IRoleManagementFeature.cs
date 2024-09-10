@@ -2,7 +2,7 @@
 
 namespace Auth.Features.RoleManagement
 {
-    public interface IRoleFeature : IFeature
+    public interface IRoleManagementFeature : IFeature
     {
 
     }

@@ -20,7 +20,7 @@ using PaymentGateway.API.Common;
 
 namespace Auth.Features.RouteManagement
 {
-    public class GetAllEndpoints : IActionController
+    public class GetAllEndpoints : IActionFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapGet($"/{nameof(GetAllEndpoints)}", Handle)

@@ -1,4 +1,5 @@
 ﻿using BS.Services.RoleService.Models.Request;
+using BS.Services.RoleService.Models.Response;
 using DM.DomainModels;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,27 @@ namespace BS.Services.RoleService.Models
             string Id = Guid.NewGuid().ToString();
             return new UserRole(request.UserId, request.RoleId, Id, userId, createdDate);
         }
+        public static ResposeGetRole ToSingleResponseModel(this Role response)
+        {
+            return new ResposeGetRole()
+            {
+                RoleId = response.Id,
+                RoleName = response.Name,
+                CreatedBy = response.CreatedBy,
+                CreatedDate = response.CreatedDate,
+                IsActive = response.IsActive,
+                UpdatedBy = response.UpdatedBy,
+                UpdatedDate = response.UpdatedDate
+
+
+
+            };
+        }
+    
+    public static List<ResposeGetRole> ToListResponseModel( this IEnumerable<Role> response)
+    {
+        return response.Select(x => x.ToSingleResponseModel()).ToList();
+        
     }
+}
 }

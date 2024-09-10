@@ -11,6 +11,15 @@ namespace DM.DomainModels
 {
     public abstract class Base<T>
     {
+        public Base() { }
+        public Base(T pId, string pCreatedBy, DateTime pCreatedDate)
+        {
+            Id = pId;
+            CreatedBy = pCreatedBy;
+            CreatedDate = pCreatedDate;
+            UpdatedBy = pCreatedBy;
+            UpdatedDate = pCreatedDate;
+        }
         [Key]
         public virtual T Id { get; set; }
 
@@ -33,6 +42,15 @@ namespace DM.DomainModels
         public virtual bool IsActive { get; set; }
         [Required(ErrorMessage = $"{nameof(IsArchived)} is required")]
         public virtual bool IsArchived { get; set; }
+        public void SetSoftDelete()
+        {
+            IsActive = false;
+        }
+        public void UpdateRecordStatus(DateTime pUpdatedDate, string pUpdatedBy)
+        {
+            UpdatedBy = pUpdatedBy;
+            UpdatedDate = pUpdatedDate;
+        }
 
     }
 }

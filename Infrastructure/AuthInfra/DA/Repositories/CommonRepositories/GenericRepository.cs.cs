@@ -216,6 +216,24 @@ namespace DA.Repositories.CommonRepositories
                 return new GetterResult<IEnumerable<TEntity>>() { Message = e.ToString(), Status = false };
             }
         }
+        public virtual  GetterResult<bool> Any( Expression<Func<TEntity, bool>> filter)
+        {
+
+            try
+            {
+                GetterResult<bool> getterResult = new GetterResult<bool>();
+                getterResult.Message = CommonMessages.Success;
+                getterResult.Status = true;
+                IQueryable<TEntity> query = _dbSet;
+                getterResult.Data =  query.Any(filter);
+                return getterResult;
+            }
+            catch (Exception e)
+            {
+
+                return new GetterResult<bool>() { Message = e.ToString(), Status = false };
+            }
+        }
         public virtual async Task<GetterResult<bool>> AnyAsync(CancellationToken cancellationToken, Expression<Func<TEntity, bool>> filter )
         {
 
@@ -342,18 +360,25 @@ namespace DA.Repositories.CommonRepositories
                 return new SetterResult() { Message = e.ToString(), Result = false, IsException = true };
             }
         }
-        public async virtual Task<SetterResult> UpdateOnConditionAsync(Expression<Func<TEntity, bool>> filter, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, CancellationToken cancellationToken)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="setPropertyCalls"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>int</returns>
+        public async virtual Task<SetterWithDataResult> UpdateOnConditionAsync(Expression<Func<TEntity, bool>> filter, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, CancellationToken cancellationToken)
         {
             try
             {
                 IQueryable<TEntity> query = _dbSet;
                 int rowsEffected = await query.Where(filter).ExecuteUpdateAsync(setPropertyCalls,cancellationToken);
 
-                return new SetterResult() { Message = $"{CommonMessages.Success}.RowsEffected:{rowsEffected}", Result = true, IsException = false };
+                return new SetterWithDataResult() { Message = $"{CommonMessages.Success}.RowsEffected:{rowsEffected}", Result = true, IsException = false,Data=rowsEffected };
             }
             catch (Exception e)
             {
-                return new SetterResult() { Message = e.ToString(), Result = false, IsException = true };
+                return new SetterWithDataResult() { Message = e.ToString(), Result = false, IsException = true };
             }
         }
         public virtual SetterResult UpdateMany(TEntity[] entity)
@@ -462,6 +487,25 @@ namespace DA.Repositories.CommonRepositories
             {
 
                 return new GetterResult<IEnumerable<TEntity>>() { Message = e.Message, Status = false };
+            }
+        }
+
+        public GetterResult<bool> All(Expression<Func<TEntity, bool>> filter)
+        {
+
+            try
+            {
+                GetterResult<bool> getterResult = new GetterResult<bool>();
+                getterResult.Message = CommonMessages.Success;
+                getterResult.Status = true;
+                IQueryable<TEntity> query = _dbSet;
+                getterResult.Data = query.All(filter);
+                return getterResult;
+            }
+            catch (Exception e)
+            {
+
+                return new GetterResult<bool>() { Message = e.ToString(), Status = false };
             }
         }
     }

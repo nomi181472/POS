@@ -13,5 +13,13 @@ namespace DA.Models.RepoResultModels
         public bool Result { get; set; }
         public bool IsException { get; set; }
         public string Message { get; set; }
+        
+    }
+    public class SetterWithDataResult:SetterResult
+    {
+     
+        public Object Data { get; set; }
+       
+
     }
 }

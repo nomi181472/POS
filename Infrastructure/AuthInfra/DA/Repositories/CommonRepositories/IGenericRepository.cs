@@ -21,7 +21,7 @@ namespace DA.Repositories.CommonRepositories
         SetterResult Update(TEntity entity, string updatedBy);
         SetterResult UpdateMany(TEntity[] entity);
         SetterResult UpdateOnCondition(Expression<Func<TEntity, bool>> filter, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls);
-        Task<SetterResult> UpdateOnConditionAsync(Expression<Func<TEntity, bool>> filter, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, CancellationToken cancellationToken);
+        Task<SetterWithDataResult> UpdateOnConditionAsync(Expression<Func<TEntity, bool>> filter, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, CancellationToken cancellationToken);
 
         SetterResult Delete(TEntity entity);
         SetterResult Delete(PrimitiveType id);
@@ -64,6 +64,9 @@ namespace DA.Repositories.CommonRepositories
            );
 
        Task<GetterResult<bool>> AnyAsync(CancellationToken cancellationToken, Expression<Func<TEntity, bool>> filter);
+
+        GetterResult<bool> Any( Expression<Func<TEntity, bool>> filter);
+        GetterResult<bool> All(Expression<Func<TEntity, bool>> filter);
 
     }
 }
