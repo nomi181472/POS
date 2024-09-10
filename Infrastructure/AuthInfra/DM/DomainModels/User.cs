@@ -15,7 +15,7 @@ namespace DM.DomainModels
         public virtual Credential? Credential { get;  set; }
         public virtual ICollection<UserRole> UserRoles { get;  set; }=new List<UserRole>();
         public User(){}
-        public User(string pId, string Createdby, DateTime pCreatedDate, string pName,string pEmail,string pUserType,Credential pCredential,List<UserRole> pUserRoles)         : base(pId, Createdby, pCreatedDate)
+        public User(string pId, string Createdby, DateTime pCreatedDate, string pName,string pEmail,string pUserType,Credential pCredential,List<UserRole> pUserRoles)         : base(pId, Createdby, pCreatedDate, true)
         {
             Name=pName;
             Email=pEmail;

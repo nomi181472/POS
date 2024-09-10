@@ -14,7 +14,7 @@ namespace Auth.Features.RoleManagement
     public class GetRole : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(GetRole)}/" +"{Id}", Handle)
+            .MapGet($"/{nameof(GetRole)}/" +"{Id}", Handle)
             .WithSummary("Get role")
             .Produces(200)
             .Produces<bool>();
@@ -22,7 +22,7 @@ namespace Auth.Features.RoleManagement
 
         private static async Task<IResult> Handle(string Id, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

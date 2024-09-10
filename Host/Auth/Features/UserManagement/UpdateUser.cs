@@ -17,7 +17,9 @@ namespace Auth.Features.UserManagement
             .MapPost($"/{nameof(UpdateUser)}", Handle)
             .WithSummary("Update User Details")
             .WithRequestValidation<RequestUpdateUser>()
-            .Produces(200)
+            .Produces(HTTPStatusCode200.Ok)
+            .Produces(HTTPStatusCode400.BadRequest)
+            .Produces(HTTPStatusCode400.Forbidden)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<RequestUpdateUser>
@@ -51,7 +53,7 @@ namespace Auth.Features.UserManagement
 
         private static async Task<IResult> Handle(RequestUpdateUser request, IUserService service, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

@@ -1,6 +1,0 @@
-2024-09-02 12:20:32.647 +05:00 [INF] HTTP GET /Auth/IRouteFeature/GetAllEndpoints received
-2024-09-02 16:20:29.856 +05:00 [INF] HTTP GET /Auth/IRouteFeature/GetAllEndpoints received
-2024-09-02 16:21:24.399 +05:00 [ERR] Something went wrong.
-2024-09-02 16:22:27.415 +05:00 [INF] HTTP GET /Auth/IRouteFeature/GetAllEndpoints received
-2024-09-02 16:22:57.858 +05:00 [ERR] Something went wrong.
-2024-09-02 16:24:05.125 +05:00 [INF] HTTP GET /Auth/IRouteFeature/GetAllEndpoints received
