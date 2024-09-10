@@ -1,35 +1,35 @@
 version: '3.8'  # Specify the docker-compose version
 
 services:
-  till:
+  store:
     build:   # Build the image from the current directory (context)
       context: .
-      dockerfile: ./Host/Till/Dockerfile
-    container_name: till_container 
+      dockerfile: ./Host/till/Dockerfile
+    container_name: store_container 
     ports:
       - "0.0.0.0:6080:6080" 
       - "0.0.0.0:6081:6081"  
       - "0.0.0.0:6082:6082"
     depends_on:  
-      - tilldb
+      - storedb
     environment:
-      - DB_HOST=tilldb
+      - DB_HOST=storedb
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=12345
-      - DB_NAME=TillDB
+      - DB_NAME=storeDB
   
-  tilldb:
+  storedb:
     image: postgres:latest
-    container_name: tilldb
+    container_name: storedb
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: TillDB
+      POSTGRES_PASSWORD: Pso!23
+      POSTGRES_DB: storeDB
     ports:
       - "0.0.0.0:5437:5432"
     volumes:
-      - till_db_data2:/var/lib/postgresql/data
+      - ./store_local_shared_db:/var/lib/postgresql/data
 
 
   hub:
@@ -48,7 +48,7 @@ services:
       - DB_HOST=hubdb
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=12345
+      - DB_PASSWORD=Pos!23
       - DB_NAME=HubDB
 
   hubdb:
@@ -56,12 +56,12 @@ services:
     container_name: hubdb
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_PASSWORD: Pos!23
       POSTGRES_DB: HubDB
     ports:
       - "0.0.0.0:5435:5432"
     volumes:
-      - hub_db_data2:/var/lib/postgresql/data
+      - ./hub_local_shared_db:/var/lib/postgresql/data
 
   auth:
     build:   # Build the image from the current directory (context)
@@ -78,7 +78,7 @@ services:
       - DB_HOST=Authdb
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=12345
+      - DB_PASSWORD=Pos!23
       - DB_NAME=AuthDB
 
   authdb:
@@ -86,12 +86,12 @@ services:
     container_name: authdb
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_PASSWORD: Pos!23
       POSTGRES_DB: AuthDB
     ports:
       - "0.0.0.0:5436:5432"
     volumes:
-      - auth_db_data2:/var/lib/postgresql/data
+      - ./auth_local_shared_db:/var/lib/postgresql/data
 
 
 
@@ -145,9 +145,15 @@ services:
       - "6379:6379"  # Expose Redis on the default port
 
 volumes:
-  till_db_data2:
-  hub_db_data2:
-  auth_db_data2:
+  auth_local_shared_db:
+    driver:
+      local
+  hub_local_shared_db:
+    driver:
+      local
+  store_local_shared_db:
+    driver:
+      local
   
 
 
