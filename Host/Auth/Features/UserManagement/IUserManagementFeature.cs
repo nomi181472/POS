@@ -1,6 +1,8 @@
-﻿namespace Auth.Features.UserManagement
+﻿using Auth.Common;
+
+namespace Auth.Features.UserManagement
 {
-    public interface IUserManagementFeature
+    public interface IUserManagementFeature:IFeature
     {
     }
 }

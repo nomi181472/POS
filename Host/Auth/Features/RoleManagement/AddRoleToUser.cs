@@ -14,7 +14,7 @@ namespace Auth.Features.RoleManagement
     public class AddRoleToUser : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(UpdateRole)}", Handle)
+            .MapPost($"/{nameof(AddRoleToUser)}", Handle)
             .WithSummary("Add Role Details")
             .WithRequestValidation<RequestAddRoleToUser>()
             .Produces(200)

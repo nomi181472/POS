@@ -7,6 +7,7 @@ using Auth.Features.ActionsManagement;
 using Auth.Features.AuthManagement;
 using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
+using Auth.Features.UserManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
@@ -33,13 +34,26 @@ public static class Endpoints
             .AddEndpointFilter<RequestLoggingFilter>()
             .WithOpenApi();
 
-        endpoints.MapAuthenticationEndpoints();
+        endpoints.MapAuthEndpoints();
         endpoints.MapRoleManagementEndpoints();
         endpoints.MapActionsManagementEndpoints();
+        endpoints.MapUserManagement();
+       
         endpoints.MapToExposedRoutes();   
     }
+    private static void MapUserManagement(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IAuthFeature)}")
+            .WithTags("UserManagement");
 
-    private static void MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<AddUser>()
+            .MapEndpoint<DeleteUser>()
+             .MapEndpoint<GetUser>()
+            .MapEndpoint<ListUsers>()
+            .MapEndpoint<UpdateUser>();
+    }
+    private static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IAuthFeature)}")
             .WithTags("Authentication");
@@ -57,6 +71,10 @@ public static class Endpoints
             .WithTags("Role");
 
         endpoints.MapPublicGroup()
+            .MapEndpoint<AddRole>()
+            .MapEndpoint<AddRoleToUser>()
+            .MapEndpoint<DeleteRole>()
+            .MapEndpoint<GetRole>()
             .MapEndpoint<UpdateRole>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
