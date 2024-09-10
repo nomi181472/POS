@@ -4,4 +4,4 @@ bin
 .fake
 logs
 /script.sql
-/Infrastructure/AuthInfra/DA/Migrations
+*local*
