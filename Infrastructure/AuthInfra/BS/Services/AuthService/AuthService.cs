@@ -2,6 +2,8 @@
 using BS.Delegate;
 using BS.Services.AuthService.Models.Request;
 using BS.Services.AuthService.Models.Response;
+using BS.Services.RoleService.Models.Request;
+using BS.Services.RoleService.Models.Response;
 using DA;
 using DM.DomainModels;
 using Helpers.Auth.Models;
@@ -133,6 +135,86 @@ namespace BS.Services.AuthService
             return response;
         }
 
-        
+        public async Task<ResponseForgetPassword> ForgetPassword(RequestForgetPassword request, CancellationToken token)
+        {
+            var userResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
+            var user = userResult.Data.FirstOrDefault();
+
+            if(user == null)
+            {
+                throw new RecordNotFoundException("User not found with the provided email.");
+            }
+
+            string resetToken = Guid.NewGuid().ToString();
+
+            var credentialResult = await _uot.creadential.GetAsync(token, c => c.UserId == user.Id);
+            var credential = credentialResult.Data.FirstOrDefault();
+            credential.PasswordHash = resetToken; // currently storing it in PasswordHash since it would be reset already
+            var updateResult = _uot.creadential.Update(credential, credential.Id);
+            // TODO: SEND PASSWORD TO EMAIL
+            if (updateResult.Result) // ADD CONDITION TO CHECK IF SENT TO EMAIL
+            {
+                await _uot.CommitAsync(token);
+                ResponseForgetPassword response = new ResponseForgetPassword()
+                {
+                    Message = "your password has been sent to email: " + user.Email
+                };
+                return response;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to send Reset Token due to: " + updateResult.Message);
+            }
+        }
+
+        public async Task<ResponseChangePassword> ChangePassword(RequestChangePassword request, CancellationToken token)
+        {
+            var userResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
+            var user = userResult.Data.FirstOrDefault();
+
+            if (user == null)
+            {
+                throw new RecordNotFoundException("User not found with the provided email.");
+            }
+
+            var credentialResult = await _uot.creadential.GetAsync(token, c => c.UserId == user.Id);
+            var credential = credentialResult.Data.FirstOrDefault();
+
+            if (credential == null)
+            {
+                throw new UnauthorizedAccessException("User credentials not found.");
+            }
+
+            if (!PasswordHelper.VerifyPassword(request.CurrentPassword, credential.PasswordHash, credential.PasswordSalt))
+            {
+                throw new UnauthorizedAccessException("Invalid current password.");
+            }
+
+            var newHashAndSalt = request.NewPassword.CreateHashAndSalt();
+            string newHash = newHashAndSalt.Hash;
+            string newSalt = newHashAndSalt.Salt;
+
+            credential.PasswordHash = newHash;
+            credential.PasswordSalt = newSalt;
+
+            var updateResult = _uot.creadential.Update(credential, credential.Id);
+            if (updateResult.Result)
+            {
+                await _uot.CommitAsync(token);
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to change password due to: " + updateResult.Message);
+            }
+
+            ResponseChangePassword response = new ResponseChangePassword()
+            {
+                Message = "Your password has been successfully changed."
+            };
+
+            return response;
+        }
+
+
     }
 }
