@@ -17,6 +17,10 @@ namespace MapConfig
             app.UseAuthorization();
             app.MapEndpoints();
             await app.EnsureDatabaseCreated();
+            app.UseCors(x => x
+              .AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 
         }
         public static async Task GlobalExceptionHandler(this WebApplication app)

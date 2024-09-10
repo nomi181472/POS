@@ -18,6 +18,10 @@ namespace Till.Extensions
             app.MapEndpointsExposed();
             app.MapEndpoints();
             await app.EnsureDatabaseCreated();
+            app.UseCors(x => x
+              .AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
