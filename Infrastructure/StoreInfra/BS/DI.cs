@@ -9,6 +9,7 @@ using BS.Services.OrderService;
 using BS.Services.TillManagementService;
 using BS.Services.CustomerManagementService;
 using BS.Services.InventoryManagementService;
+using BS.Services.SurchargeDiscountService.Models;
 
 public static class DependencyInjection
 {
@@ -33,6 +34,7 @@ public static class DependencyInjection
         services.TryAddTransient<ITillManagementService, TillManagementService>();
         services.TryAddScoped<ICustomerManagementService, CustomerManagementService>();
         services.TryAddScoped<IInventoryManagementService, InventoryManagementService>();
+        services.TryAddScoped<IPaymentService, PaymentService>();
 
 
 
