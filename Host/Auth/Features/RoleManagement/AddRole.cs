@@ -11,40 +11,42 @@ using PaymentGateway.API.Common;
 
 namespace Auth.Features.RoleManagement
 {
-    public class AddRoleToUser : IRoleManagementFeature
+    public class AddRole : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(UpdateRole)}", Handle)
-            .WithSummary("Add Role Details")
+            .MapPost($"/{nameof(AddRole)}", Handle)
+            .WithSummary("update Role Details")
             .WithRequestValidation<RequestAddRoleToUser>()
             .Produces(200)
-            .Produces<ResponseAddRoleToUser>();
+            .Produces<bool>();
 
-        public class RequestValidator : AbstractValidator<RequestAddRoleToUser>
+        public class RequestValidator : AbstractValidator<RequestAddRole>
         {
-            public RequestValidator()
+            IRoleService _role;
+            public RequestValidator(IRoleService roleService)
             {
-                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
+                _role = roleService;
+
+                RuleFor(x => x.RoleName)
+                    .NotEmpty().WithMessage("Role name is required.")
+                    .Must(RoleNameNotExist).WithMessage("Role already exists.");
+            }
+            private bool RoleNameNotExist(string roleName)
+            {
+                return !_role.IsRoleExist(roleName);
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddRoleToUser request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddRole request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await roleService.AddRoleToUser(request, "", cancellationToken);
+                var result = await roleService.AddRole(request, "", cancellationToken);
               
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
-            }
-            catch (RecordNotFoundException e)
-            {
-                statusCode = HTTPStatusCode400.NotFound;
-                message = e.Message;
-                _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (Exception e)
             {

@@ -15,6 +15,13 @@ namespace BS.Services.RoleService.Models
         Task<ResponseGetAllUserRoles> GetUserRoleById(string roleId, CancellationToken CancellationToken);
         Task<bool> DetachUserRole (string roleId,string userId, CancellationToken CancellationToken);
         Task<bool> DetachUserRoles(string[] roleId, string userId, CancellationToken CancellationToken);
-       
+        bool IsRoleExist(string roleName);
+        bool IsRoleExistByRoleId(string roleId);
+        bool IsRoleExistByRoleId(string[] roleId);
+        Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken);
+        Task<bool> DeleteRole(RequestDeleteRole request, string userId, CancellationToken cancellationToken);
+        Task<bool> UpdateRole(RequestUpdateRole request, string userId, CancellationToken cancellationToken);
+        Task<ResposeGetRole> GetRole(string roleId, CancellationToken cancellationToken);
+        Task<List<ResposeGetRole>> ListRole( CancellationToken cancellationToken);
     }
 }

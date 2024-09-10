@@ -21,6 +21,27 @@ namespace BS.Services.RoleService.Models
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken)
+        {
+            Role role = new Role(
+                Guid.NewGuid().ToString(),
+                Createdby: userId,
+                pCreatedDate: DateTime.UtcNow,
+                request.RoleName);
+
+
+            var result=await _unitOfWork.role.AddAsync(role, userId, cancellationToken);
+            if (result.Result)
+            {
+                await _unitOfWork.CommitAsync(cancellationToken);
+                return true;
+            }
+            throw new UnknownException(result.Message);
+           
+
+
+        }
+
         public async Task<bool> AddRoleToUser(RequestAddRoleToUser request, string userId, CancellationToken cancellationToken)
         {
             if (request == null)
@@ -56,6 +77,25 @@ namespace BS.Services.RoleService.Models
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return true;
+        }
+
+        public async Task<bool> DeleteRole(RequestDeleteRole request, string userId, CancellationToken cancellationToken)
+        {
+           var result=await _unitOfWork.role.UpdateOnConditionAsync(x => x.Id == request.RoleId && x.IsActive,
+                x => x.SetProperty(x => x.IsActive, false)
+                .SetProperty(x => x.UpdatedBy, userId)
+                .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
+                cancellationToken
+
+                );
+            if (result.Result)
+            {
+                return (int)result.Data > 0;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
         }
 
         public async Task<bool> DetachUserRole(string roleId, string userId, CancellationToken cancellationToken)
@@ -143,6 +183,24 @@ namespace BS.Services.RoleService.Models
             }
         }
 
+        public async Task<ResposeGetRole> GetRole(string roleId, CancellationToken cancellationToken)
+        {
+            var result= await _unitOfWork.role.GetSingleAsync(cancellationToken,x=>x.Id == roleId && x.IsActive);
+            if (result.Status)
+            {
+                if (result.Data == null)
+                {
+                    throw new RecordNotFoundException($"{roleId} not found.");
+
+                }
+                return result.Data.ToSingleResponseModel();
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+
         public async Task<ResponseGetAllUserRoles> GetUserRoleById(string roleId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(roleId))
@@ -170,6 +228,80 @@ namespace BS.Services.RoleService.Models
             else
             {
                 throw new RecordNotFoundException("UserId or RoleId not found");
+            }
+        }
+
+        public bool IsRoleExist(string roleName)
+        {
+           var result=  _unitOfWork.role.Any(x=>x.Name.ToLower()==roleName.ToLower() && x.IsActive);
+            if (result.Status)
+            {
+                return result.Data;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+        public bool IsRoleExistByRoleId(string[] roleIds)
+        {
+            var result = _unitOfWork.role.All(x =>roleIds.Contains( x.Id) && x.IsActive);
+            if (result.Status)
+            {
+                return result.Data;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+        public bool IsRoleExistByRoleId(string roleId)
+        {
+            var result = _unitOfWork.role.Any(x => x.Id == roleId && x.IsActive);
+            if (result.Status)
+            {
+                return result.Data;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+
+        public async Task<List<ResposeGetRole>> ListRole( CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.role.GetAllAsync(cancellationToken);
+            if (result.Status)
+            {
+                if (result.Data == null)
+                {
+                    return new List<ResposeGetRole>();
+
+                }
+                return result.Data.ToListResponseModel();
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+
+        public async Task<bool> UpdateRole(RequestUpdateRole request, string userId, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.role.UpdateOnConditionAsync(x => x.Id == request.RoleId && x.IsActive,
+                   x => x.SetProperty(x => x.Name,request.RoleName)
+                   .SetProperty(x => x.UpdatedBy, userId)
+                   .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
+                   cancellationToken
+
+                   );
+            if (result.Result)
+            {
+                return (int)result.Data > 0;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
             }
         }
     }
