@@ -4,6 +4,7 @@ using BS.ExternalServices.GrpcClients;
 using BS.Services.ActionsService;
 using BS.Services.AuthService;
 using BS.Services.RoleService.Models;
+using BS.Services.UserService.Models;
 using DA;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ public static class DependencyInjection
 
         services.TryAddScoped<IAuthService, AuthService>();
         services.TryAddScoped<IRoleService, RoleService>();
+        services.TryAddScoped<IUserService, UserService>();
         services.TryAddScoped<IActionControllerService, ActionControllerService>();
         services.TryAddScoped<IActionService, ActionService>();
 

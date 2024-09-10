@@ -1,6 +1,46 @@
 version: '3.8'  # Specify the docker-compose version
 
 services:
+
+  authdb:
+    image: postgres:latest
+    container_name: authdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pos!23
+      POSTGRES_DB: AuthDB
+    ports:
+      - "0.0.0.0:5436:5432"
+    volumes:
+      - ./auth_local_shared_db:/var/lib/postgresql/data
+
+
+  hubdb:
+    image: postgres:latest
+    container_name: hubdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pos!23
+      POSTGRES_DB: HubDB
+    ports:
+      - "0.0.0.0:5435:5432"
+    volumes:
+      - ./hub_local_shared_db:/var/lib/postgresql/data
+
+  
+  storedb:
+    image: postgres:latest
+    container_name: storedb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pos!23
+      POSTGRES_DB: storeDB
+    ports:
+      - "0.0.0.0:5437:5432"
+    volumes:
+      - ./store_local_shared_db:/var/lib/postgresql/data
+
+
   store:
     build:   # Build the image from the current directory (context)
       context: .
@@ -18,18 +58,6 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=12345
       - DB_NAME=storeDB
-  
-  storedb:
-    image: postgres:latest
-    container_name: storedb
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Pso!23
-      POSTGRES_DB: storeDB
-    ports:
-      - "0.0.0.0:5437:5432"
-    volumes:
-      - ./store_local_shared_db:/var/lib/postgresql/data
 
 
   hub:
@@ -51,17 +79,7 @@ services:
       - DB_PASSWORD=Pos!23
       - DB_NAME=HubDB
 
-  hubdb:
-    image: postgres:latest
-    container_name: hubdb
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Pos!23
-      POSTGRES_DB: HubDB
-    ports:
-      - "0.0.0.0:5435:5432"
-    volumes:
-      - ./hub_local_shared_db:/var/lib/postgresql/data
+ 
 
   auth:
     build:   # Build the image from the current directory (context)
@@ -80,20 +98,6 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=Pos!23
       - DB_NAME=AuthDB
-
-  authdb:
-    image: postgres:latest
-    container_name: authdb
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Pos!23
-      POSTGRES_DB: AuthDB
-    ports:
-      - "0.0.0.0:5436:5432"
-    volumes:
-      - ./auth_local_shared_db:/var/lib/postgresql/data
-
-
 
 
   zookeeper:
