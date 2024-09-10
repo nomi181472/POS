@@ -18,7 +18,16 @@ namespace Hub.Extensions
             .AddUserActivityLogging(configuration)
             .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(UserActivityLogCommandHandler).Assembly))
             .AddSwagger()
-            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature)); ;
+            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature))
+            .AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            }); 
             
 
 
