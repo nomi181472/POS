@@ -47,7 +47,9 @@ public static class Endpoints
         endpoints.MapPublicGroup()
             .MapEndpoint<SignUp>()
             .MapEndpoint<Login>()
-            .MapEndpoint<RefreshToken>();
+            .MapEndpoint<RefreshToken>()
+            .MapEndpoint<ForgetPassword>()
+            .MapEndpoint<ChangePassword>();
     }
     private static void MapRoleManagementEndpoints(this IEndpointRouteBuilder app)
     {
