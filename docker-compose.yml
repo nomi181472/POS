@@ -44,7 +44,7 @@ services:
   store:
     build:   # Build the image from the current directory (context)
       context: .
-      dockerfile: ./Host/till/Dockerfile
+      dockerfile: ./Host/Till/Dockerfile
     container_name: store_container 
     ports:
       - "0.0.0.0:6080:6080" 
