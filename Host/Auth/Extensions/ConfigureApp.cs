@@ -1,5 +1,7 @@
 using Auth;
+using DA.AppDbContexts;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace MapConfig
 {
@@ -14,7 +16,7 @@ namespace MapConfig
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapEndpoints();
-            //TODO: Add migration await app.EnsureDatabaseCreated();
+            await app.EnsureDatabaseCreated();
 
         }
         public static async Task GlobalExceptionHandler(this WebApplication app)
@@ -26,6 +28,19 @@ namespace MapConfig
             // using var scope = app.Services.CreateScope();
             // var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             // await db.Database.MigrateAsync();
+
+            using var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+            {
+                Console.WriteLine("Applying pending migrations...");
+                await dbContext.Database.MigrateAsync(); // Apply pending migrations
+            }
+            else
+            {
+                Console.WriteLine("No pending migrations found.");
+            }
         }
     }
 }

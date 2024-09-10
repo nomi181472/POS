@@ -16,6 +16,7 @@ using Auth.Common.Auth;
 using Auth.Common.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Helpers.Auth.Models;
+using NATSNotificationSystem;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -31,8 +32,8 @@ namespace ConfigResource
             //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
-            .AddHelpers(configuration);
-
+            .AddHelpers(configuration)
+            .AddNatsService(configuration);
 
 
 

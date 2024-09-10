@@ -21,17 +21,58 @@ namespace BS.Services.AuthService
         public AuthService(IUnitOfWork unit, Func<UserPayload, AccessAndRefreshTokens> generateToken) {
             _uot = unit;
             _generateToken = generateToken;
-        }    
+        }
         public async Task<ResponseAuthorizedUser> Login(RequestLogin request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
-            //TODO: ge user email and check exist or not
-            //
-            //compare password and login the user
-            //when fetching user, must fetch its roles then policiess and provide in return type where roleIds object is and make
-            //AccessAndReferesh tokens
-            
-            return new ResponseAuthorizedUser() { UserId = Guid.NewGuid().ToString() };
+
+            var userResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
+            var user = userResult.Data.FirstOrDefault();
+
+            if (user == null)
+            {
+                throw new RecordNotFoundException("User not found.");
+            }
+
+            var credentialResult = await _uot.creadential.GetAsync(token, c => c.UserId == user.Id);
+            var credential = credentialResult.Data.FirstOrDefault();
+
+            var pwd = request.Password;
+            var hash = credential.PasswordHash;
+            var salt = credential.PasswordSalt;
+            if(hash == null || salt == null)
+            {
+                throw new ArgumentNullException("Credentials are being passed null");
+            }
+            if (PasswordHelper.VerifyPassword(pwd, hash, salt) == false)
+            {
+                throw new UnauthorizedAccessException("Invalid password.");
+            }
+
+            var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
+            var userRolesResult = await _uot.role.GetAsync(token, r => roleIds.Contains(r.Id));
+            var userRoles = userRolesResult.Data.ToList();
+
+            var roleActionsResult = await _uot.roleAction.GetAsync(token, ra => roleIds.Contains(ra.RoleId));
+            var roleActions = roleActionsResult.Data.ToList();
+
+            var policyIds = roleActions.Select(ra => ra.ActionId).Distinct().ToList();
+
+            var tokens = _generateToken(new UserPayload()
+            {
+                UserId = user.Id,
+                PolicyName = user.UserType,
+                RoleIds = string.Join(";", userRoles.Select(r => r.Id)),
+                Email = user.Email
+            });
+
+            response.UserId = user.Id;
+            response.RoleIds = userRoles.Select(r => r.Id).ToArray();
+            response.Token = tokens.AccessToken;
+            response.RefreshToken = tokens.RefreshToken;
+            response.UserType = user.UserType;
+
+            return response;
         }
 
         public async Task<ResponseAuthorizedUser> SignUp(RequestSignUp request, CancellationToken token)

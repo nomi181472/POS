@@ -1,44 +1,100 @@
 version: '3.8'  # Specify the docker-compose version
 
 services:
-  auth:
-    build:
-      context: .
-      dockerfile: ./Host/Auth/Dockerfile
-    container_name: auth_container  # Build the image from the current directory (context)
-    ports:
-      - "8080:8080"  # Map container port 8080 to host port 8080
-      - "8081:8081"  # Map container port 8081 to host port 8081
-      - "8082:8082"
-    # depends_on:  # This service depends on no other services
-    networks:
-      - app-network
-
-  hub:
-    build:
-      context: .
-      dockerfile: ./Host/Hub/Dockerfile
-    container_name: hub_container  # Build the image from the current directory (context)
-    ports:
-      - "7080:7080"  # Map container port 7080 to host port 7080
-      - "7081:7081"  # Map container port 7081 to host port 7081
-      - "7082:7082"
-    # depends_on:  # This service depends on no other services
-    networks:
-      - app-network
-
   till:
     build:   # Build the image from the current directory (context)
       context: .
       dockerfile: ./Host/Till/Dockerfile
-    container_name: till_container  # Build the image from the current directory (context)
+    container_name: till_container 
     ports:
-      - "6080:6080"  # Map container port 6080 to host port 6080 (different port than hub)
-      - "6081:6081"  # Map container port 6081 to host port 6081
-      - "6082:6082"
-    # depends_on:  # This service depends on no other services
-    networks:
-      - app-network
+      - "0.0.0.0:6080:6080" 
+      - "0.0.0.0:6081:6081"  
+      - "0.0.0.0:6082:6082"
+    depends_on:  
+      - tilldb
+    environment:
+      - DB_HOST=tilldb
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=12345
+      - DB_NAME=TillDB
+  
+  tilldb:
+    image: postgres:latest
+    container_name: tilldb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: TillDB
+    ports:
+      - "0.0.0.0:5437:5432"
+    volumes:
+      - till_db_data2:/var/lib/postgresql/data
+
+
+  hub:
+    build:   # Build the image from the current directory (context)
+      context: .
+      dockerfile: ./Host/Hub/Dockerfile
+    container_name: hub_container 
+    ports:
+      - "0.0.0.0:9080:9080" 
+      - "0.0.0.0:9081:9081"  
+      - "0.0.0.0:9082:9082"
+    depends_on:  
+      - hubdb
+      - redis
+    environment:
+      - DB_HOST=hubdb
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=12345
+      - DB_NAME=HubDB
+
+  hubdb:
+    image: postgres:latest
+    container_name: hubdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: HubDB
+    ports:
+      - "0.0.0.0:5435:5432"
+    volumes:
+      - hub_db_data2:/var/lib/postgresql/data
+
+  auth:
+    build:   # Build the image from the current directory (context)
+      context: .
+      dockerfile: ./Host/Auth/Dockerfile
+    container_name: auth_container 
+    ports:
+      - "0.0.0.0:7080:7080" 
+      - "0.0.0.0:7081:7081"  
+      - "0.0.0.0:7082:7082"
+    depends_on:  
+      - authdb
+    environment:
+      - DB_HOST=Authdb
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=12345
+      - DB_NAME=AuthDB
+
+  authdb:
+    image: postgres:latest
+    container_name: authdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: AuthDB
+    ports:
+      - "0.0.0.0:5436:5432"
+    volumes:
+      - auth_db_data2:/var/lib/postgresql/data
+
+
+
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -50,8 +106,6 @@ services:
       - 2181:2181
     extra_hosts:
       - "localhost: 10.10.2.82"
-    networks:
-      - app-network
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -72,8 +126,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     extra_hosts:
       - "localhost: 10.10.2.82"
-    networks:
-      - app-network
 
   kafkaUI:
     image: provectuslabs/kafka-ui:latest
@@ -85,17 +137,21 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     extra_hosts:
       - "localhost: 10.10.2.82"
-    networks:
-      - app-network
 
   redis:
     image: redis:latest
     container_name: redis_container
     ports:
       - "6379:6379"  # Expose Redis on the default port
-    networks:
-      - app-network
 
-networks:
-  app-network:
-    driver: bridge
+volumes:
+  till_db_data2:
+  hub_db_data2:
+  auth_db_data2:
+  
+
+
+
+
+
+
