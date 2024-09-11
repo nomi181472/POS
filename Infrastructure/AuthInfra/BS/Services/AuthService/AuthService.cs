@@ -74,6 +74,9 @@ namespace BS.Services.AuthService
             response.RefreshToken = tokens.RefreshToken;
             response.UserType = user.UserType;
 
+            response.Name = user.Name;
+            response.Email = user.Email;
+
             return response;
         }
 

@@ -9,6 +9,7 @@ using Till.Common.Constant;
 using Till.Feature.TillManagement;
 using Till.Feature.InventoryManagement;
 using Till.Feature.CustomerManagement;
+using Till.Feature.PaymentManagement;
 
 namespace Till;
 
@@ -37,6 +38,7 @@ public static class Endpoints
         endpoints.MapTillManagementEndpoints();
         endpoints.MapInventoryManagementEndpoints();
         endpoints.MapCustomerManagementEndpoints();
+        endpoints.MapPaymentManagementEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -88,7 +90,17 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddCustomer>()
-                 .MapEndpoint<UpdateCustomer>();
+                 .MapEndpoint<UpdateCustomer>()
+                 .MapEndpoint<ListCustomerWithDetails>();
+    }
+
+    private static void MapPaymentManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IPaymentManagementFeature)}")
+                           .WithTags("PaymentManagement");
+
+        endpoints.MapPublicGroup()
+                 .MapEndpoint<AddSurchargeDiscount>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
