@@ -10,4 +10,5 @@ namespace Auth.Common
     {
         static abstract void Map(IEndpointRouteBuilder app);
     }
+  
 }

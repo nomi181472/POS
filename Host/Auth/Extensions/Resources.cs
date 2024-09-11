@@ -17,30 +17,50 @@ using Auth.Common.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Helpers.Auth.Models;
 using NATSNotificationSystem;
+using FluentValidation;
+using Auth.Features.RoleManagement;
+using BS.Services.RoleService.Models.Request;
+using System.Xml;
+using Helpers.ServiceCollectionExtensions;
+using Auth.Features.UserManagement;
 namespace ConfigResource
 {
     public static class ConfigDI
     {
+       
         public static IServiceCollection RegisterService(this IServiceCollection services, IConfiguration configuration)
         {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            var featureType = typeof(IFeature);
+            string validatorName = "RequestValidator";
             services
 
 
             .AddCustomLogger(configuration)
             .AddSwagger(KConstant.ApiName)
             //TODO: AddServicesLayers
-            //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
             .AddHelpers(configuration)
-            .AddNatsService(configuration);
+            .AddNatsService(configuration)
+            .AddValidatorUsingAssemblies( assemblies, featureType, validatorName,typeof(IValidator<>))
+            .AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
 
 
             return services;
         }
-       
-      
+
+        
         private static IServiceCollection AddSwagger(this IServiceCollection services,string pTitle)
         {
             services.AddEndpointsApiExplorer();

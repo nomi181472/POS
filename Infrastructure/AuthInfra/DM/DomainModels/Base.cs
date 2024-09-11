@@ -12,13 +12,14 @@ namespace DM.DomainModels
     public abstract class Base<T>
     {
         public Base() { }
-        public Base(T pId, string pCreatedBy, DateTime pCreatedDate)
+        public Base(T pId, string pCreatedBy, DateTime pCreatedDate, bool pIsActive)
         {
             Id = pId;
             CreatedBy = pCreatedBy;
             CreatedDate = pCreatedDate;
             UpdatedBy= pCreatedBy;
             UpdatedDate = pCreatedDate;
+            IsActive = pIsActive;
         }
         [Key]
         public virtual T Id { get; set; }

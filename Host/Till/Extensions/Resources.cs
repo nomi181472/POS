@@ -31,7 +31,16 @@ namespace Till.Extensions
                    
                     .AddBusinessLayer(configuration)
                     .AddHelpers(configuration)
-                    .AddEndpointGRPC(configuration,KConstant.ApiName,Assembly.GetExecutingAssembly(),typeof(IFeature));
+                    .AddEndpointGRPC(configuration,KConstant.ApiName,Assembly.GetExecutingAssembly(),typeof(IFeature))
+                    .AddCors(options =>
+                    {
+                        options.AddDefaultPolicy(policy =>
+                        {
+                            policy.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader();
+                        });
+                    });
 
             return services;
         }
