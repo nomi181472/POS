@@ -9,6 +9,7 @@ using BS.Services.OrderService;
 using BS.Services.TillManagementService;
 using BS.Services.CustomerManagementService;
 using BS.Services.InventoryManagementService;
+using BS.Services.PaymentManagementService;
 
 public static class DependencyInjection
 {
@@ -17,12 +18,6 @@ public static class DependencyInjection
         services
         .AddDALayer(configuration)
         .AddServices();
-
-
-
-
-
-
 
         return services;
     }
@@ -33,15 +28,9 @@ public static class DependencyInjection
         services.TryAddTransient<ITillManagementService, TillManagementService>();
         services.TryAddScoped<ICustomerManagementService, CustomerManagementService>();
         services.TryAddScoped<IInventoryManagementService, InventoryManagementService>();
-
-
-
-
-
-
+        services.TryAddScoped<IPaymentManagementService, PaymentManagementService>();
 
         return services;
-    }
-    
+    }    
 }
 

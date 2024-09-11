@@ -1,5 +1,6 @@
 ﻿using BS.Services.CashManagementService.Models.Request;
 using BS.Services.CustomerManagementService.Models.Request;
+using BS.Services.CustomerManagementService.Models.Response;
 using BS.Services.OrderService.Models.Request;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace BS.Services.CustomerManagementService
     public interface ICustomerManagementService
     {
         public Task<bool> AddCustomer(RequestAddCustomer request, string userId, CancellationToken token);
-
         public Task<bool> UpdateCustomer(RequestUpdateCustomer request, string userId, CancellationToken token);
+        Task<List<ResponseListCustomerWithDetails>> ListCustomerWithDetails(string userId, CancellationToken cancellationToken);
     }
 }
