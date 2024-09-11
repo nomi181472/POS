@@ -45,11 +45,7 @@ namespace BS.Services.InventoryManagementService
                     url = $"{host}:{port}";
                 }
 
-                Channel channel = new Channel(url, ChannelCredentials.Insecure)
-                {
-
-                };
-                await channel.ConnectAsync();
+                var channel = GrpcChannel.ForAddress(url);
                 var client = new HubServiceGRPC.HubServiceGRPCClient(channel);
                 var request = new DataRequest()
                 {
