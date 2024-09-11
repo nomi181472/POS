@@ -90,7 +90,8 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddCustomer>()
-                 .MapEndpoint<UpdateCustomer>();
+                 .MapEndpoint<UpdateCustomer>()
+                 .MapEndpoint<ListCustomerWithDetails>();
     }
 
     private static void MapPaymentManagementEndpoints(this IEndpointRouteBuilder app)
