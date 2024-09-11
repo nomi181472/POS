@@ -11,5 +11,7 @@ namespace BS.Services.PaymentManagementService
     public interface IPaymentManagementService
     {
         Task<ResponseAddSurchargeDiscount> AddSurchargeDiscount(RequestAddSurchargeDiscount request, string userId, CancellationToken token);
+
+        Task<ResponseAddSplitPayments> AddSplitPayments(RequestAddSplitPayments request, string userId, CancellationToken token);
     }
 }

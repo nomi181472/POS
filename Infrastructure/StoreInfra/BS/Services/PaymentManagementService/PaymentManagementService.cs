@@ -10,6 +10,13 @@ namespace BS.Services.PaymentManagementService
 {
     public class PaymentManagementService : IPaymentManagementService
     {
+        public async Task<ResponseAddSplitPayments> AddSplitPayments(RequestAddSplitPayments request, string userId, CancellationToken token)
+        {
+            ResponseAddSplitPayments response = new ResponseAddSplitPayments();
+            response.RemainingBalance = request.TotalBill - request.CardPayment - request.CashPayment;
+            return response;
+        }
+
         public async Task<ResponseAddSurchargeDiscount> AddSurchargeDiscount(RequestAddSurchargeDiscount request, string userId, CancellationToken token)
         {
             // NEED TO REPLACE SURCHARGE AND DISCOUNT HARDCODED VALUES WITH A NEW ENTITY'S VAR

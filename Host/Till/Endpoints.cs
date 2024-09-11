@@ -99,7 +99,8 @@ public static class Endpoints
                            .WithTags("PaymentManagement");
 
         endpoints.MapPublicGroup()
-                 .MapEndpoint<AddSurchargeDiscount>();
+                 .MapEndpoint<AddSurchargeDiscount>()
+                 .MapEndpoint<AddSplitPayments>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
