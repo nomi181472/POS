@@ -8,10 +8,12 @@ namespace BS.Services.PaymentManagementService.Models.Response
 {
     public class ResponseAddSurchargeDiscount
     {
-        public double SurchargeAmount { get; set; }
-
         public double CashDiscountAmount { get; set; }
+        public double ChequeSurchargeAmount { get; set; }
+        public double OnlineTransferSurchargeAmount { get; set; }
+        public double CardSurchargeAmount { get; set; }
 
-        public double TotalBillWithSurchargeAndDiscount { get; set; }
+        public double CreditAmount { get; set; }
+        public double RemainingAmounnt { get; set; }
     }
 }
