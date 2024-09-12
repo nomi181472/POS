@@ -1,4 +1,4 @@
-﻿using AttendanceService.Common;
+﻿using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.InventoryManagementService;
 using BS.Services.OrderService;

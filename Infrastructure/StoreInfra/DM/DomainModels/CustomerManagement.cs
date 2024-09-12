@@ -19,6 +19,7 @@ namespace DM.DomainModels
         public string Billing {  get; set; }
 
         public string Address { get; set; }
+        public virtual ICollection<CustomerCart>? CustomerCarts { get; set; }
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using AttendanceService.Common;
+﻿using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.PaymentManagementService;
 using BS.Services.PaymentManagementService.Models.Request;
