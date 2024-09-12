@@ -10,6 +10,8 @@ using Till.Feature.TillManagement;
 using Till.Feature.InventoryManagement;
 using Till.Feature.CustomerManagement;
 using Till.Feature.PaymentManagement;
+using Till.Feature.SaleProcessing;
+using Till.Feature.CartManagement;
 
 namespace Till;
 
@@ -39,6 +41,7 @@ public static class Endpoints
         endpoints.MapInventoryManagementEndpoints();
         endpoints.MapCustomerManagementEndpoints();
         endpoints.MapPaymentManagementEndpoints();
+        endpoints.MapSaleProcessingEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -101,6 +104,19 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
                  .MapEndpoint<AddSurchargeDiscount>();
+    }
+
+    private static void MapSaleProcessingEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"{nameof(ISaleFeature)}")
+            .WithTags("SalesProcessing");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<CreateCart>()
+            .MapEndpoint<UpdateCart>()
+            .MapEndpoint<RemoveCart>()
+            .MapEndpoint<GetActiveCartsByUser>()
+            .MapEndpoint<AddItemsToCart>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

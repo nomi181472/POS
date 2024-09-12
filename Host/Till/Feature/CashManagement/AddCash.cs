@@ -3,7 +3,6 @@ using System.Collections.Generic;
 //using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using AttendanceService.Common;
 using Till.Common;
 using Till.Extensions.RouteHandler;
 //using BS.CustomExceptions.CustomExceptionMessage;

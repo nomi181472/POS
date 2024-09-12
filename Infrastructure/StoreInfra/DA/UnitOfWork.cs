@@ -21,6 +21,8 @@ namespace DA
         public IGenericRepository<OrderDetails, string> OrderDetailsRepo => new GenericRepository<OrderDetails, string>(_db);
         public IGenericRepository<Till, string> TillRepo => new GenericRepository<Till, string>(_db);
         public IGenericRepository<CustomerManagement, string> CustomerManagementRepo => new GenericRepository<CustomerManagement, string>(_db);
+        public IGenericRepository<CustomerCart, string> CustomerCartRepo => new GenericRepository<CustomerCart, string>(_db);
+        public IGenericRepository<CustomerCartItems, string> CustomerCartItemsRepo => new GenericRepository<CustomerCartItems, string>(_db);
 
         public void Commit()
         {
