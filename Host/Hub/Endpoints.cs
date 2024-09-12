@@ -2,6 +2,7 @@
 using Hub.Common;
 using Hub.Common.Filters;
 using Hub.Features.AreaCoverageManagement;
+using Hub.Features.InventoryManagment;
 
 namespace Hub
 {
@@ -14,6 +15,7 @@ namespace Hub
                 .WithOpenApi();
 
             endpoints.MapAreaCoverageManagementEndpoints();
+            endpoints.MapInventoryManagementEndpoints();
 
         }
 
@@ -25,6 +27,16 @@ namespace Hub
             endpoints.MapPublicGroup()
                 //.MapEndpoint<Signup>()
                 .MapEndpoint<AddArea>();
+        }
+
+        private static void MapInventoryManagementEndpoints(this IEndpointRouteBuilder app)
+        {
+            var endpoints = app.MapGroup($"/{nameof(IInventoryManagementFeature)}")
+                .WithTags("InventoryManagemnt");
+
+            endpoints.MapPublicGroup()
+                .MapEndpoint<AddItemData>();
+
         }
 
         private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
