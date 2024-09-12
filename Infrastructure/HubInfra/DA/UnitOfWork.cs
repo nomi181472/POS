@@ -17,6 +17,7 @@ namespace DA
         }
 
         public IGenericRepository<Location, string> LocationRepo => new GenericRepository<Location, string>(_db);
+        public IGenericRepository<InventoryItems, string> InventoryItemsRepo => new GenericRepository<InventoryItems, string>(_db);
 
 
 

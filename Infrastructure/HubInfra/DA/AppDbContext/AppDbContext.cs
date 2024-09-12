@@ -14,6 +14,7 @@ namespace DA.AppDbContexts
     public class AppDbContext:DbContext
     {
         public DbSet<Location> Locations { get; set; }
+        public DbSet<InventoryItems> InventoryItems { get; set; }
 
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)

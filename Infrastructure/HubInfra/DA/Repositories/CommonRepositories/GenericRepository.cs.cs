@@ -224,6 +224,25 @@ namespace DA.Repositories.CommonRepositories
                 return new GetterResult<IEnumerable<TEntity>>() { Message = e.ToString(), Status = false };
             }
         }
+
+        public virtual GetterResult<bool> Any(Expression<Func<TEntity, bool>> filter)
+        {
+            try
+            {
+                GetterResult<bool> getterResult = new GetterResult<bool>();
+                getterResult.Message = CommonMessages.Success;
+                getterResult.Status = true;
+                IQueryable<TEntity> query = _dbSet;
+                getterResult.Data = query.Any(filter);
+                return getterResult;
+            }
+            catch (Exception e)
+            {
+
+                return new GetterResult<bool>() { Message = e.ToString(), Status = false };
+            }
+        }
+
         public virtual async Task<GetterResult<bool>> AnyAsync(CancellationToken cancellationToken, Expression<Func<TEntity, bool>> filter )
         {
 
