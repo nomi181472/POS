@@ -10,7 +10,7 @@ using PaymentGateway.API.Common;
 using System;
 using System.Xml.Linq;
 
-namespace AttendanceService.Common
+namespace Till.Common
 {
     public class ApiResult : ObjectResult
     {

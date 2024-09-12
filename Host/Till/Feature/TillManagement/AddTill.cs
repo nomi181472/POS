@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Metadata;
-using AttendanceService.Common;
+using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.CashManagementService.Models.Response;
 using BS.Services.TillManagementService;
