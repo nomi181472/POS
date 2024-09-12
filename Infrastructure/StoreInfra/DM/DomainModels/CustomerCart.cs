@@ -12,5 +12,6 @@ namespace DM.DomainModels
         public virtual bool IsConvertedToSale { get; set; } = false;
         public virtual CustomerManagement? CustomerManagement { get; set; }
         public virtual ICollection<CustomerCartItems>? CustomerCartItems { get; set; }
+        public virtual ICollection<Order>? Order { get; set; }
     }
 }

@@ -76,6 +76,31 @@ namespace DA.AppDbContexts
                 .HasForeignKey(x => x.CartId);
             });
 
+            builder.Entity<Order>(entity =>
+            {
+                entity.HasOne(x => x.CustomerCart)
+                .WithMany(x => x.Order)
+                .HasForeignKey(x => x.CartId);
+            });
+
+            builder.Entity<OrderSplitPayments>(entity =>
+            {
+                entity.HasOne(x => x.Order)
+                .WithMany(x => x.OrderSplitPayments)
+                .HasForeignKey(x => x.OrderId);
+
+                entity.HasOne(x => x.PaymentMethods)
+                .WithMany(x => x.OrderSplitPayments)
+                .HasForeignKey(x => x.PaymentMethodId);
+            });
+
+            builder.Entity<PaymentTransactions>(entity =>
+            {
+                entity.HasOne(x => x.OrderSplitPayments)
+                .WithMany(x => x.PaymentTransactions)
+                .HasForeignKey(x => x.SplitPaymentId);
+            });
+
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             
         }
