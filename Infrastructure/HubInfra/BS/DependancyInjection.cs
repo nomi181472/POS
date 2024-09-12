@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BS.Services.InventoryManagementService;
 
 namespace BS
 {
@@ -34,6 +35,7 @@ namespace BS
 
 
             services.TryAddScoped<IAreaCoverageManagementService, AreaCoverageManagementService>();
+            services.TryAddScoped<IInventoryManagementService, InventoryManagementService>();
 
 
 

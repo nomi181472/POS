@@ -65,6 +65,7 @@ namespace DA.Repositories.CommonRepositories
            string includeProperties = ""
            );
 
+        GetterResult<bool> Any(Expression<Func<TEntity, bool>> filter);
        Task<GetterResult<bool>> AnyAsync(CancellationToken cancellationToken, Expression<Func<TEntity, bool>> filter);
 
     }
