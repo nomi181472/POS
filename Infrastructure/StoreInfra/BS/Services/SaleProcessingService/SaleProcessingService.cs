@@ -121,11 +121,11 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentNullException("Cart Id can not be null.");
             }
-            if(request.ItemIds == null)
+            if(request.Items == null)
             {
                 throw new ArgumentNullException("Item Id is required.");
             }
-            if (request.ItemIds.Count == 0)
+            if (request.Items.Count == 0)
             {
                 throw new ArgumentNullException("Item Ids are required.");
             }
@@ -135,10 +135,20 @@ namespace BS.Services.SaleProcessingService
                 throw new RecordNotFoundException("The cart does not exist.");
             }
 
-            foreach (var item in request.ItemIds)
+            foreach (var item in request.Items)
             {
-                await _unitOfWork.CustomerCartItemsRepo.AddAsync(new CustomerCartItems { Id = Guid.NewGuid().ToString(),CartId = request.CartId, 
-                    IsActive = true, IsArchived = false, ItemId = item }, userId, cancellationToken);
+                if(item.Quantity > 0)
+                {
+                    await _unitOfWork.CustomerCartItemsRepo.AddAsync(new CustomerCartItems
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        CartId = request.CartId,
+                        IsActive = true,
+                        IsArchived = false,
+                        ItemId = item.ItemId,
+                        Quantity = item.Quantity ?? 0
+                    }, userId, cancellationToken);
+                }
             }
             await _unitOfWork.CommitAsync(cancellationToken);
             return true;
