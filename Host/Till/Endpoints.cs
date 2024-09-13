@@ -12,6 +12,7 @@ using Till.Feature.CustomerManagement;
 using Till.Feature.PaymentManagement;
 using Till.Feature.SaleProcessing;
 using Till.Feature.CartManagement;
+using Till.Feature.CustomerFeedbackManagement;
 
 namespace Till;
 
@@ -42,6 +43,7 @@ public static class Endpoints
         endpoints.MapCustomerManagementEndpoints();
         endpoints.MapPaymentManagementEndpoints();
         endpoints.MapSaleProcessingEndpoints();
+        endpoints.MapCustomerFeedbackEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -117,6 +119,15 @@ public static class Endpoints
             .MapEndpoint<RemoveCart>()
             .MapEndpoint<GetActiveCartsByUser>()
             .MapEndpoint<AddItemsToCart>();
+    }
+
+    private static void MapCustomerFeedbackEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"{nameof(ICustomerFeedbackFeature)}")
+            .WithTags("CustomerFeedback");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<AddCustomerFeedback>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
