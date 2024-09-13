@@ -34,15 +34,18 @@ namespace Auth.Features.AuthManagement
         {  
             public RequestValidator()
             {
+                RuleFor(n => n.Name)
+                    .NotEmpty().WithMessage("Name is required.")
+                    .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                    .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be only whitespaces.");
                 RuleFor(x => x.Email).EmailAddress().NotEmpty();
                 RuleFor(m => m.Password)
-                .NotEmpty()
-                .WithMessage("Password is required.")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
-                .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
-                .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
-                .Matches("[0-9]").WithMessage("Password must contain at least one number.")
-                .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+                    .NotEmpty().WithMessage("Password is required.")
+                    .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                    .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+                    .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+                    .Matches("[0-9]").WithMessage("Password must contain at least one number.")
+                    .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
             }
         }
 
@@ -68,7 +71,7 @@ namespace Auth.Features.AuthManagement
             }
             catch (InvalidDataException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
