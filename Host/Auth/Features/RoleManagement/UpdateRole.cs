@@ -14,7 +14,7 @@ namespace Auth.Features.RoleManagement
     public class UpdateRole : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(UpdateRole)}", Handle)
+            .MapPut($"/{nameof(UpdateRole)}", Handle)
             .WithSummary("Update Role Details")
             .WithRequestValidation<RequestUpdateRole>().
             Produces(HTTPStatusCode200.Ok)
