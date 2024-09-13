@@ -26,9 +26,20 @@ namespace BS.Services.AuthService
         }
 
 
+
         public async Task<ResponseAuthorizedUser> Login(RequestLogin request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
+
+            response.UserId = "DummyUserId";
+            response.RoleIds = ["DummyRoleId1","DummyRoleId2"];
+            response.Token = "DummyAccessToken";
+            response.RefreshToken = "DummyRefreshToken";
+            response.UserType = "DummyUserType";
+            response.Name = "DummUserName";
+            response.Email = "DummyEmail";
+
+            return response;
 
             var userResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
             var user = userResult.Data.FirstOrDefault();
@@ -83,6 +94,7 @@ namespace BS.Services.AuthService
         }
 
 
+
         public async Task<ResponseAuthorizedUser> SignUp(RequestSignUp request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
@@ -106,7 +118,15 @@ namespace BS.Services.AuthService
                 userRoles = userRolesWithRoleId;
             }
 
-            if(request.ConfirmPassword != request.Password)
+            var existingUserResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
+            var existingUser = existingUserResult.Data.FirstOrDefault();
+
+            if (existingUser != null)
+            {
+                throw new InvalidDataException("Email already registered");
+            }
+
+            if (request.ConfirmPassword != request.Password)
             {
                 throw new InvalidDataException("Passwords don't match");
             }
@@ -139,10 +159,9 @@ namespace BS.Services.AuthService
             response.RefreshToken = tokens.RefreshToken;
             response.Token = tokens.AccessToken;
 
-
-
             return response;
         }
+
 
 
         public async Task<ResponseForgetPassword> ForgetPassword(RequestForgetPassword request, CancellationToken token)
@@ -176,6 +195,7 @@ namespace BS.Services.AuthService
                 throw new InvalidOperationException("Failed to send Reset Token due to: " + updateResult.Message);
             }
         }
+
 
 
         public async Task<ResponseChangePassword> ChangePassword(RequestChangePassword request, CancellationToken token)
