@@ -85,11 +85,15 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<AddActions>()
-            .MapEndpoint<AppendActionTag>();
+            .MapEndpoint<AppendActionTag>()
+            .MapEndpoint<DeleteAction>()
+            .MapEndpoint<DeleteActions>()
+            .MapEndpoint<GetAllAction>()
+            .MapEndpoint<RemoveActionTag>();
     }
     private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup($"/{nameof(IActionFeature)}")
+        var endpoints = app.MapGroup($"/{nameof(IRouteFeature)}")
             .WithTags("Routes");
 
         endpoints.MapAuthorizedGroup()
