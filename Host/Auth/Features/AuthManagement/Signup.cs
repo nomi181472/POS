@@ -62,7 +62,14 @@ namespace Auth.Features.AuthManagement
             catch(RecordNotFoundException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;
-                message = e.Message; /*ExceptionMessage.NA;*/
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (InvalidDataException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
