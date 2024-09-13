@@ -24,6 +24,8 @@ namespace BS.Services.AuthService
             _uot = unit;
             _generateToken = generateToken;
         }
+
+
         public async Task<ResponseAuthorizedUser> Login(RequestLogin request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
@@ -80,14 +82,13 @@ namespace BS.Services.AuthService
             return response;
         }
 
+
         public async Task<ResponseAuthorizedUser> SignUp(RequestSignUp request, CancellationToken token)
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
            
             string userId = Guid.NewGuid().ToString();
             
-
-
             DateTime now = DateTime.Now;
             List<UserRole> userRoles = new List<UserRole>();
             if (request.RoleIds != null && request.RoleIds.Count > 0)
@@ -105,9 +106,14 @@ namespace BS.Services.AuthService
                 userRoles = userRolesWithRoleId;
             }
 
+            if(request.ConfirmPassword != request.Password)
+            {
+                throw new InvalidDataException("Passwords don't match");
+            }
+
             var hAndS = request.Password.CreateHashAndSalt();
             string passwordHash = hAndS.Hash;
-            string passwordSalt=hAndS.Salt;
+            string passwordSalt = hAndS.Salt;
 
             Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
 
@@ -137,6 +143,7 @@ namespace BS.Services.AuthService
 
             return response;
         }
+
 
         public async Task<ResponseForgetPassword> ForgetPassword(RequestForgetPassword request, CancellationToken token)
         {
@@ -169,6 +176,7 @@ namespace BS.Services.AuthService
                 throw new InvalidOperationException("Failed to send Reset Token due to: " + updateResult.Message);
             }
         }
+
 
         public async Task<ResponseChangePassword> ChangePassword(RequestChangePassword request, CancellationToken token)
         {
