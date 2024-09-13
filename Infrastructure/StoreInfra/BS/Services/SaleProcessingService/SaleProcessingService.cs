@@ -35,7 +35,8 @@ namespace BS.Services.SaleProcessingService
                 CustomerId = request.CustomerId,
                 IsConvertedToSale = request.IsConvertedToSale,
                 IsActive = true,
-                IsArchived = false
+                IsArchived = false,
+                TillId = request.TillId
             },userId, cancellationToken);
             if (response.IsException)
             {
@@ -90,24 +91,24 @@ namespace BS.Services.SaleProcessingService
             await _unitOfWork.CommitAsync(cancellationToken);
             return response.Result;
         }
-        public async Task<List<Carts>> GetActiveCartsByUser(string userId, CancellationToken cancellationToken)
+        public async Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken)
         {
             List<Carts> carts = new List<Carts>();
-            if (string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(tillId))
             {
-                throw new ArgumentNullException("The User Id can not be null.");
+                throw new ArgumentNullException("The Till Id can not be null.");
             }
             carts = _unitOfWork.CustomerCartRepo
-                .GetAsync(cancellationToken, x => x.CreatedBy == userId && x.IsActive == true && x.IsConvertedToSale == false, 
+                .GetAsync(cancellationToken, x => x.TillId == tillId && x.IsActive == true && x.IsConvertedToSale == false, 
                 orderBy: q => q.OrderByDescending(p => p.CreatedDate)).Result.Data
                 .Select(x=>new Carts { Id = x.Id, CustomerId = x.CustomerId }).ToList();
             if(carts == null)
             {
-                throw new RecordNotFoundException("No active carts found for the user.");
+                throw new RecordNotFoundException("No active carts found for the till.");
             }
             if(carts.Count == 0)
             {
-                throw new RecordNotFoundException("No active carts found for the user.");
+                throw new RecordNotFoundException("No active carts found for the till.");
             }
             return carts;
         }
@@ -152,6 +153,90 @@ namespace BS.Services.SaleProcessingService
             }
             await _unitOfWork.CommitAsync(cancellationToken);
             return true;
+        }
+
+        public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, string userId, CancellationToken cancellationToken)
+        {
+            CreateOrderResponse createOrderResponse = new CreateOrderResponse();
+
+            #region Request validation
+            if (request == null)
+            {
+                throw new ArgumentNullException("The request can not be null.");
+            }
+            if (string.IsNullOrWhiteSpace(request.CartId))
+            {
+                throw new ArgumentNullException("Cart Id can not be null.");
+            }
+            if(request.OrderSplitPayments == null)
+            {
+                throw new ArgumentNullException("Payment method is required.");
+            }
+            if(request.OrderSplitPayments.Count == 0)
+            {
+                throw new ArgumentNullException("Payment method is required.");
+            }
+            if (request.TotalAmount <= 0)
+            {
+                throw new ArgumentNullException("Total amount must be greater than 0.");
+            }
+            #endregion
+
+            #region Create Order
+            string orderId = Guid.NewGuid().ToString();
+            await _unitOfWork.OrderRepo.AddAsync(new Order
+            {
+                Id = orderId,
+                CartId = request.CartId,
+                PaidAmount = 0,
+                TotalAmount = request.TotalAmount,
+                IsArchived = false,
+                IsActive = true,
+                IsPaid = false
+            }, userId, cancellationToken);
+            foreach(var splitPayment in request.OrderSplitPayments)
+            {
+                await _unitOfWork.OrderSplitPaymentsRepo.AddAsync(new OrderSplitPayments
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    OrderId = orderId,
+                    PaymentMethodId = splitPayment.PaymentMethodId,
+                    Amount = splitPayment.PaidAmount,
+                    IsArchived = false,
+                    IsActive = true
+                }, userId, cancellationToken);
+            }
+            await _unitOfWork.CommitAsync(cancellationToken);
+            #endregion
+            //Call split payment method here, give order object and request object in request.
+            var order = await _unitOfWork.OrderRepo.GetByIdAsync(orderId, cancellationToken);
+            if(order.Data == null)
+            {
+                throw new RecordNotFoundException("Something went wrong");
+            }
+            #region Return response
+            if (order.Data.PaidAmount == order.Data.TotalAmount)
+            {
+                order.Data.IsPaid = true;
+                await _unitOfWork.OrderRepo.UpdateAsync(order.Data, userId, cancellationToken);
+                await _unitOfWork.CommitAsync(cancellationToken);
+                createOrderResponse.TotalAmount = order.Data.TotalAmount;
+                createOrderResponse.PaidAmount = order.Data.PaidAmount;
+                createOrderResponse.IsPaid = order.Data.IsPaid;
+                createOrderResponse.Success = true;
+                createOrderResponse.Message = "Sale processed successfully.";
+                return createOrderResponse;
+            }
+            else
+            {
+                createOrderResponse.TotalAmount = order.Data.TotalAmount;
+                createOrderResponse.PaidAmount = order.Data.PaidAmount;
+                createOrderResponse.IsPaid = order.Data.IsPaid;
+                createOrderResponse.Success = false;
+                createOrderResponse.Message = $"Sale was not closed, only {order.Data.PaidAmount} of {order.Data.TotalAmount} was processed.";
+                return createOrderResponse;
+            }
+            #endregion
         }
     }
 }

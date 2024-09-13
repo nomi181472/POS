@@ -11,21 +11,25 @@ using Till.Common;
 
 namespace Till.Feature.CartManagement
 {
-    public class GetActiveCartsByUser:ICartFeature
+    public class GetActiveCartsByTill:ICartFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapGet($"/{nameof(GetActiveCartsByUser)}", Handle)
+            .MapGet($"/{nameof(GetActiveCartsByTill)}", Handle)
             .WithSummary("Get active carts by user.")
             .Produces(200)
+            .Produces(201)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<List<Carts>>();
 
-        private static async Task<IResult> Handle(string userId, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(string tillId, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await _saleProcessing.GetActiveCartsByUser(userId, cancellationToken);
+                var result = await _saleProcessing.GetActiveCartsByTill(tillId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException ex)

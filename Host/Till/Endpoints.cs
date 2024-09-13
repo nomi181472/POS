@@ -12,6 +12,7 @@ using Till.Feature.CustomerManagement;
 using Till.Feature.PaymentManagement;
 using Till.Feature.SaleProcessing;
 using Till.Feature.CartManagement;
+using Till.Feature.PaymentMethod;
 
 namespace Till;
 
@@ -42,6 +43,7 @@ public static class Endpoints
         endpoints.MapCustomerManagementEndpoints();
         endpoints.MapPaymentManagementEndpoints();
         endpoints.MapSaleProcessingEndpoints();
+        endpoints.MapPaymentMethodEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -56,13 +58,23 @@ public static class Endpoints
                  .MapEndpoint<UpdateCash>();
     }
 
+    private static void MapPaymentMethodEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IPaymentMethodFeature)}")
+            .WithTags("PaymentMethods");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<ListAllPaymentMethods>();
+    }
+
     private static void MapTillManagementEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(ITillFeature)}")
             .WithTags("TillManagement");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddTill>();
+            .MapEndpoint<AddTill>()
+            .MapEndpoint<ListAllTills>();
     }
 
     private static void MapOrderManagementEndpoints(this IEndpointRouteBuilder app)
@@ -115,8 +127,9 @@ public static class Endpoints
             .MapEndpoint<CreateCart>()
             .MapEndpoint<UpdateCart>()
             .MapEndpoint<RemoveCart>()
-            .MapEndpoint<GetActiveCartsByUser>()
-            .MapEndpoint<AddItemsToCart>();
+            .MapEndpoint<GetActiveCartsByTill>()
+            .MapEndpoint<AddItemsToCart>()
+            .MapEndpoint<CreateOrder>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

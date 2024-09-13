@@ -3,6 +3,7 @@ using System;
 using DA.AppDbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240913130225_addTillIdInTill")]
+    partial class addTillIdInTill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -360,41 +363,6 @@ namespace DA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PaymentMethods");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "a7dabf7f-9718-4587-80cf-b678ec8c9853",
-                            CreatedBy = "Default",
-                            CreatedDate = new DateTime(2024, 9, 13, 14, 12, 24, 192, DateTimeKind.Utc).AddTicks(7597),
-                            IsActive = true,
-                            IsArchived = false,
-                            Name = "Cash",
-                            UpdatedBy = "",
-                            UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = "272e3baa-ae7d-4355-80f0-3d29e1985c71",
-                            CreatedBy = "Default",
-                            CreatedDate = new DateTime(2024, 9, 13, 14, 12, 24, 192, DateTimeKind.Utc).AddTicks(7658),
-                            IsActive = true,
-                            IsArchived = false,
-                            Name = "Card",
-                            UpdatedBy = "",
-                            UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = "d41523b9-e04e-4a41-8658-7c40853d71c5",
-                            CreatedBy = "Default",
-                            CreatedDate = new DateTime(2024, 9, 13, 14, 12, 24, 192, DateTimeKind.Utc).AddTicks(7664),
-                            IsActive = true,
-                            IsArchived = false,
-                            Name = "Gift Card",
-                            UpdatedBy = "",
-                            UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("DM.DomainModels.PaymentTransactions", b =>

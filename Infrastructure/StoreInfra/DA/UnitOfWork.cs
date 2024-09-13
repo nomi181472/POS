@@ -23,6 +23,9 @@ namespace DA
         public IGenericRepository<CustomerManagement, string> CustomerManagementRepo => new GenericRepository<CustomerManagement, string>(_db);
         public IGenericRepository<CustomerCart, string> CustomerCartRepo => new GenericRepository<CustomerCart, string>(_db);
         public IGenericRepository<CustomerCartItems, string> CustomerCartItemsRepo => new GenericRepository<CustomerCartItems, string>(_db);
+        public IGenericRepository<Order, string> OrderRepo => new GenericRepository<Order, string>(_db);
+        public IGenericRepository<OrderSplitPayments, string> OrderSplitPaymentsRepo => new GenericRepository<OrderSplitPayments, string>(_db);
+        public IGenericRepository<PaymentMethods, string> PaymentMethodsRepo => new GenericRepository<PaymentMethods, string>(_db);
 
         public void Commit()
         {

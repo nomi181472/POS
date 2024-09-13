@@ -18,6 +18,10 @@ namespace Till.Feature.CartManagement
             .WithSummary("Update cart")
             .WithRequestValidation<UpdateCartRequest>()
             .Produces(200)
+            .Produces(201)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<UpdateCartRequest>

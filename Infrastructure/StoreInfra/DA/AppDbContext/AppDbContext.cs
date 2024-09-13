@@ -101,6 +101,44 @@ namespace DA.AppDbContexts
                 .HasForeignKey(x => x.SplitPaymentId);
             });
 
+            builder.Entity<PaymentMethods>(entity =>
+            {
+                entity.HasData(
+                    new PaymentMethods { 
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Cash",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Card",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Gift Card",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    }
+                );
+            });
+
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             
         }

@@ -2,44 +2,39 @@
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.SaleProcessingService;
 using BS.Services.SaleProcessingService.Models.Request;
+using BS.Services.SaleProcessingService.Models.Response;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
 using System.Reflection.Metadata;
 using Till.Common;
 using Till.Extensions.RouteHandler;
+using Till.Feature.CartManagement;
 
-namespace Till.Feature.CartManagement
+namespace Till.Feature.SaleProcessing
 {
-    public class RemoveCart : ICartFeature
+    public class CreateOrder:ISaleFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPatch($"/{nameof(RemoveCart)}", Handle)
-            .WithSummary("Remove cart")
-            .WithRequestValidation<RemoveCartRequest>()
+            .MapPost($"/{nameof(CreateOrder)}", Handle)
+            .WithSummary("Create Order")
+            .WithRequestValidation<CreateOrderRequest>()
             .Produces(200)
             .Produces(201)
             .Produces(400)
             .Produces(404)
             .Produces(500)
-            .Produces<bool>();
+            .Produces<CreateOrderResponse>();
 
-        public class RequestValidator : AbstractValidator<RemoveCartRequest>
-        {
-            public RequestValidator()
-            {
-                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
-            }
-        }
-
-        private static async Task<IResult> Handle(RemoveCartRequest request, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(CreateOrderRequest request, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
+            CreateOrderResponse response = new CreateOrderResponse();
             try
             {
                 string userId = "";//fetch from header
-                var result = await _saleProcessing.RemoveCart(request, userId, cancellationToken);
+                var result = await _saleProcessing.CreateOrder(request, userId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException ex)
@@ -47,21 +42,27 @@ namespace Till.Feature.CartManagement
                 statusCode = HTTPStatusCode400.NotFound;
                 message = ex.Message;
                 _logger.LogError(message, ex);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+                response.Success = false;
+                response.Message = message;
+                return ApiResponseHelper.Convert(false, false, message, statusCode, response);
             }
             catch (ArgumentNullException ex)
             {
                 statusCode = HTTPStatusCode400.BadRequest;
                 message = ex.Message;
                 _logger.LogError(message, ex);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+                response.Success = false;
+                response.Message = message;
+                return ApiResponseHelper.Convert(false, false, message, statusCode, response);
             }
             catch (Exception ex)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, ex);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+                response.Success = false;
+                response.Message = message;
+                return ApiResponseHelper.Convert(false, false, message, statusCode, response);
             }
         }
     }

@@ -20,6 +20,10 @@ namespace Till.Feature.TillManagement
             .WithSummary("add a new till")
             .WithRequestValidation<RequestAddTill>()
             .Produces(200)
+            .Produces(201)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<RequestAddTill>

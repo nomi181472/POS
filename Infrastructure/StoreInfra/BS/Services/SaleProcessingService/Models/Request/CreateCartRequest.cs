@@ -10,5 +10,6 @@ namespace BS.Services.SaleProcessingService.Models.Request
     {
         public virtual string? CustomerId {  get; set; }
         public virtual bool IsConvertedToSale {  get; set; }
+        public virtual string? TillId {  get; set; }
     }
 }

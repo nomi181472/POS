@@ -13,7 +13,8 @@ namespace BS.Services.SaleProcessingService
         public Task<bool> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<bool> UpdateCart(UpdateCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<bool> RemoveCart(RemoveCartRequest request, string userId, CancellationToken cancellationToken);
-        public Task<List<Carts>> GetActiveCartsByUser(string userId, CancellationToken cancellationToken);
+        public Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken);
         public Task<bool> AddItemsToCart(AddItemsToCartRequest request, string userId, CancellationToken cancellationToken);
+        public Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, string userId, CancellationToken cancellationToken);
     }
 }
