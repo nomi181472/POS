@@ -10,59 +10,36 @@ namespace Helpers.StringsExtension
     using System.Security.Cryptography;
     using System.Text;
 
-    public static class PasswordHelper
+    public class PasswordHelper
     {
-        
-        public static (string Hash, string Salt) CreateHashAndSalt(this string password)
-        {
-            
-            byte[] saltBytes = new byte[16];
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(saltBytes);
-            }
-            string salt = Convert.ToBase64String(saltBytes);
+        private const int SaltSize = 16; // 128-bit salt
+        private const int HashSize = 32; // 256-bit hash
+        private const int Iterations = 10000; // Number of PBKDF2 iterations
 
-            
-            string hash = HashPassword(password, salt);
-            return (hash, salt);
+        public static (string hash, string salt) HashPassword(string password)
+        {
+            // Generate a random salt
+            byte[] saltBytes = RandomNumberGenerator.GetBytes(SaltSize);
+
+            // Generate the hash
+            var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, Iterations, HashAlgorithmName.SHA256);
+            byte[] hashBytes = pbkdf2.GetBytes(HashSize);
+
+            // Return hash and salt in base64 format
+            return (Convert.ToBase64String(hashBytes), Convert.ToBase64String(saltBytes));
         }
 
-        private static string HashPassword(string password, string salt)
+        public static bool VerifyPassword(string password, string storedHash, string storedSalt)
         {
-            byte[] saltBytes = Convert.FromBase64String(salt);
+            // Convert stored salt from base64
+            byte[] saltBytes = Convert.FromBase64String(storedSalt);
 
-            using (var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000))
-            {
-                byte[] hashBytes = pbkdf2.GetBytes(20);
-                byte[] hashBytesWithSalt = new byte[36];
-                Array.Copy(saltBytes, 0, hashBytesWithSalt, 0, 16);
-                Array.Copy(hashBytes, 0, hashBytesWithSalt, 16, 20);
-                return Convert.ToBase64String(hashBytesWithSalt);
-            }
-        }
-        public static bool VerifyPassword(string password, string hash, string salt)
-        {
-           
-            byte[] hashBytesWithSalt = Convert.FromBase64String(hash);
-            byte[] saltBytes = new byte[16];
-            Array.Copy(hashBytesWithSalt, 0, saltBytes, 0, 16);
+            // Generate the hash from the provided password and salt
+            var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, Iterations, HashAlgorithmName.SHA256);
+            byte[] hashBytes = pbkdf2.GetBytes(HashSize);
 
-            
-            using (var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000))
-            {
-                byte[] hashBytes = pbkdf2.GetBytes(20);
-
-               
-                for (int i = 0; i < 20; i++)
-                {
-                    if (hashBytesWithSalt[i + 16] != hashBytes[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            // Compare the hashes
+            return Convert.ToBase64String(hashBytes) == storedHash;
         }
     }
 

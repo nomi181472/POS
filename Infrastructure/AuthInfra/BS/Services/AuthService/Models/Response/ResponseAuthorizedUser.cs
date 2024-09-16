@@ -15,6 +15,6 @@ namespace BS.Services.AuthService.Models.Response
         public string UserType { get;set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public string[] RoleIds { get; set; } = new string[0];
+        public string[] RoleAndActions { get; set; } = new string[0];
     }
 }

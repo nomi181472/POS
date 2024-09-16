@@ -11,7 +11,7 @@ namespace DM.DomainModels
         public string? RoleId { get; set; }
         public string? ActionId { get; set; }
         public virtual Role? Role { get; set; }
-        public virtual Actions? Policy { get; set; }
+        public virtual Actions? Actions { get; set; }
         public RoleAction(){}
         public RoleAction(string pId, string Createdby, DateTime pCreatedDate,string pRoleId,string pActionId) : base(pId, Createdby, pCreatedDate, true)
         {

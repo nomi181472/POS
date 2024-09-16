@@ -14,7 +14,7 @@ namespace DA.Models.DomainModelsConfigurations
 
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasMany(x => x.UserRoles)
+            builder.HasMany(x => x.UserRole)
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId);
 

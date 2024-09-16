@@ -9,7 +9,7 @@ namespace DM.DomainModels
     public class Role:Base<string>
     {
         public string Name { get;  set; }
-        public ICollection<RoleAction> RoleActions { get; set; }=new List<RoleAction>();
+        public ICollection<RoleAction> RoleAction { get; set; }=new List<RoleAction>();
         public Role(){} 
         public Role(string pId, string Createdby, DateTime pCreatedDate,string pName): base(pId, Createdby, pCreatedDate,true)
         {
