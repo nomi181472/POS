@@ -34,7 +34,7 @@ namespace Till.Feature.PaymentManagement
             string message = "Success";
             try
             {
-                var result = await service.AddSurchargeDiscount(request, "", cancellationToken);
+                var result = true;// await service.AddSurchargeDiscount(request, "", cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddSurchargeDiscount();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

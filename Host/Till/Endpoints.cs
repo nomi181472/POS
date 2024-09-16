@@ -43,7 +43,7 @@ public static class Endpoints
         endpoints.MapTillManagementEndpoints();
         endpoints.MapInventoryManagementEndpoints();
         endpoints.MapCustomerManagementEndpoints();
-        endpoints.MapPaymentManagementEndpoints();
+        //endpoints.MapPaymentManagementEndpoints();
         endpoints.MapSaleProcessingEndpoints();
         endpoints.MapPaymentMethodEndpoints();
         endpoints.MapCustomerFeedbackEndpoints();

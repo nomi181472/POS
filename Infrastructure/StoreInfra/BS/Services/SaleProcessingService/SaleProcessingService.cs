@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
+using BS.Services.PaymentManagementService;
 using BS.Services.SaleProcessingService.Models.Request;
 using BS.Services.SaleProcessingService.Models.Response;
 using DA;
@@ -15,9 +16,11 @@ namespace BS.Services.SaleProcessingService
     public class SaleProcessingService:ISaleProcessingService
     {
         private IUnitOfWork _unitOfWork;
-        public SaleProcessingService(IUnitOfWork unitOfWork)
+        private readonly IPaymentManagementService _paymentManagementService;
+        public SaleProcessingService(IUnitOfWork unitOfWork, IPaymentManagementService paymentManagementService)
         {
             _unitOfWork = unitOfWork;
+            _paymentManagementService = paymentManagementService;
         }
         public async Task<bool> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken)
         {
@@ -184,7 +187,7 @@ namespace BS.Services.SaleProcessingService
 
             #region Create Order
             string orderId = Guid.NewGuid().ToString();
-            await _unitOfWork.OrderRepo.AddAsync(new Order
+            var orderInit = new Order
             {
                 Id = orderId,
                 CartId = request.CartId,
@@ -193,7 +196,8 @@ namespace BS.Services.SaleProcessingService
                 IsArchived = false,
                 IsActive = true,
                 IsPaid = false
-            }, userId, cancellationToken);
+            };
+            await _unitOfWork.OrderRepo.AddAsync(orderInit, userId, cancellationToken);
             foreach(var splitPayment in request.OrderSplitPayments)
             {
                 await _unitOfWork.OrderSplitPaymentsRepo.AddAsync(new OrderSplitPayments
@@ -208,9 +212,9 @@ namespace BS.Services.SaleProcessingService
             }
             await _unitOfWork.CommitAsync(cancellationToken);
             #endregion
-            //Call split payment method here, give order object and request object in request.
+            await _paymentManagementService.AddSurchargeDiscount(request, orderInit, userId, cancellationToken);
             var order = await _unitOfWork.OrderRepo.GetByIdAsync(orderId, cancellationToken);
-            if(order.Data == null)
+            if (order.Data == null)
             {
                 throw new RecordNotFoundException("Something went wrong");
             }

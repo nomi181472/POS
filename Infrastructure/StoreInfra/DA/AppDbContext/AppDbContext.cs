@@ -141,6 +141,56 @@ namespace DA.AppDbContexts
                 );
             });
 
+            builder.Entity<PaymentMethods>(entity =>
+            {
+                entity.HasData(
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Cheque",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Online Transfer",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Loyalty Points",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Discount Voucher",
+                        CreatedBy = "Default",
+                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    }
+                );
+            });
+
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             
         }
