@@ -9,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
 
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.HasMany(x => x.UserRoles)
-                .WithOne(x => x.User)
-                .HasForeignKey(x => x.UserId);
+            builder.HasMany(x => x.RoleAction)
+                .WithOne(x => x.Role)
+                .HasForeignKey(x => x.RoleId);
 
-            builder.HasOne(x => x.Credential)
-                .WithOne(x => x.User)
-                .HasForeignKey<Credential>(x => x.UserId);
-
+           
         }
     }
 }

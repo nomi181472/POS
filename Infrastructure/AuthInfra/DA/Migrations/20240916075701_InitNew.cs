@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DA.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Policies",
+                name: "Actions",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -27,7 +27,7 @@ namespace DA.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Policies", x => x.Id);
+                    table.PrimaryKey("PK_Actions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,7 +69,7 @@ namespace DA.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RolePolicies",
+                name: "RoleActions",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -84,14 +84,14 @@ namespace DA.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RolePolicies", x => x.Id);
+                    table.PrimaryKey("PK_RoleActions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RolePolicies_Policies_ActionId",
+                        name: "FK_RoleActions_Actions_ActionId",
                         column: x => x.ActionId,
-                        principalTable: "Policies",
+                        principalTable: "Actions",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_RolePolicies_Roles_RoleId",
+                        name: "FK_RoleActions_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id");
@@ -123,7 +123,7 @@ namespace DA.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "userRoles",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -138,18 +138,38 @@ namespace DA.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
+                    table.PrimaryKey("PK_userRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRole_Roles_RoleId",
+                        name: "FK_userRoles_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_UserRole_Users_UserId",
+                        name: "FK_userRoles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "CreatedBy", "CreatedDate", "IsActive", "IsArchived", "Name", "UpdatedBy", "UpdatedDate" },
+                values: new object[] { "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), true, false, "SuperAdmin", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472) });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedBy", "CreatedDate", "Email", "IsActive", "IsArchived", "Name", "UpdatedBy", "UpdatedDate", "UserType" },
+                values: new object[] { "72990663-2edc-4c10-b331-cd1c65e477e0", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), "POS@gmail.com", true, false, "POS", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), "SuperAdmin" });
+
+            migrationBuilder.InsertData(
+                table: "Credential",
+                columns: new[] { "Id", "CreatedBy", "CreatedDate", "IsActive", "IsArchived", "PasswordHash", "PasswordSalt", "UpdatedBy", "UpdatedDate", "UserId" },
+                values: new object[] { "10bcc73c-e40a-4852-a81d-c18d654e8806", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), true, false, "d9eaIWSBDoLwkZMUgEdNzYyiwHFg1rcR3gZRlRVYIDQ=", "TzYRkd2fsMUus0DoHl4Dmw==", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), "72990663-2edc-4c10-b331-cd1c65e477e0" });
+
+            migrationBuilder.InsertData(
+                table: "userRoles",
+                columns: new[] { "Id", "CreatedBy", "CreatedDate", "IsActive", "IsArchived", "RoleId", "UpdatedBy", "UpdatedDate", "UserId" },
+                values: new object[] { "f3df99c7-07fb-4b7f-89e5-89d86b84bd4e", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), true, false, "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7", "72990663-2edc-4c10-b331-cd1c65e477e0", new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472), "72990663-2edc-4c10-b331-cd1c65e477e0" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Credential_UserId",
@@ -158,23 +178,23 @@ namespace DA.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePolicies_ActionId",
-                table: "RolePolicies",
+                name: "IX_RoleActions_ActionId",
+                table: "RoleActions",
                 column: "ActionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePolicies_RoleId",
-                table: "RolePolicies",
+                name: "IX_RoleActions_RoleId",
+                table: "RoleActions",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId",
-                table: "UserRole",
+                name: "IX_userRoles_RoleId",
+                table: "userRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId",
-                table: "UserRole",
+                name: "IX_userRoles_UserId",
+                table: "userRoles",
                 column: "UserId");
         }
 
@@ -185,13 +205,13 @@ namespace DA.Migrations
                 name: "Credential");
 
             migrationBuilder.DropTable(
-                name: "RolePolicies");
+                name: "RoleActions");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "userRoles");
 
             migrationBuilder.DropTable(
-                name: "Policies");
+                name: "Actions");
 
             migrationBuilder.DropTable(
                 name: "Roles");

@@ -19,7 +19,11 @@
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Utility\Helpers\Helpers.csproj" />
 	  <ProjectReference Include="..\DM\DM.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
 	</ItemGroup>
 
 </Project>

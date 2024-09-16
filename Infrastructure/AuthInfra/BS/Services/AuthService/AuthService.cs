@@ -5,12 +5,15 @@ using BS.Services.AuthService.Models.Response;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models.Response;
 using DA;
+using DM;
 using DM.DomainModels;
 using Helpers.Auth.Models;
 using Helpers.StringsExtension;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,66 +34,65 @@ namespace BS.Services.AuthService
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
 
-            response.UserId = "UID-1";
-            response.RoleIds = ["RID-1", "RID-2"];
-            response.Token = "accessToken";
-            response.RefreshToken = "refreshToken";
-            response.UserType = "Admin";
-            response.Name = "Bilal";
-            response.Email = request.Email;
 
-            return response;
+            #region Getting user
+            var userData = await _uot.user
+                .GetSingleAsync(
+                token, 
+                u => u.Email.ToLower() == request.Email.ToLower(),
+                $"{nameof(Credential)}," +
+                $"{nameof(UserRole)}," +
+                $"{nameof(RefreshToken)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}" 
+                );
+            #endregion
 
-            var userResult = await _uot.user.GetAsync(token, u => u.Email == request.Email);
-            var user = userResult.Data.FirstOrDefault();
-
-            if (user == null)
+            if (userData.Status)
             {
-                throw new RecordNotFoundException("User not found.");
+                var user = userData.Data;
+                if (user == null)
+                {
+                    throw new RecordNotFoundException("User not found.");
+                }
+
+                var credential = user.Credential!;
+                var roles = user.UserRole;
+
+                var pwd = request.Password;
+                var hash = credential.PasswordHash;
+                var salt = credential.PasswordSalt;
+
+                if (PasswordHelper.VerifyPassword(pwd, hash,salt) == false)
+                {
+                    throw new UnauthorizedAccessException("Invalid password.");
+                }
+
+                var tokens = _generateToken(new UserPayload()
+                {
+                    UserId = user.Id,
+                    PolicyName = user.UserType,
+                    RoleIds = string.Join(";",roles.Select(r => r.Id)),
+                    Email = user.Email
+                });
+
+                response.UserId = user.Id;
+                response.RoleAndActions = roles.Select(r => r.Id).ToArray();
+                response.Token = tokens.AccessToken;
+                response.RefreshToken = user.RefreshToken!.Token;
+                response.UserType = user.UserType;
+
+                response.Name = user.Name;
+                response.Email = user.Email;
+
+                return response;
             }
-
-            var credentialResult = await _uot.creadential.GetAsync(token, c => c.UserId == user.Id);
-            var credential = credentialResult.Data.FirstOrDefault();
-
-            var pwd = request.Password;
-            var hash = credential.PasswordHash;
-            var salt = credential.PasswordSalt;
-            if(hash == null || salt == null)
+            else
             {
-                throw new ArgumentNullException("Credentials are being passed null");
+                throw new UnknownException(userData.Message);
             }
-            if (PasswordHelper.VerifyPassword(pwd, hash, salt) == false)
-            {
-                throw new UnauthorizedAccessException("Invalid password.");
-            }
-
-            var roleIds = user.UserRoles.Select(ur => ur.RoleId).ToList();
-            var userRolesResult = await _uot.role.GetAsync(token, r => roleIds.Contains(r.Id));
-            var userRoles = userRolesResult.Data.ToList();
-
-            var roleActionsResult = await _uot.roleAction.GetAsync(token, ra => roleIds.Contains(ra.RoleId));
-            var roleActions = roleActionsResult.Data.ToList();
-
-            var policyIds = roleActions.Select(ra => ra.ActionId).Distinct().ToList();
-
-            var tokens = _generateToken(new UserPayload()
-            {
-                UserId = user.Id,
-                PolicyName = user.UserType,
-                RoleIds = string.Join(";", userRoles.Select(r => r.Id)),
-                Email = user.Email
-            });
-
-            response.UserId = user.Id;
-            response.RoleIds = userRoles.Select(r => r.Id).ToArray();
-            response.Token = tokens.AccessToken;
-            response.RefreshToken = tokens.RefreshToken;
-            response.UserType = user.UserType;
-
-            response.Name = user.Name;
-            response.Email = user.Email;
-
-            return response;
+            
         }
 
 
@@ -131,9 +133,9 @@ namespace BS.Services.AuthService
                 throw new InvalidDataException("Passwords don't match");
             }
 
-            var hAndS = request.Password.CreateHashAndSalt();
-            string passwordHash = hAndS.Hash;
-            string passwordSalt = hAndS.Salt;
+            var hAndS =PasswordHelper.HashPassword(request.Password);
+            string passwordHash = hAndS.hash;
+            string passwordSalt = hAndS.salt;
 
             Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
 
@@ -155,7 +157,7 @@ namespace BS.Services.AuthService
 
             response.UserType = user.UserType;
             response.UserId = user.Id;
-            response.RoleIds = request.RoleIds.ToArray();
+            response.RoleAndActions = request.RoleIds.ToArray();
             response.RefreshToken = tokens.RefreshToken;
             response.Token = tokens.AccessToken;
 
@@ -221,9 +223,9 @@ namespace BS.Services.AuthService
                 throw new UnauthorizedAccessException("Invalid current password.");
             }
 
-            var newHashAndSalt = request.NewPassword.CreateHashAndSalt();
-            string newHash = newHashAndSalt.Hash;
-            string newSalt = newHashAndSalt.Salt;
+            var newHashAndSalt = PasswordHelper.HashPassword(request.NewPassword);
+            string newHash = newHashAndSalt.hash;
+            string newSalt = newHashAndSalt.salt;
 
             credential.PasswordHash = newHash;
             credential.PasswordSalt = newSalt;
@@ -245,7 +247,46 @@ namespace BS.Services.AuthService
 
             return response;
         }
+        
 
+        public async Task<AccessAndRefreshTokens> UpdateAndGetRefreshToken(AccessAndRefreshTokens request,string claimUserId,string userId, string actions, CancellationToken token)
+        {
+            var userData=await _uot.user.GetSingleAsync(token, x => x.Id == claimUserId, $"{nameof(RefreshToken)}");
 
+            if (userData.Status)
+            {
+                if (userData.Data == null)
+                {
+                    throw new UnauthorizedAccessException("invalid refresh token");
+                }
+                var user = userData.Data;
+                var refreshToken = user.RefreshToken!;
+                if (!refreshToken.IsTokenMatch(request.RefreshToken))
+                {
+                    throw new UnauthorizedAccessException("invalid refresh token");
+                }
+               
+
+                var tokens = _generateToken(new UserPayload()
+                {
+                    UserId = user.Id,
+                    PolicyName = user.UserType,
+                    RoleIds = actions,
+                    Email = user.Email
+                });
+                request.RefreshToken = tokens.RefreshToken;
+                request.AccessToken = tokens.AccessToken;
+
+                refreshToken.UpdateRefreshToken(DateTime.UtcNow.AddMinutes(KTokenValidity.RefreshTokenInMin), request.RefreshToken, userId) ;
+                _uot.refereshToken.Update(refreshToken, userId);
+                _uot.Commit();
+                
+                return request;
+
+            }
+            throw new UnknownException(userData.Message);
+
+            
+        }
     }
 }

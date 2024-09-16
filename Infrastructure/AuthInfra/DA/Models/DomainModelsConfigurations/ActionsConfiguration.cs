@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class PolicyConfiguration : IEntityTypeConfiguration<Actions>
+    public class ActionsConfiguration : IEntityTypeConfiguration<Actions>
     {
 
         public void Configure(EntityTypeBuilder<Actions> builder)
         {
             builder.HasMany(x => x.RoleActions)
-                .WithOne(x => x.Policy)
+                .WithOne(x => x.Actions)
                 .HasForeignKey(x => x.ActionId);
         }
     }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240910125833_Init")]
-    partial class Init
+    [Migration("20240916075701_InitNew")]
+    partial class InitNew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,7 +60,7 @@ namespace DA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Policies");
+                    b.ToTable("Actions");
                 });
 
             modelBuilder.Entity("DM.DomainModels.Credential", b =>
@@ -105,6 +105,21 @@ namespace DA.Migrations
                         .IsUnique();
 
                     b.ToTable("Credential");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "10bcc73c-e40a-4852-a81d-c18d654e8806",
+                            CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            CreatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            IsActive = true,
+                            IsArchived = false,
+                            PasswordHash = "d9eaIWSBDoLwkZMUgEdNzYyiwHFg1rcR3gZRlRVYIDQ=",
+                            PasswordSalt = "TzYRkd2fsMUus0DoHl4Dmw==",
+                            UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            UpdatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            UserId = "72990663-2edc-4c10-b331-cd1c65e477e0"
+                        });
                 });
 
             modelBuilder.Entity("DM.DomainModels.Role", b =>
@@ -139,6 +154,19 @@ namespace DA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7",
+                            CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            CreatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            IsActive = true,
+                            IsArchived = false,
+                            Name = "SuperAdmin",
+                            UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            UpdatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472)
+                        });
                 });
 
             modelBuilder.Entity("DM.DomainModels.RoleAction", b =>
@@ -178,7 +206,7 @@ namespace DA.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePolicies");
+                    b.ToTable("RoleActions");
                 });
 
             modelBuilder.Entity("DM.DomainModels.User", b =>
@@ -221,6 +249,21 @@ namespace DA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            CreatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            Email = "POS@gmail.com",
+                            IsActive = true,
+                            IsArchived = false,
+                            Name = "POS",
+                            UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            UpdatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            UserType = "SuperAdmin"
+                        });
                 });
 
             modelBuilder.Entity("DM.DomainModels.UserRole", b =>
@@ -260,7 +303,21 @@ namespace DA.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("userRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "f3df99c7-07fb-4b7f-89e5-89d86b84bd4e",
+                            CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            CreatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            IsActive = true,
+                            IsArchived = false,
+                            RoleId = "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7",
+                            UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
+                            UpdatedDate = new DateTime(2024, 9, 16, 7, 57, 0, 692, DateTimeKind.Utc).AddTicks(6472),
+                            UserId = "72990663-2edc-4c10-b331-cd1c65e477e0"
+                        });
                 });
 
             modelBuilder.Entity("DM.DomainModels.Credential", b =>
@@ -274,15 +331,15 @@ namespace DA.Migrations
 
             modelBuilder.Entity("DM.DomainModels.RoleAction", b =>
                 {
-                    b.HasOne("DM.DomainModels.Actions", "Policy")
+                    b.HasOne("DM.DomainModels.Actions", "Actions")
                         .WithMany("RoleActions")
                         .HasForeignKey("ActionId");
 
                     b.HasOne("DM.DomainModels.Role", "Role")
-                        .WithMany("RoleActions")
+                        .WithMany("RoleAction")
                         .HasForeignKey("RoleId");
 
-                    b.Navigation("Policy");
+                    b.Navigation("Actions");
 
                     b.Navigation("Role");
                 });
@@ -294,7 +351,7 @@ namespace DA.Migrations
                         .HasForeignKey("RoleId");
 
                     b.HasOne("DM.DomainModels.User", "User")
-                        .WithMany("UserRoles")
+                        .WithMany("UserRole")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Role");
@@ -309,14 +366,14 @@ namespace DA.Migrations
 
             modelBuilder.Entity("DM.DomainModels.Role", b =>
                 {
-                    b.Navigation("RoleActions");
+                    b.Navigation("RoleAction");
                 });
 
             modelBuilder.Entity("DM.DomainModels.User", b =>
                 {
                     b.Navigation("Credential");
 
-                    b.Navigation("UserRoles");
+                    b.Navigation("UserRole");
                 });
 #pragma warning restore 612, 618
         }

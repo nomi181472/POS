@@ -1,4 +1,8 @@
-﻿using DM.DomainModels;
+﻿using DA.Common.CommonRoles;
+using DM;
+using DM.DomainModels;
+using Helpers.StringsExtension;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,8 +18,11 @@ namespace DA.AppDbContexts
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Actions> Policies { get; set; }
-        public DbSet<RoleAction> RolePolicies { get; set; }
+        public DbSet<Actions> Actions { get; set; }
+        public DbSet<RoleAction> RoleActions { get; set; }
+        public DbSet<UserRole> userRoles { get; set; }
+        public DbSet<Credential> Credential { get; set; }
+        public DbSet<RefreshToken> RefereshToken { get; set; }
 
 
 
@@ -61,7 +68,46 @@ namespace DA.AppDbContexts
             base.OnModelCreating(builder);
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            SeedSuperAdmin(builder);
             
+        }
+        private void SeedSuperAdmin(ModelBuilder builder)
+        {
+            // Create the super admin role
+            string userId = "72990663-2edc-4c10-b331-cd1c65e477e0";
+            var roleId = "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7";
+            var credsId = "10bcc73c-e40a-4852-a81d-c18d654e8806";
+            var userRoleId = "f3df99c7-07fb-4b7f-89e5-89d86b84bd4e";
+            var refereshId = "f3df99c7-07fb-4b7f-89e5-89d86b84bd41";
+            var now = DateTime.UtcNow;
+            var adminRole = new Role(roleId,userId,now, KDefinedRoles.SuperAdmin);
+            
+
+            
+            //TODO Will be taking from env variable
+            string pass = "Pos!23";
+            var helper = PasswordHelper.HashPassword(pass);
+            string pH = helper.hash;
+            string pS = helper.salt;
+
+            var userRoles=new List<UserRole>() { new UserRole(userId, roleId, userRoleId, userId, now) };
+            var credential = new Credential(credsId, userId, now,pPasswordHash:pH,pPasswordSalt:pS,pUserId: userId);
+            var adminUser = new User(userId,userId,now,"POS","POS@gmail.com", KDefinedRoles.SuperAdmin
+               
+                );
+            var refreshToken = new RefreshToken(pId: refereshId,
+                pCreatedby:userId,pCreatedDate:now,userId,pIsrevokable:true,pExpiryDate:DateTime.UtcNow.AddMinutes(100),userId);
+
+            //builders
+            builder.Entity<User>().HasData(adminUser);
+            builder.Entity<RefreshToken>().HasData(refreshToken);
+            builder.Entity<Credential>().HasData(credential);
+            builder.Entity<UserRole>().HasData(userRoles);
+            builder.Entity<Role>().HasData(adminRole);
+           
+
+
+
         }
     }
 }

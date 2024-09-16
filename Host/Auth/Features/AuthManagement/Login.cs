@@ -52,10 +52,11 @@ namespace Auth.Features.AuthManagement
             }
             catch (RecordNotFoundException e)
             {
+
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
             catch (ArgumentNullException e)
             {
@@ -66,7 +67,14 @@ namespace Auth.Features.AuthManagement
             }
             catch (UnauthorizedAccessException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.Unauthorized;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
+            }
+            catch (UnknownException e)
+            {
+                statusCode = HTTPStatusCode500.InternalServerError;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
