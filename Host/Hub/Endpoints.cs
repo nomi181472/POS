@@ -35,7 +35,9 @@ namespace Hub
                 .WithTags("InventoryManagemnt");
 
             endpoints.MapPublicGroup()
-                .MapEndpoint<AddItemData>();
+                .MapEndpoint<AddItemData>()
+                .MapEndpoint<UpdateItemData>()
+                .MapEndpoint<AddItemGroup>();
 
         }
 
