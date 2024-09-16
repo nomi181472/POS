@@ -34,6 +34,7 @@ namespace BS.Services.CashSessionManagementService
             var entity = request.ToDomain();
 
             entity.Id = Guid.NewGuid().ToString();
+            entity.CreatedBy = userId;
             entity.UpdatedBy = userId;
             entity.CreatedDate = DateTime.Now;
             entity.UpdatedDate = DateTime.Now;
@@ -44,16 +45,17 @@ namespace BS.Services.CashSessionManagementService
             {
                 entity.cashDetails = new List<CashDetails>()
                 {
-                    new CashDetails() 
+                    new CashDetails()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        
+
                         Currency = item.Currency,
                         Type = item.Type,
                         Quantity = item.Quantity,
-                        
+
                         CashSessionId = entity.Id,
 
+                        CreatedBy = userId,
                         UpdatedBy = userId,
                         CreatedDate = DateTime.Now,
                         UpdatedDate = DateTime.Now,
