@@ -12,5 +12,7 @@ namespace BS.Services.CashSessionManagementService
     public interface ICashSessionService
     {
         public Task<ResponseAddCashSession> AddCashSession(RequestAddCashSession request, string userId, CancellationToken cancellationToken);
+
+        //public Task<ResponseGetCashDetailsByCashSessionId> GetCashDetailsByCashId(RequestGetCashDetailsByCashId request, CancellationToken);
     }
 }
