@@ -19,6 +19,8 @@ namespace DA.AppDbContexts
         public DbSet<CustomerCart> CustomerCart { get; set; }
         public DbSet<CustomerManagement> CustomerManagements { get; set; }
         public DbSet<CustomerCartItems> CustomerCartItems { get; set; }
+        public DbSet<CashSession> CashSessions { get; set; }
+        public DbSet<CashDetails> CashDetails  { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
