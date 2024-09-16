@@ -3,6 +3,7 @@
 
 using DA.AppDbContexts;
 using DA.Repositories.CommonRepositories;
+using DM;
 using DM.DomainModels;
 
 namespace DA
@@ -27,6 +28,8 @@ namespace DA
 
         public IGenericRepository<UserRole, string> userRole => new GenericRepository<UserRole, string>(_db);
         public IGenericRepository<RoleAction, string> roleAction => new GenericRepository<RoleAction, string>(_db);
+
+        public IGenericRepository<RefreshToken, string> refereshToken => new GenericRepository<RefreshToken, string>(_db);
 
         public void Commit()
         {

@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class RoleConfiguration : IEntityTypeConfiguration<Role>
+    public class ActionsConfiguration : IEntityTypeConfiguration<Actions>
     {
 
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<Actions> builder)
         {
-            builder.HasMany(x => x.RoleAction)
-                .WithOne(x => x.Role)
-                .HasForeignKey(x => x.RoleId);
+            builder.HasMany(x => x.RoleActions)
+                .WithOne(x => x.Actions)
+                .HasForeignKey(x => x.ActionId);
         }
     }
 }
