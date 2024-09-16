@@ -22,9 +22,16 @@ namespace Auth.Features.ActionsManagement
 
         public class RequestValidator : AbstractValidator<RequestAddAction>
         {
-            public RequestValidator()
+            IActionService _actionService;
+            public RequestValidator(IActionService actionService)
             {
-                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
+                
+                RuleFor(x => x.Name).Must(IsActionAvailable).WithMessage("Action already available");
+                _actionService = actionService; 
+            }
+            public bool IsActionAvailable(string name)
+            {
+                return !_actionService.IsActionsAvailable(name);
             }
         }
 

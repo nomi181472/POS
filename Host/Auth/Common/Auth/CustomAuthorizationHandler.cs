@@ -22,8 +22,16 @@ namespace Auth.Common.Auth
             if (httpContext != null)
             {
                 var path = httpContext.Request.Path;
+                if(!context?.User?.Identity?.IsAuthenticated ?? false)
+                {
+                    int statusCode = HTTPStatusCode400.Unauthorized;
+                    _httpContextAccessor.HttpContext.Response.StatusCode = statusCode;
+                    _httpContextAccessor.HttpContext.Response.ContentType = "application/json";
+                    await _httpContextAccessor.HttpContext.Response.WriteAsJsonAsync(ApiResponseHelper.Convert(true, false, $"Invalid jwt or token is expired", statusCode, null));
+                    await _httpContextAccessor.HttpContext.Response.CompleteAsync();
+                }
                 // Optionally, check the request path
-                if (IsUserValidated(context))
+                else if (IsUserValidated(context))
                 {
 
                     context.Succeed(requirement);
