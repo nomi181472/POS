@@ -37,7 +37,6 @@ namespace Till.Feature.CashSessionManagement
             {
                 var result = await service.AddCashSession(request, "", cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
-                var response = new ResponseAddCashSession();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (ArgumentNullException e)
