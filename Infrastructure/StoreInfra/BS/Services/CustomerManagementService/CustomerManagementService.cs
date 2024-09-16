@@ -12,6 +12,8 @@ using HubService;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
+using BS.Services.CashManagementService.Models.Response;
+using BS.Services.CustomerManagementService.Models.Response;
 
 namespace BS.Services.CustomerManagementService
 {
@@ -158,6 +160,36 @@ namespace BS.Services.CustomerManagementService
 
         }
 
+
+        public async Task<List<ResponseListCustomerWithDetails>> ListCustomerWithDetails(string userId, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.CustomerManagementRepo.GetAllAsync(cancellationToken);
+            List<ResponseListCustomerWithDetails> response = new List<ResponseListCustomerWithDetails>();
+
+            if (result.Status)
+            {
+                foreach (var record in result.Data)
+                {
+                    if (record.IsActive == true)
+                    {
+                        response.Add(new ResponseListCustomerWithDetails()
+                        {
+                            Name = record.Name,
+                            PhoneNumber = record.PhoneNumber,
+                            Email = record.Email,
+                            Cnic = record.Cnic,
+                            Billing = record.Billing,
+                            Address = record.Address
+                        });
+                    }
+                }
+                return response;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to retrieve customer data.");
+            }
+        }
 
 
     }

@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace DM.DomainModels
 {
-    public class OrderDetails : Base<String>
+    public class OrderDetails:Base<string>
     {
-        public string ItemName { get; set; }
-
-        public int Price { get; set; }
-
-        public int Quantity { get; set; }
+        public virtual string? ItemName { get; set; }
+        public virtual int Price {get; set;}
+        public virtual int Quantity {get; set;}
     }
 }

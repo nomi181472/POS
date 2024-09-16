@@ -21,6 +21,10 @@ namespace Hub.Extensions
             app.MapGrpcService<HubGrpcImpl>();
             app.MapEndpointsExposed();
             await app.EnsureDatabaseCreated();
+            app.UseCors(x => x
+              .AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 
         }
 

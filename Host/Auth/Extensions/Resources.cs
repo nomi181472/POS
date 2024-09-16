@@ -44,8 +44,19 @@ namespace ConfigResource
             .AddBusinessLayer(configuration)
             .AddHelpers(configuration)
             .AddNatsService(configuration)
-            .AddValidatorUsingAssemblies( assemblies, featureType, validatorName,typeof(IValidator<>));
+            .AddValidatorUsingAssemblies( assemblies, featureType, validatorName,typeof(IValidator<>))
+            .AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
+
+            
             return services;
         }
 

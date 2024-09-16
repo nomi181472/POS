@@ -1,4 +1,4 @@
-﻿using AttendanceService.Common;
+﻿using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.InventoryManagementService;
 using BS.Services.OrderService;
@@ -44,6 +44,8 @@ namespace Till.Feature.InventoryManagement
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
         }

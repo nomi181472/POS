@@ -1,10 +1,9 @@
-﻿using AttendanceService.Common;
+﻿using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.OrderService;
 using BS.Services.OrderService.Models.Response;
 using Logger;
 using PaymentGateway.API.Common;
-using Till.Common;
 using Till.Feature.CashManagement;
 
 namespace Till.Feature.OrderManagement

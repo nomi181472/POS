@@ -28,44 +28,38 @@ namespace BS.Services.InventoryManagementService
 
         public async Task<ResponseGetInventory> GetInventoryData(string filter, CancellationToken cancellationToken)
         {
-            try
+           
+
+            string? port = _configuration.GetSection("Hub:Port").Value;
+            string? host = _configuration.GetSection("Hub:Host").Value;
+
+            string url = "";
+            if (String.IsNullOrEmpty(port) || String.IsNullOrEmpty(host))
             {
-
-
-                string? port = _configuration.GetSection("Hub:Port").Value;
-                string? host = _configuration.GetSection("Hub:Host").Value;
-
-                string url = "";
-                if (String.IsNullOrEmpty(port) || String.IsNullOrEmpty(host))
-                {
-                    throw new Exception("GRPC Port and Host is required.");
-                }
-                else
-                {
-                    url = $"{host}:{port}";
-                }
-
-                var channel = GrpcChannel.ForAddress(url);
-                var client = new HubServiceGRPC.HubServiceGRPCClient(channel);
-                var request = new DataRequest()
-                {
-                    Data = filter
-                };
-
-                var verify = await client.SendDataAsync(request, cancellationToken: cancellationToken);
-                var response = new ResponseGetInventory()
-                {
-                    Message = verify.Message,
-                    IsSuccess = true
-                };
-
-                return response;
-
+                throw new Exception("GRPC Port and Host is required.");
             }
-            catch
+            else
             {
-                throw new Exception("An error occured for grpc");
+                url = $"{host}:{port}";
             }
+
+            var channel = GrpcChannel.ForAddress(url);
+            var client = new HubServiceGRPC.HubServiceGRPCClient(channel);
+            var request = new DataRequest()
+            {
+                Data = filter
+            };
+
+            var verify = await client.SendDataAsync(request, cancellationToken: cancellationToken);
+            var response = new ResponseGetInventory()
+            {
+                Message = verify.Message,
+                IsSuccess = true
+            };
+
+            return response;
+
+           
 
             
         }

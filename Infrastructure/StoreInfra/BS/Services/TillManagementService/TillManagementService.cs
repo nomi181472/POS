@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DM.DomainModels;
 using BS.Services.TillManagementService.Request;
 using DA;
+using BS.Services.TillManagementService.Response;
+using BS.CustomExceptions.Common;
 
 namespace BS.Services.TillManagementService
 {
@@ -34,6 +36,23 @@ namespace BS.Services.TillManagementService
             await _unitOfWork.TillRepo.AddAsync(till, request.CreatedBy ?? "", cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
             return true; 
+        }
+
+        public async Task<List<ListAllTillsResponse>> ListAllTills(CancellationToken cancellationToken)
+        {
+            List<ListAllTillsResponse> response = new List<ListAllTillsResponse>();
+            response = _unitOfWork.TillRepo.GetAllAsync(cancellationToken).Result.Data.Select(x=>new ListAllTillsResponse
+            {
+                Id = x.Id,
+                Name = x.Name,
+                CreatedBy = x.CreatedBy,
+                CreatedOn = x.CreatedDate.ToString() ?? ""
+            }).ToList();
+            if (response == null)
+            {
+                throw new RecordNotFoundException("Tills were not found.");
+            }
+            return response;
         }
     }
 }

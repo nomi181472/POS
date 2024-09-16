@@ -1,4 +1,4 @@
-﻿using AttendanceService.Common;
+﻿using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.CashManagementService;
 using BS.Services.CashManagementService.Models.Request;
@@ -6,7 +6,6 @@ using BS.Services.CashManagementService.Models.Response;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
-using Till.Common;
 
 namespace Till.Feature.CashManagement
 {

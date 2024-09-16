@@ -1,5 +1,5 @@
 ﻿using System.Reflection.Metadata;
-using AttendanceService.Common;
+using Till.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.CashManagementService.Models.Response;
 using BS.Services.TillManagementService;
@@ -20,6 +20,10 @@ namespace Till.Feature.TillManagement
             .WithSummary("add a new till")
             .WithRequestValidation<RequestAddTill>()
             .Produces(200)
+            .Produces(201)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<RequestAddTill>

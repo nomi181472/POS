@@ -8,6 +8,7 @@ using Auth.Common;
 using Auth.Common.Auth;
 using Auth.Extensions.RouteHandler;
 using AuthJWT;
+using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.AuthService;
 using BS.Services.AuthService.Models.Request;
@@ -45,9 +46,30 @@ namespace Auth.Features.AuthManagement
             {
 
                 var result = await _auth.Login(request, cancellationToken);
-              //  var token = jwt.GenerateToken(new UserPayload() { Id = "1", RoleIds = new[] { "a", "b" }, PolicyName = KPolicyDescriptor.SuperAdminPolicy });
+                //  var token = jwt.GenerateToken(new UserPayload() { Id = "1", RoleIds = new[] { "a", "b" }, PolicyName = KPolicyDescriptor.SuperAdminPolicy });
                 //result.Token = token;//.Token;
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
+            }
+            catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (ArgumentNullException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (Exception e)
             {

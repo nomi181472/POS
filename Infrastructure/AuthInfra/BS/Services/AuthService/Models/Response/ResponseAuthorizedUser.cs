@@ -8,6 +8,9 @@ namespace BS.Services.AuthService.Models.Response
 {
     public class ResponseAuthorizedUser
     {
+        public string Name { get; set; }
+        public string Email { get; set; }
+
         public string UserId { get; set; }
         public string UserType { get;set; }
         public string Token { get; set; }
