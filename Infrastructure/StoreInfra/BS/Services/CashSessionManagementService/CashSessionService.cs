@@ -47,10 +47,18 @@ namespace BS.Services.CashSessionManagementService
                     new CashDetails() 
                     {
                         Id = Guid.NewGuid().ToString(),
+                        
                         Currency = item.Currency,
                         Type = item.Type,
                         Quantity = item.Quantity,
-                        CashSessionId = entity.Id
+                        
+                        CashSessionId = entity.Id,
+
+                        UpdatedBy = userId,
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        IsArchived = false,
+                        IsActive = true,
                     }
                 };
             }
