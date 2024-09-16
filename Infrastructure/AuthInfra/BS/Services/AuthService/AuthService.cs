@@ -31,13 +31,13 @@ namespace BS.Services.AuthService
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
 
-            response.UserId = "DummyUserId";
-            response.RoleIds = ["DummyRoleId1","DummyRoleId2"];
-            response.Token = "DummyAccessToken";
-            response.RefreshToken = "DummyRefreshToken";
-            response.UserType = "DummyUserType";
-            response.Name = "DummUserName";
-            response.Email = "DummyEmail";
+            response.UserId = "UID-1";
+            response.RoleIds = ["RID-1", "RID-2"];
+            response.Token = "accessToken";
+            response.RefreshToken = "refreshToken";
+            response.UserType = "Admin";
+            response.Name = "Bilal";
+            response.Email = request.Email;
 
             return response;
 
