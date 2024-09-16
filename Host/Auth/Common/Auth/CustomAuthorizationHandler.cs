@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Common.Auth.Requirements;
+using DA.Common.CommonRoles;
 using Microsoft.AspNetCore.Authorization;
 using PaymentGateway.API.Common;
 using System.Security.Claims;
@@ -58,8 +59,16 @@ namespace Auth.Common.Auth
 
         private static bool IsUserValidated(AuthorizationHandlerContext context)
         {
-            string userId = "";
-            return context.User.HasClaim(c => c.Value == "sad");
+            
+            var userType= context.User.Claims.FirstOrDefault(x=>x.Type==KAuthClaimTypes.UserType)?.Value;
+            if (userType == null)
+            {
+                return false;
+            }else if(userType== KDefinedRoles.SuperAdmin)
+            {
+                return true;
+            }
+            return true;
         }
     }
 }

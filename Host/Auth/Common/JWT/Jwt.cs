@@ -25,7 +25,7 @@ namespace AuthJWT
             {
                 Email = user.FindFirst(KAuthClaimTypes.Email)?.Value,
                 UserId = user.FindFirst(KAuthClaimTypes.UserId)?.Value,
-                PolicyName = user.FindFirst(KAuthClaimTypes.UserType)?.Value,
+                UserType = user.FindFirst(KAuthClaimTypes.UserType)?.Value,
                 RoleIds = user.FindFirst(KAuthClaimTypes.Resources)?.Value
             };
 
@@ -49,6 +49,7 @@ namespace AuthJWT
             {
                 Subject = GetSubject(payload),
                 Expires = DateTime.UtcNow.AddMinutes(options.Value.AccessTokenExpirationInMinutes),
+                
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -70,7 +71,7 @@ namespace AuthJWT
                             {
                     new Claim(KAuthClaimTypes.Email, payload.Email),
                     new Claim(KAuthClaimTypes.UserId,payload.UserId),
-                    new Claim(KAuthClaimTypes.UserType,payload.PolicyName),
+                    new Claim(KAuthClaimTypes.UserType,payload.UserType),
                     new Claim(KAuthClaimTypes.Resources,payload.RoleIds)
                             });
         }

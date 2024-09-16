@@ -9,7 +9,7 @@ namespace Helpers.Auth.Models
     {
         public required string Email {  get; set; }
         public required string UserId { get; set; }
-        public required string PolicyName { get; set; }
+        public required string UserType { get; set; }
         public string RoleIds { get; set; } 
 
     }

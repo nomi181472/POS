@@ -38,8 +38,6 @@ public static class Endpoints
         endpoints.MapRoleManagementEndpoints();
         endpoints.MapActionsManagementEndpoints();
         endpoints.MapUserManagement();
-       
-        endpoints.MapToExposedRoutes();   
     }
     private static void MapUserManagement(this IEndpointRouteBuilder app)
     {
@@ -83,23 +81,17 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IActionsFeature)}")
             .WithTags("Actions");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddActions>()
             .MapEndpoint<AppendActionTag>()
             .MapEndpoint<DeleteAction>()
             .MapEndpoint<DeleteActions>()
             .MapEndpoint<GetAllAction>()
-            .MapEndpoint<RemoveActionTag>();
+            .MapEndpoint<GetOverallActions>()
+            .MapEndpoint<RemoveActionTag>()
+            ;
     }
-    private static void MapToExposedRoutes(this IEndpointRouteBuilder app)
-    {
-        var endpoints = app.MapGroup($"/{nameof(IRouteFeature)}")
-            .WithTags("Routes");
-
-        endpoints.MapAuthorizedGroup()
-            .MapEndpoint<GetAllEndpoints>();
-    }
-
+    
    
    
 

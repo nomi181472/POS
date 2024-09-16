@@ -18,27 +18,29 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using PaymentGateway.API.Common;
 
-namespace Auth.Features.RouteManagement
+namespace Auth.Features.ActionsManagement
 {
-    public class GetAllEndpoints : IActionFeature
+    public class GetOverallActions : IActionsFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapGet($"/{nameof(GetAllEndpoints)}", Handle)
-            .WithSummary("TestEndpoint");
-        
+            .MapGet($"/{nameof(GetOverallActions)}", Handle)
+            .WithSummary("TestEndpoint")
+            .Produces(200)
+            .Produces(400);
+
 
         private static async Task<IResult> Handle(IActionControllerService action, ICustomLogger _logger, Jwt jwt, CancellationToken cancellationToken)
         {
 
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-               
+
                 string ApiBaseName = KConstant.ApiName;
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 var iFeature = typeof(IFeature);
-                var result=await action.GetAllActionsOfAllApis(ApiBaseName, assembly, iFeature, cancellationToken);
+                var result = await action.GetAllActionsOfAllApis(ApiBaseName, assembly, iFeature, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (Exception e)
@@ -53,6 +55,6 @@ namespace Auth.Features.RouteManagement
 
         }
 
-       
+
     }
 }
