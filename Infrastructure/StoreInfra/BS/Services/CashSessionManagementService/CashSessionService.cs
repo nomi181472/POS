@@ -41,28 +41,23 @@ namespace BS.Services.CashSessionManagementService
             entity.IsArchived = false;
             entity.IsActive = true;
 
+            entity.cashDetails = new List<CashDetails>();
+
             foreach (var item in request.CashDetails)
             {
-                entity.cashDetails = new List<CashDetails>()
+                entity.cashDetails.Add(new CashDetails()
                 {
-                    new CashDetails()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-
-                        Currency = item.Currency,
-                        Type = item.Type,
-                        Quantity = item.Quantity,
-
-                        CashSessionId = entity.Id,
-
-                        CreatedBy = userId,
-                        UpdatedBy = userId,
-                        CreatedDate = DateTime.Now,
-                        UpdatedDate = DateTime.Now,
-                        IsArchived = false,
-                        IsActive = true,
-                    }
-                };
+                    Id = Guid.NewGuid().ToString(),
+                    Currency = item.Currency,
+                    Type = item.Type,
+                    Quantity = item.Quantity,
+                    CreatedBy = userId,
+                    UpdatedBy = userId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    IsArchived = false,
+                    IsActive = true,
+                });
             }
 
             if (entity == null)
