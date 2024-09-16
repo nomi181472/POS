@@ -5,12 +5,15 @@ using BS.Services.AuthService.Models.Response;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models.Response;
 using DA;
+using DM;
 using DM.DomainModels;
 using Helpers.Auth.Models;
 using Helpers.StringsExtension;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,18 +34,21 @@ namespace BS.Services.AuthService
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
 
-           
 
+            #region Getting user
             var userData = await _uot.user
                 .GetSingleAsync(
                 token, 
                 u => u.Email.ToLower() == request.Email.ToLower(),
                 $"{nameof(Credential)}," +
                 $"{nameof(UserRole)}," +
+                $"{nameof(RefreshToken)}," +
                 $"{nameof(UserRole)}.{nameof(Role)}," +
                 $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
                 $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}" 
                 );
+            #endregion
+
             if (userData.Status)
             {
                 var user = userData.Data;
@@ -50,6 +56,7 @@ namespace BS.Services.AuthService
                 {
                     throw new RecordNotFoundException("User not found.");
                 }
+
                 var credential = user.Credential!;
                 var roles = user.UserRole;
 
@@ -73,7 +80,7 @@ namespace BS.Services.AuthService
                 response.UserId = user.Id;
                 response.RoleAndActions = roles.Select(r => r.Id).ToArray();
                 response.Token = tokens.AccessToken;
-                response.RefreshToken = tokens.RefreshToken;
+                response.RefreshToken = user.RefreshToken!.Token;
                 response.UserType = user.UserType;
 
                 response.Name = user.Name;
@@ -240,7 +247,46 @@ namespace BS.Services.AuthService
 
             return response;
         }
+        
 
+        public async Task<AccessAndRefreshTokens> UpdateAndGetRefreshToken(AccessAndRefreshTokens request,string claimUserId,string userId, string actions, CancellationToken token)
+        {
+            var userData=await _uot.user.GetSingleAsync(token, x => x.Id == claimUserId, $"{nameof(RefreshToken)}");
 
+            if (userData.Status)
+            {
+                if (userData.Data == null)
+                {
+                    throw new UnauthorizedAccessException("invalid refresh token");
+                }
+                var user = userData.Data;
+                var refreshToken = user.RefreshToken!;
+                if (!refreshToken.IsTokenMatch(request.RefreshToken))
+                {
+                    throw new UnauthorizedAccessException("invalid refresh token");
+                }
+               
+
+                var tokens = _generateToken(new UserPayload()
+                {
+                    UserId = user.Id,
+                    PolicyName = user.UserType,
+                    RoleIds = actions,
+                    Email = user.Email
+                });
+                request.RefreshToken = tokens.RefreshToken;
+                request.AccessToken = tokens.AccessToken;
+
+                refreshToken.UpdateRefreshToken(DateTime.UtcNow.AddMinutes(KTokenValidity.RefreshTokenInMin), request.RefreshToken, userId) ;
+                _uot.refereshToken.Update(refreshToken, userId);
+                _uot.Commit();
+                
+                return request;
+
+            }
+            throw new UnknownException(userData.Message);
+
+            
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using DA.AppDbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240916093140_RefreshToken")]
+    partial class RefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,13 +111,13 @@ namespace DA.Migrations
                         {
                             Id = "10bcc73c-e40a-4852-a81d-c18d654e8806",
                             CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            CreatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            CreatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             IsActive = true,
                             IsArchived = false,
-                            PasswordHash = "+9+/xVd25XvmTCwGGmd40tnBEzR0pIHnCw62JFNSlp8=",
-                            PasswordSalt = "31Wbh5304Z1mw2O+3ZOSJA==",
+                            PasswordHash = "Arq5AJX3l7UfGe8/xX3vXfLFY1CbOewFMEXJum5Yseo=",
+                            PasswordSalt = "EXLlrXqolrz7P449o9UtAA==",
                             UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            UpdatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            UpdatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             UserId = "72990663-2edc-4c10-b331-cd1c65e477e0"
                         });
                 });
@@ -157,12 +160,12 @@ namespace DA.Migrations
                         {
                             Id = "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7",
                             CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            CreatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            CreatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             IsActive = true,
                             IsArchived = false,
                             Name = "SuperAdmin",
                             UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            UpdatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143)
+                            UpdatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739)
                         });
                 });
 
@@ -252,13 +255,13 @@ namespace DA.Migrations
                         {
                             Id = "72990663-2edc-4c10-b331-cd1c65e477e0",
                             CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            CreatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            CreatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             Email = "POS@gmail.com",
                             IsActive = true,
                             IsArchived = false,
                             Name = "POS",
                             UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            UpdatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            UpdatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             UserType = "SuperAdmin"
                         });
                 });
@@ -307,12 +310,12 @@ namespace DA.Migrations
                         {
                             Id = "f3df99c7-07fb-4b7f-89e5-89d86b84bd4e",
                             CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            CreatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            CreatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             IsActive = true,
                             IsArchived = false,
                             RoleId = "78f4b56a-3fa3-4067-b641-7adb0a7a2ca7",
                             UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            UpdatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
+                            UpdatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
                             UserId = "72990663-2edc-4c10-b331-cd1c65e477e0"
                         });
                 });
@@ -367,15 +370,14 @@ namespace DA.Migrations
                         {
                             Id = "f3df99c7-07fb-4b7f-89e5-89d86b84bd41",
                             CreatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            CreatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
-                            ExpireyDate = new DateTime(2024, 9, 16, 11, 17, 12, 635, DateTimeKind.Utc).AddTicks(1612),
+                            CreatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739),
+                            ExpireyDate = new DateTime(2024, 9, 16, 11, 11, 39, 846, DateTimeKind.Utc).AddTicks(4206),
                             IsActive = true,
                             IsArchived = false,
                             RevokeAble = true,
                             Token = "72990663-2edc-4c10-b331-cd1c65e477e0",
                             UpdatedBy = "72990663-2edc-4c10-b331-cd1c65e477e0",
-                            UpdatedDate = new DateTime(2024, 9, 16, 9, 37, 12, 625, DateTimeKind.Utc).AddTicks(4143),
-                            UserId = "72990663-2edc-4c10-b331-cd1c65e477e0"
+                            UpdatedDate = new DateTime(2024, 9, 16, 9, 31, 39, 833, DateTimeKind.Utc).AddTicks(5739)
                         });
                 });
 
