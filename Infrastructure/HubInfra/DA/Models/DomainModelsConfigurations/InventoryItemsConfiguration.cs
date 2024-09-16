@@ -14,7 +14,9 @@ namespace DA.Models.DomainModelsConfigurations
     {
         public void Configure(EntityTypeBuilder<InventoryItems> builder)
         {
-
+            builder.HasOne(i => i.InventoryGroups)              
+                .WithMany(g => g.InventoryItems)             
+                .HasForeignKey(i => i.GroupId);
         }
     }
 }

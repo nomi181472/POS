@@ -14,6 +14,7 @@ using Till.Feature.SaleProcessing;
 using Till.Feature.CartManagement;
 using Till.Feature.PaymentMethod;
 using Till.Feature.CustomerFeedbackManagement;
+using Till.Feature.CashSessionManagement;
 
 namespace Till;
 
@@ -46,6 +47,7 @@ public static class Endpoints
         endpoints.MapSaleProcessingEndpoints();
         endpoints.MapPaymentMethodEndpoints();
         endpoints.MapCustomerFeedbackEndpoints();
+        endpoints.MapCashSessionEndpoints();
         //endpoints.MapToExposedRoutes();
     }
 
@@ -141,6 +143,15 @@ public static class Endpoints
 
         endpoints.MapPublicGroup()
             .MapEndpoint<AddCustomerFeedback>();
+    }
+
+    private static void MapCashSessionEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"{nameof(ICashSessionFeature)}")
+            .WithTags("CashSession");
+
+        endpoints.MapPublicGroup()
+            .MapEndpoint<AddCashSession>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
