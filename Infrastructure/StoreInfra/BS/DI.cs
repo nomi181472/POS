@@ -13,6 +13,7 @@ using BS.Services.PaymentManagementService;
 using BS.Services.SaleProcessingService;
 using BS.Services.PaymentMethodService;
 using BS.Services.CustomerFeedbackService;
+using BS.Services.CashSessionManagementService;
 
 public static class DependencyInjection
 {
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.TryAddTransient<IPaymentMethodsService, PaymentMethodsService>();
         services.TryAddScoped<ISaleProcessingService, SaleProcessingService>();
         services.TryAddScoped<ICustomerFeedbackService, CustomerFeedbackService>();
+        services.TryAddScoped<ICashSessionService, CashSessionService>();
 
         return services;
     }    

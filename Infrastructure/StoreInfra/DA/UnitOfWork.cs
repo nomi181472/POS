@@ -26,6 +26,8 @@ namespace DA
         public IGenericRepository<Order, string> OrderRepo => new GenericRepository<Order, string>(_db);
         public IGenericRepository<OrderSplitPayments, string> OrderSplitPaymentsRepo => new GenericRepository<OrderSplitPayments, string>(_db);
         public IGenericRepository<PaymentMethods, string> PaymentMethodsRepo => new GenericRepository<PaymentMethods, string>(_db);
+        public IGenericRepository<CashDetails, string> CashDetailsRepo => new GenericRepository<CashDetails, string>(_db);
+        public IGenericRepository<CashSession, string> CashSessionRepo => new GenericRepository<CashSession, string>(_db);
 
         public void Commit()
         {
