@@ -83,7 +83,7 @@ namespace ConfigResource
 
 
             services
-            .AddCustomValidator(configuration)
+          
             .AddJwtValidator(configuration)
             .AddCustomAuthorization();
 

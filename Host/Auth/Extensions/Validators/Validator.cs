@@ -72,8 +72,8 @@ namespace Auth.Common.Validators
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = Jwt.SecurityKey(configuration["Jwt:Key"]!),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,//TODO will be added in future
+                    ValidateAudience = false, // TODO will be added in future
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],

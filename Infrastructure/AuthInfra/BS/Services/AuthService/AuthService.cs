@@ -72,7 +72,7 @@ namespace BS.Services.AuthService
                 var tokens = _generateToken(new UserPayload()
                 {
                     UserId = user.Id,
-                    PolicyName = user.UserType,
+                    UserType = user.UserType,
                     RoleIds = string.Join(";",roles.Select(r => r.Id)),
                     Email = user.Email
                 });
@@ -150,7 +150,7 @@ namespace BS.Services.AuthService
             var tokens = _generateToken(new UserPayload()
             {
                 UserId = userId,
-                PolicyName = request.UserType,
+                UserType = request.UserType,
                 RoleIds = string.Join(";", request.RoleIds),
                 Email = request.Email,
             });
@@ -270,7 +270,7 @@ namespace BS.Services.AuthService
                 var tokens = _generateToken(new UserPayload()
                 {
                     UserId = user.Id,
-                    PolicyName = user.UserType,
+                    UserType = user.UserType,
                     RoleIds = actions,
                     Email = user.Email
                 });
