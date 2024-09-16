@@ -13,22 +13,13 @@ namespace BS.Services.InventoryManagementService.Model.Request
 
     public class ItemsDetail
     {
-        public string ItemCode { get; set; }
+        public int ItemCode { get; set; }
         public string ItemName { get; set; }
-        public long ItmsGrpCod { get; set; }
-        public Item PrchseItem { get; set; }
-        public Item SellItem { get; set; }
-        public Item InvntItem { get; set; }
-        public long UgpEntry { get; set; }
-        public BuyUnitMsr? BuyUnitMsr { get; set; }
-        public BuyUnitMsr? SalUnitMsr { get; set; }
-        public BuyUnitMsr? InvntryUom { get; set; }
-        public long? PUoMEntry { get; set; }
-        public long? SUoMEntry { get; set; }
-        public long? IUoMEntry { get; set; }
+        public int ItemGrpCod { get; set; }
+        public string ItemGrpName { get; set; }
+        public string Barcode { get; set; } = "NA";
+        public double Price { get; set; } = Double.MaxValue;
+        public int QTY { get; set; }  = Int32.MaxValue;
+        public List<string> Category { get; set; }
     }
-
-    public enum BuyUnitMsr { Bag, BuyUnitMsrManual, BuyUnitMsrPiece, Capsules, Ch, Each, Empty, Kilogram, Manual, Menual, Ml, Pc, Pcs, Piece, The100Gram, The361Piece, The50Gram, The721Piece };
-
-    public enum Item { N, Y };
 }

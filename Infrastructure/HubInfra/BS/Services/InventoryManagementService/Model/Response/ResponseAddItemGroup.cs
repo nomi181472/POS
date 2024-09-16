@@ -4,19 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BS.Services.InventoryManagementService.Model.Request
+namespace BS.Services.InventoryManagementService.Model.Response
 {
-    public class ResponseAddItemData
+    public class ResponseAddItemGroup
     {
-        public List<ItemResponseDetails> ItemResponse { get; set; }
+        public List<ItemGrpResponseDetails> ItemGrpsResponse { get; set; }
     }
 
-    public class ItemResponseDetails
+    public class ItemGrpResponseDetails
     {
         public string Id { get; set; }
         public string Name { get; set; }
         public int Code { get; set; }
         public bool IsSuccess { get; set; }
-        public string Status { get; set;}
+        public string Status { get; set; }
     }
+
+
 }
