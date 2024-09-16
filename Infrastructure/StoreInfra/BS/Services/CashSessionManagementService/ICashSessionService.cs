@@ -1,4 +1,5 @@
 ﻿using BS.Services.CashManagementService.Models.Request;
+using BS.Services.CashManagementService.Models.Response;
 using BS.Services.CashSessionManagementService.Models.Request;
 using BS.Services.CashSessionManagementService.Models.Response;
 using System;
@@ -12,5 +13,7 @@ namespace BS.Services.CashSessionManagementService
     public interface ICashSessionService
     {
         public Task<ResponseAddCashSession> AddCashSession(RequestAddCashSession request, string userId, CancellationToken cancellationToken);
+
+        public Task<ResponseCashSessionDetails> GetCashDetailsByCashSessionId(string CashSessionId, string userId, CancellationToken cancellationToken);
     }
 }

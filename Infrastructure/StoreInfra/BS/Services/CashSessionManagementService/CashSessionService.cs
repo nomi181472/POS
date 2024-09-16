@@ -1,5 +1,7 @@
-﻿using BS.Services.CashManagementService.Models;
+﻿using BS.CustomExceptions.Common;
+using BS.Services.CashManagementService.Models;
 using BS.Services.CashManagementService.Models.Request;
+using BS.Services.CashManagementService.Models.Response;
 using BS.Services.CashSessionManagementService.Models;
 using BS.Services.CashSessionManagementService.Models.Request;
 using BS.Services.CashSessionManagementService.Models.Response;
@@ -41,28 +43,23 @@ namespace BS.Services.CashSessionManagementService
             entity.IsArchived = false;
             entity.IsActive = true;
 
+            entity.cashDetails = new List<CashDetails>();
+
             foreach (var item in request.CashDetails)
             {
-                entity.cashDetails = new List<CashDetails>()
+                entity.cashDetails.Add(new CashDetails()
                 {
-                    new CashDetails()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-
-                        Currency = item.Currency,
-                        Type = item.Type,
-                        Quantity = item.Quantity,
-
-                        CashSessionId = entity.Id,
-
-                        CreatedBy = userId,
-                        UpdatedBy = userId,
-                        CreatedDate = DateTime.Now,
-                        UpdatedDate = DateTime.Now,
-                        IsArchived = false,
-                        IsActive = true,
-                    }
-                };
+                    Id = Guid.NewGuid().ToString(),
+                    Currency = item.Currency,
+                    Type = item.Type,
+                    Quantity = item.Quantity,
+                    CreatedBy = userId,
+                    UpdatedBy = userId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    IsArchived = false,
+                    IsActive = true,
+                });
             }
 
             if (entity == null)
@@ -78,5 +75,50 @@ namespace BS.Services.CashSessionManagementService
 
             return response;
         }
+
+
+
+        public async Task<ResponseCashSessionDetails> GetCashDetailsByCashSessionId(string CashSessionId, string userId, CancellationToken token)
+        {
+            if(CashSessionId == null)
+            {
+                throw new ArgumentNullException("CashSessionId can't be null");
+            }
+
+            var response = new ResponseCashSessionDetails();
+
+            var cashSessionResult = await _unitOfWork.CashSessionRepo.GetSingleAsync(token, x => x.Id == CashSessionId, "cashDetails");
+            if (cashSessionResult.Data == null)
+            {
+                throw new RecordNotFoundException("No record exists for such CashSessionId");
+            }
+
+            response.TotalAmount = cashSessionResult.Data.TotalAmount;
+            response.TillId = cashSessionResult.Data.TillId;
+            response.UserId = cashSessionResult.Data.UserId;
+
+            response.CashDetails = new List<CashDetailsResponseObject>();
+            if (cashSessionResult.Data.cashDetails != null)
+            {
+                foreach (var item in cashSessionResult.Data.cashDetails)
+                {
+                    response.CashDetails.Add(new CashDetailsResponseObject()
+                    {
+                        Id = item.Id,
+                        Currency = item.Currency,
+                        Type = item.Type,
+                        Quantity = item.Quantity
+                    });
+                }
+            }
+
+            return response;
+        }
+
+
+
+
+
+
     }
 }

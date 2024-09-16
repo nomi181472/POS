@@ -15,8 +15,4 @@
     <ProjectReference Include="..\DA\DA.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\InventoryManagementService\Model\Response\" />
-  </ItemGroup>
-
 </Project>

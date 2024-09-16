@@ -151,7 +151,8 @@ public static class Endpoints
             .WithTags("CashSession");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddCashSession>();
+            .MapEndpoint<AddCashSession>()
+            .MapEndpoint<GetCashDetailsByCashSessionId>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)

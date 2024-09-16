@@ -1,4 +1,5 @@
 ﻿using DA.Repositories.CommonRepositories;
+using DM;
 using DM.DomainModels;
 
 namespace DA
@@ -14,6 +15,7 @@ namespace DA
         IGenericRepository<Actions, string> action { get;  }
         IGenericRepository<UserRole, string> userRole { get;  }
         IGenericRepository<RoleAction, string> roleAction { get;  }
+        IGenericRepository<RefreshToken, string> refereshToken { get;  }
       
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Auth.Common.Auth;
 using Google.Protobuf.WellKnownTypes;
@@ -30,6 +31,15 @@ namespace AuthJWT
 
             return userPayload;
         }
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
         public AccessAndRefreshTokens GenerateToken(UserPayload payload)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -42,20 +52,15 @@ namespace AuthJWT
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            var refreshTokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = GetSubject(payload),
-                Expires = DateTime.UtcNow.AddDays(options.Value.RefreshTokenExpirationInDays),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+            var refreshToken = GenerateRefreshToken();
 
             var accessToken = tokenHandler.CreateToken(accessTokenDescriptor);
-            var refreshToken = tokenHandler.CreateToken(refreshTokenDescriptor);
+            
 
             return new AccessAndRefreshTokens
             {
                 AccessToken = tokenHandler.WriteToken(accessToken),
-                RefreshToken = tokenHandler.WriteToken(refreshToken)
+                RefreshToken = refreshToken
             };
         }
 

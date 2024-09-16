@@ -12,6 +12,7 @@ namespace DM.DomainModels
         public string Email { get;  set; }   
        
         public string UserType { get; set; }
+        public virtual RefreshToken? RefreshToken { get; set; }
         public virtual Credential? Credential { get;  set; }
         public virtual ICollection<UserRole> UserRole { get;  set; }=new List<UserRole>();
         public User(){}

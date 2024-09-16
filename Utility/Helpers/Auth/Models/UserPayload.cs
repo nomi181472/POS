@@ -19,4 +19,8 @@ namespace Helpers.Auth.Models
         public string RefreshToken { get; set; }
 
     }
+    public static class KTokenValidity
+    {
+        public static int RefreshTokenInMin { get; set; } = 10;
+    }
 }
