@@ -20,6 +20,8 @@ namespace DA
         IGenericRepository<Order, string> OrderRepo { get; }
         IGenericRepository<OrderSplitPayments, string> OrderSplitPaymentsRepo { get; }
         IGenericRepository<PaymentMethods, string> PaymentMethodsRepo { get; }
+        IGenericRepository<CashDetails, string> CashDetailsRepo { get; }
+        IGenericRepository<CashSession, string> CashSessionRepo { get; }
 
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);
