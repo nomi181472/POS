@@ -27,8 +27,8 @@ namespace Hub.Features.AreaCoverageManagement
         {
             public RequestValidator()
             {
-                RuleFor(x => x.Address).NotEmpty();
-                RuleFor(x => x.Name).NotEmpty();
+                //RuleFor(x => x.Address).NotEmpty();
+                //RuleFor(x => x.Name).NotEmpty();
 
             }
         }
