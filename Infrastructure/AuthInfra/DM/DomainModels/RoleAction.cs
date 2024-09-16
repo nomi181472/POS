@@ -19,5 +19,9 @@ namespace DM.DomainModels
             ActionId= pActionId;
             RoleId= pRoleId;
         }
+        public bool IsRoleIdMatch(string roleId)
+        {
+            return RoleId?.Equals(roleId)?? false;
+        }
     }
 }

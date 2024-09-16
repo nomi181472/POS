@@ -4,6 +4,7 @@ using BS.Services.ActionsService.Models.Request;
 using BS.Services.ActionsService.Models.Response;
 using BS.Services.RoleService.Models.Response;
 using DA;
+using DA.Models.RepoResultModels;
 using DM.DomainModels;
 using Microsoft.AspNetCore.Http;
 
@@ -28,25 +29,10 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request), "The request cannot be null.");
-            }
-
-            var actionExists = await _unitOfWork.action.AnyAsync(cancellationToken, a => a.Name == request.Name);
-            if (actionExists.Data == true)
-            {
-                throw new RecordAlreadyExistException($"Action {request.Name} already exists.");
-            }
+            
 
 
             var entity = request.ToDomain(userId);
-
-            if (entity == null)
-            {
-                throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
-            }
-
             entity.UpdatedBy = userId;
             entity.UpdatedDate = DateTime.Now;
             entity.IsArchived = false;
@@ -55,12 +41,15 @@ namespace BS.Services.ActionsService
             await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            
-            /// NATS Publisher Usage
             var message = $"Action {request.Name} has been added by user {userId}.";
             await _natsService.PublishAsync("action_updates", "action.*", message);
 
             return true;
+        }
+
+        public  bool IsActionsAvailable(string name)
+        {
+            return   _unitOfWork.action.Any( a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
         }
 
         public async Task<bool> DeleteAction(string actionId, string userId, CancellationToken cancellationToken)
@@ -121,7 +110,7 @@ namespace BS.Services.ActionsService
 
             return true;
         }
-
+        // TODO: retur all properties
         public async Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
@@ -237,6 +226,10 @@ namespace BS.Services.ActionsService
 
             return updateStatus.Result;
         }
-
+        // TODO: usaid update this
+        public Task<bool> GetActionsDetailsById(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

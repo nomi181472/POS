@@ -23,5 +23,6 @@ namespace BS.Services.RoleService.Models
         Task<bool> UpdateRole(RequestUpdateRole request, string userId, CancellationToken cancellationToken);
         Task<ResposeGetRole> GetRole(string roleId, CancellationToken cancellationToken);
         Task<List<ResposeGetRole>> ListRole( CancellationToken cancellationToken);
+        Task<bool> AddActionsInRole(RequestAddActionsInRole request, string v, CancellationToken cancellationToken);
     }
 }

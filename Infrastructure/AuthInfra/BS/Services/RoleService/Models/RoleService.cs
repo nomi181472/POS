@@ -21,6 +21,56 @@ namespace BS.Services.RoleService.Models
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<bool> AddActionsInRole(RequestAddActionsInRole request, string userId, CancellationToken cancellationToken)
+        {
+            
+            var actionsFromReq = request.Actions.Select(x=>x.ToLower());
+            var actionsInDb =await  _unitOfWork.action.GetAsync(cancellationToken,
+                x => actionsFromReq.Contains(x.Name.ToLower()),
+                includeProperties:
+                $"{nameof(RoleAction)},"
+                ) ;
+            if (actionsInDb.Status)
+            {
+                #region Adding new policy and assign it to the role
+                var actionsInDbSet = new HashSet<string>(actionsInDb.Data.Select(x => x.Name.ToLower()));
+                 actionsFromReq = actionsFromReq
+                .Where(x => !actionsInDbSet.Contains(x.ToLower()))
+                .ToList();
+                List<RoleAction> roleActions = new List<RoleAction>();
+                foreach (var item in actionsFromReq)
+                {
+                    var action = new Actions(Guid.NewGuid().ToString(),userId,DateTime.UtcNow,item,item);
+                    var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
+                    _unitOfWork.action.Add(action, userId);
+                    _unitOfWork.roleAction.Add(roleAction, userId);
+
+                }
+                #endregion
+                #region only assigning policies
+                var newActionsCreated = new HashSet<string>(actionsFromReq);
+                var oldActions = actionsInDb.Data.Where(x => !newActionsCreated.Contains(x.Name.ToLower()));
+                foreach (var action in oldActions)
+                {
+                    var alreadyAssignedSameAction = action.RoleAction;
+                    if (! alreadyAssignedSameAction.Any(x => x.IsRoleIdMatch(request.RoleId)))
+                    {
+                        var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
+
+                        _unitOfWork.roleAction.Add(roleAction, userId);
+                    }
+                   
+
+                }
+                #endregion
+
+                await _unitOfWork.CommitAsync(cancellationToken);
+                return true;
+
+            }
+            throw new UnknownException(actionsInDb.Message);
+        }
+
         public async Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken)
         {
             Role role = new Role(

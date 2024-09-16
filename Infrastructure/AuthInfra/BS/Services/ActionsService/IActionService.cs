@@ -12,7 +12,9 @@ namespace BS.Services.ActionsService
 {
     public interface IActionService
     {
+        bool IsActionsAvailable(string name);
         Task<bool> AddAction(RequestAddAction request, string UserId, CancellationToken cancellationToken);
+        Task<bool> GetActionsDetailsById( CancellationToken cancellationToken);
         Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken CancellationToken);
         Task<ResponseGetAllActionDetails> GetActionById(string actionId, CancellationToken CancellationToken);
         Task<bool> DeleteAction(string actionId, string userId, CancellationToken CancellationToken);

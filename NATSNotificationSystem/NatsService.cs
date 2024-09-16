@@ -28,7 +28,7 @@ public class NatsService : INatsService
         catch (Exception ex)
         {
             Console.WriteLine($"Error publishing message: {ex.Message}");
-            throw;
+           
         }
     }
 
