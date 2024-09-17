@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BS.Services.RoleService.Models.Response
 {
-    public class ResposeGetRole
+    public class ResponseGetRole
     {
         public string RoleId { get; set; }
         public string RoleName { get; set; }
