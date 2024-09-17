@@ -22,5 +22,6 @@ namespace BS.Services.UserService.Models
         Task<bool> UpdateUser(RequestUpdateUser request, string userId, CancellationToken cancellationToken);
         Task<ResponseGetUser> GetUser(string UserId, CancellationToken cancellationToken);
         Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken);
+        Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken);
     }
 }

@@ -1,5 +1,4 @@
-﻿using DM.DomainModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -7,18 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace DM
+namespace DM.DomainModels
 {
-    public class RefreshToken:Base<string>
+    public class RefreshToken : Base<string>
     {
-        public string Token { get; set; }   
+        public string Token { get; set; }
         public DateTime ExpireyDate { get; set; }
         public bool RevokeAble { get; set; }
 
         public User? User { get; set; }
         public virtual string? UserId { get; set; }
 
-        public RefreshToken(string pId, string pCreatedby, DateTime pCreatedDate, string pToken, bool pIsrevokable, DateTime pExpiryDate,string pUserId) : base(pId, pCreatedby, pCreatedDate, true)
+        public RefreshToken(string pId, string pCreatedby, DateTime pCreatedDate, string pToken, bool pIsrevokable, DateTime pExpiryDate, string pUserId) : base(pId, pCreatedby, pCreatedDate, true)
         {
             Token = pToken;
             ExpireyDate = pExpiryDate;
@@ -30,9 +29,9 @@ namespace DM
         }
         public RefreshToken()
         {
-                
+
         }
-        public bool UpdateRefreshToken(DateTime pExpiryDate,string pToken,string by)
+        public bool UpdateRefreshToken(DateTime pExpiryDate, string pToken, string by)
         {
 
             if (RevokeAble)
@@ -43,7 +42,7 @@ namespace DM
                 UpdatedDate = DateTime.UtcNow;
                 return true;
             }
-            
+
             throw new Exception("token is non revokable");
         }
         public bool IsExpired()
@@ -57,6 +56,6 @@ namespace DM
 
     }
 
-   
+
 
 }

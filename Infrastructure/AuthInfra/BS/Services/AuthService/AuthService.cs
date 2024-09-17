@@ -5,7 +5,6 @@ using BS.Services.AuthService.Models.Response;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models.Response;
 using DA;
-using DM;
 using DM.DomainModels;
 using Helpers.Auth.Models;
 using Helpers.StringsExtension;
