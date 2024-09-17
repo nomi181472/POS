@@ -5,15 +5,16 @@ using DM.DomainModels;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.UserService.Models.Response;
 using BS.Services.UserService.Models.Request;
+using Helpers.CustomExceptionThrower;
 
 namespace BS.Services.UserService.Models
 {
     public class UserService : IUserService
     {
-        IUnitOfWork _unitOfWork;
+        IUnitOfWork _uot;
         public UserService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            _uot = unitOfWork;
         }
 
         public async Task<bool> AddUser(RequestAddUser request, string updatedBy, CancellationToken cancellationToken)
@@ -24,10 +25,10 @@ namespace BS.Services.UserService.Models
             string userId = Guid.NewGuid().ToString();
             User User = request.ToDomainModel( updatedBy, now, ph, ps, userId);
 
-            var result = await _unitOfWork.user.AddAsync(User, userId, cancellationToken);
+            var result = await _uot.user.AddAsync(User, userId, cancellationToken);
             if (result.Result)
             {
-                await _unitOfWork.CommitAsync(cancellationToken);
+                await _uot.CommitAsync(cancellationToken);
                 return true;
             }
             throw new UnknownException(result.Message);
@@ -39,7 +40,7 @@ namespace BS.Services.UserService.Models
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
         {
-           var result=await _unitOfWork.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
+           var result=await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                 x => x.SetProperty(x => x.IsActive, false)
                 .SetProperty(x => x.UpdatedBy, userId)
                 .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
@@ -61,7 +62,7 @@ namespace BS.Services.UserService.Models
 
         public async Task<ResponseGetUser> GetUser(string UserId, CancellationToken cancellationToken)
         {
-            var result= await _unitOfWork.user.GetSingleAsync(cancellationToken,x=>x.Id == UserId && x.IsActive);
+            var result= await _uot.user.GetSingleAsync(cancellationToken,x=>x.Id == UserId && x.IsActive);
             if (result.Status)
             {
                 if (result.Data == null)
@@ -77,11 +78,36 @@ namespace BS.Services.UserService.Models
             }
         }
 
-   
+        public async Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken)
+        {
+
+            #region Getting user
+            var userData = await _uot.user
+                .GetSingleAsync(
+                cancellationToken,
+                u => u.Id == id,
+                $"{nameof(Credential)}," +
+                $"{nameof(RefreshToken)}," +
+                $"{nameof(UserRole)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
+                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}"
+                );
+
+            ArgumentFalseException.ThrowIfFalse(userData.Status, userData.Message);
+            ArgumentThrowCustom.ThrowIfNull<RecordNotFoundException>(userData.Data, "invalid user");
+            #endregion
+            ResponseUserDetailsWithRoleAndPolicies response = new ResponseUserDetailsWithRoleAndPolicies();
+            var user = userData.Data;
+            response = user.ToResponseUserDetailsWithActions();
+            return response;
+
+
+        }
 
         public bool IsUserExist(string email)
         {
-           var result=  _unitOfWork.user.Any(x=>x.Email.ToLower()==email.ToLower() && x.IsActive);
+           var result=  _uot.user.Any(x=>x.Email.ToLower()==email.ToLower() && x.IsActive);
             if (result.Status)
             {
                 return result.Data;
@@ -93,7 +119,7 @@ namespace BS.Services.UserService.Models
         }
         public bool IsUserExistByUserId(string pUserId)
         {
-            var result = _unitOfWork.user.Any(x => x.Id.ToLower() == pUserId.ToLower() && x.IsActive);
+            var result = _uot.user.Any(x => x.Id.ToLower() == pUserId.ToLower() && x.IsActive);
             if (result.Status)
             {
                 return result.Data;
@@ -106,7 +132,7 @@ namespace BS.Services.UserService.Models
 
         public async Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.user.GetAllAsync(cancellationToken);
+            var result = await _uot.user.GetAllAsync(cancellationToken);
             if (result.Status)
             {
 
@@ -127,7 +153,7 @@ namespace BS.Services.UserService.Models
 
         public async Task<bool> UpdateUser(RequestUpdateUser request, string userId, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
+            var result = await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                    x => x.SetProperty(x => x.Name,request.Name)
                    .SetProperty(x=>x.Email,request.Email)
                    
