@@ -190,7 +190,7 @@ namespace DA.Repositories.CommonRepositories
 
                 if (filter != null)
                 {
-                    query = query.Where(filter);
+                    query = query.Where(filter).Where(x=>x.IsActive);
                 }
 
                 foreach (var includeProperty in includeProperties.Split

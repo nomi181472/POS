@@ -233,7 +233,29 @@ namespace BS.Services.RoleService.Models
             }
         }
 
-        public async Task<ResposeGetRole> GetRole(string roleId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ResponsePolicyByRoleId>> GetPoliciesByRoleId(string id, CancellationToken cancellationToken)
+        {
+            List<ResponsePolicyByRoleId> response = new List<ResponsePolicyByRoleId>();
+            var result = await _unitOfWork.role.GetAsync(
+                 cancellationToken,
+                 x => x.Id == id, x => x.OrderByDescending(x => x.UpdatedDate),
+                 includeProperties: $"{nameof(RoleAction)}," +
+                 $"{nameof(RoleAction)}.{nameof(Actions)}"
+
+                 );
+            if (result.Status)
+            {
+                response.AddRange(from item in result.Data
+                                  select item.ToSingleWithPolicyAction());
+                return response;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+
+        public async Task<ResponseGetRole> GetRole(string roleId, CancellationToken cancellationToken)
         {
             var result= await _unitOfWork.role.GetSingleAsync(cancellationToken,x=>x.Id == roleId && x.IsActive);
             if (result.Status)
@@ -318,14 +340,14 @@ namespace BS.Services.RoleService.Models
             }
         }
 
-        public async Task<List<ResposeGetRole>> ListRole( CancellationToken cancellationToken)
+        public async Task<List<ResponseGetRole>> ListRole( CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.role.GetAllAsync(cancellationToken);
             if (result.Status)
             {
                 if (result.Data == null)
                 {
-                    return new List<ResposeGetRole>();
+                    return new List<ResponseGetRole>();
 
                 }
                 return result.Data.ToListResponseModel();

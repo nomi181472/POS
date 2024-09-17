@@ -68,10 +68,11 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IRoleManagementFeature)}")
             .WithTags("Role");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddRole>()
             .MapEndpoint<AddRoleToUser>()
             .MapEndpoint<DeleteRole>()
+              .MapEndpoint<GetPoliciesByRoleId>()
             .MapEndpoint<GetRole>()
             .MapEndpoint<ListRoles>()
             .MapEndpoint<UpdateRole>();
