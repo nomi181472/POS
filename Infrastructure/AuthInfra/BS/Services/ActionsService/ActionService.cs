@@ -20,18 +20,16 @@ namespace BS.Services.ActionsService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly INatsService _natsService;
-
         public ActionService(IUnitOfWork unitOfWork, INatsService natsService)
         {
             _unitOfWork = unitOfWork;
             _natsService = natsService ?? throw new ArgumentNullException(nameof(natsService));
         }
 
+
+
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
-            
-
-
             var entity = request.ToDomain(userId);
             entity.UpdatedBy = userId;
             entity.UpdatedDate = DateTime.Now;
@@ -41,16 +39,21 @@ namespace BS.Services.ActionsService
             await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            var message = $"Action {request.Name} has been added by user {userId}.";
-            await _natsService.PublishAsync("action_updates", "action.*", message);
+            // COMMENT OUT WHEN NATS WORKING IN DOCKER-COMPOSE
+            //var message = $"Action {request.Name} has been added by user {userId}.";
+            //await _natsService.PublishAsync("action_updates", "action.*", message);
 
             return true;
         }
 
+
+
         public  bool IsActionsAvailable(string name)
         {
-            return   _unitOfWork.action.Any( a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
+            return _unitOfWork.action.Any( a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
         }
+
+
 
         public async Task<bool> DeleteAction(string actionId, string userId, CancellationToken cancellationToken)
         {
@@ -77,6 +80,8 @@ namespace BS.Services.ActionsService
 
             return true;
         }
+
+
 
         public async Task<bool> DeleteActions(string[] actionIds, string userId, CancellationToken cancellationToken)
         {
@@ -136,6 +141,8 @@ namespace BS.Services.ActionsService
             }
         }
 
+
+
         public async Task<ResponseGetAllActionDetails> GetActionById(string actionId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(actionId))
@@ -164,6 +171,8 @@ namespace BS.Services.ActionsService
                 throw new RecordNotFoundException("ActionId not found");
             }
         }
+
+
 
         public async Task<bool> AppendActionTag(RequestAppendActionTag request, string userId, CancellationToken cancellationToken)
         {
@@ -199,6 +208,7 @@ namespace BS.Services.ActionsService
         }
 
 
+
         public async Task<bool> RemoveActionTag(RequestRemoveActionTag request, string userId, CancellationToken cancellationToken)
         {
             var existingAction = await _unitOfWork.action.GetByIdAsync(request.actionId, cancellationToken);
@@ -226,10 +236,27 @@ namespace BS.Services.ActionsService
 
             return updateStatus.Result;
         }
-        // TODO: usaid update this
-        public Task<bool> GetActionsDetailsById(CancellationToken cancellationToken)
+        
+
+
+        public async Task<ResponseGetActionsDetailsById> GetActionsDetailsById(string actionId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            ResponseGetActionsDetailsById response = new ResponseGetActionsDetailsById();
+
+            var existingActionResult = await _unitOfWork.action.GetByIdAsync(actionId, cancellationToken);
+            var existingAction = existingActionResult.Data;
+            if (existingAction == null)
+            {
+                throw new RecordNotFoundException(existingActionResult.Message);
+            }
+
+            response.Name = existingAction.Name;
+            response.Tags = existingAction.Tags;
+            return response;
         }
+
+
+
+
     }
 }
