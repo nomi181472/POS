@@ -92,6 +92,7 @@ public static class Endpoints
             .MapEndpoint<GetAllAction>()
             .MapEndpoint<GetOverallActions>()
             .MapEndpoint<RemoveActionTag>()
+            .MapEndpoint<GetActionById>()
             ;
     }
     
