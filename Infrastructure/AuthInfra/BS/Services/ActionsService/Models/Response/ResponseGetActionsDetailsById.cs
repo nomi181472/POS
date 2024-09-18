@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BS.Services.ActionsService.Models.Response
 {
-    public class ResponseGetAllActionDetails
+    public class ResponseGetActionsDetailsById
     {
         public string Name { get; set; }
         public string Tags { get; set; }
