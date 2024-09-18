@@ -115,7 +115,9 @@ namespace BS.Services.ActionsService
 
             return true;
         }
-        // TODO: retur all properties
+
+
+
         public async Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
@@ -129,7 +131,8 @@ namespace BS.Services.ActionsService
                     {
                         response.Add(new ResponseGetAllActionDetails()
                         {
-                            Name = record.Name
+                            Name = record.Name,
+                            Tags = record.Tags
                         });
                     }
                 }

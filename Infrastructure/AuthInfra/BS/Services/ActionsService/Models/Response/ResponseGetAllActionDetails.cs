@@ -9,6 +9,6 @@ namespace BS.Services.ActionsService.Models.Response
     public class ResponseGetAllActionDetails
     {
         public string Name { get; set; }
-       
+        public string Tags { get; set; }
     }
 }
