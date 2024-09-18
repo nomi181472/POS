@@ -43,9 +43,21 @@ namespace BS.Services.UserService.Models
 
 
                     )
+                    
                 ).ToList()
+                ,
+                pRefreshToken:new RefreshToken(
+                    Guid.NewGuid().ToString(),
+                    updatedBy,
+                    now,
+                    Guid.NewGuid().ToString(),
+                    request.IsRefreshTokenRevokable,
+                    request.ExpiryDate,
+                    userId
+                    )
 
                 );
+            
             return User;
         }
 

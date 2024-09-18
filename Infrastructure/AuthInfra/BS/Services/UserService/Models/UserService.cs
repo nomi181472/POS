@@ -26,13 +26,10 @@ namespace BS.Services.UserService.Models
             User User = request.ToDomainModel( updatedBy, now, ph, ps, userId);
 
             var result = await _uot.user.AddAsync(User, userId, cancellationToken);
-            if (result.Result)
-            {
-                await _uot.CommitAsync(cancellationToken);
-                return true;
-            }
-            throw new UnknownException(result.Message);
+            ArgumentFalseException.ThrowIfFalse(result.Result, result.Message);
 
+            await _uot.CommitAsync(cancellationToken);
+            return true;
 
 
         }

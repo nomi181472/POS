@@ -317,15 +317,9 @@ namespace BS.Services.RoleService.Models
         }
         public bool IsRoleExistByRoleId(string[] roleIds)
         {
-            var result = _unitOfWork.role.All(x =>roleIds.Contains( x.Id) && x.IsActive);
-            if (result.Status)
-            {
-                return result.Data;
-            }
-            else
-            {
-                throw new UnknownException(result.Message);
-            }
+            return roleIds.All(id=> _unitOfWork.role.Any(x =>x.Id==id && x.IsActive).Data);
+      
+            
         }
         public bool IsRoleExistByRoleId(string roleId)
         {

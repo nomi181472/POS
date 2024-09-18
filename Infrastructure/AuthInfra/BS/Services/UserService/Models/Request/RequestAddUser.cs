@@ -8,13 +8,15 @@ namespace BS.Services.RoleService.Models.Request
 {
     public class RequestAddUser
     {
-        public string UserId { get; set; }
+       
 
         public string Email { get; set; }
         public string Name { get; set; }
         public string Password { get; set; }
         
         public string ConfirmedPassword { get; set; }
+        public bool IsRefreshTokenRevokable { get; set; } = true;  
+        public DateTime ExpiryDate { get; set; } = DateTime.UtcNow;
         public List<string> RoleIds { get; set; }
         public string UserType { get;  set; }
     }

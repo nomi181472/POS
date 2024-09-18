@@ -47,7 +47,8 @@ public static class Endpoints
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddUser>()
             .MapEndpoint<DeleteUser>()
-             .MapEndpoint<GetUser>()
+            .MapEndpoint<GetUser>()
+            .MapEndpoint<GetUserDetailsWithActions>()
             .MapEndpoint<ListUsers>()
             .MapEndpoint<UpdateUser>();
     }
