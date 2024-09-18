@@ -34,7 +34,10 @@ namespace BS.Services.CashSessionManagementService
             }
 
             var entity = request.ToDomain();
-
+            if (entity == null)
+            {
+                throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
+            }
             entity.Id = Guid.NewGuid().ToString();
             entity.CreatedBy = userId;
             entity.UpdatedBy = userId;
@@ -43,28 +46,26 @@ namespace BS.Services.CashSessionManagementService
             entity.IsArchived = false;
             entity.IsActive = true;
 
-            entity.cashDetails = new List<CashDetails>();
-
-            foreach (var item in request.CashDetails)
+            if (request.CashDetails != null)
             {
-                entity.cashDetails.Add(new CashDetails()
+                entity.cashDetails = new List<CashDetails>();
+
+                foreach (var item in request.CashDetails)
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    Currency = item.Currency,
-                    Type = item.Type,
-                    Quantity = item.Quantity,
-                    CreatedBy = userId,
-                    UpdatedBy = userId,
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now,
-                    IsArchived = false,
-                    IsActive = true,
-                });
-            }
-
-            if (entity == null)
-            {
-                throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
+                    entity.cashDetails.Add(new CashDetails()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Currency = item.Currency,
+                        Type = item.Type,
+                        Quantity = item.Quantity,
+                        CreatedBy = userId,
+                        UpdatedBy = userId,
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        IsArchived = false,
+                        IsActive = true,
+                    });
+                }
             }
 
             await _unitOfWork.CashSessionRepo.AddAsync(entity, userId, cancellationToken);
