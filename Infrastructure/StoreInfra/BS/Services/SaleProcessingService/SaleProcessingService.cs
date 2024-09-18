@@ -32,6 +32,10 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentNullException(nameof(request), "Customer Id can not be null.");
             }
+            if (string.IsNullOrWhiteSpace(request.TillId))
+            {
+                throw new ArgumentNullException(nameof(request), "Till Id can not be null.");
+            }
             var response = await _unitOfWork.CustomerCartRepo.AddAsync(new DM.DomainModels.CustomerCart
             {
                 Id = Guid.NewGuid().ToString(),
