@@ -77,6 +77,12 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken)
         {
+            var roleExists = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Name.ToLower() == request.RoleName.ToLower() && r.IsActive);
+            if (roleExists.Data)
+            {
+                throw new InvalidOperationException($"Role with name '{request.RoleName}' already exists.");
+            }
+
             Role role = new Role(
                 Guid.NewGuid().ToString(),
                 Createdby: userId,
@@ -112,6 +118,12 @@ namespace BS.Services.RoleService.Models
             if (roleExists.Data == false)
             {
                 throw new RecordNotFoundException($"Role with ID {request.RoleId} does not exist.");
+            }
+
+            var userHasRole = await _unitOfWork.userRole.AnyAsync(cancellationToken, ur => ur.UserId == request.UserId && ur.RoleId == request.RoleId);
+            if (userHasRole.Data)
+            {
+                throw new InvalidOperationException($"User with ID {request.UserId} already has the role with ID {request.RoleId}.");
             }
 
             var entity = request.ToDomain(userId);
