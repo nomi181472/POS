@@ -8,6 +8,7 @@ using Logger;
 using PaymentGateway.API.Common;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models;
+using DA.Common.CommonRoles;
 
 namespace Auth.Features.UserManagement
 {
@@ -37,7 +38,13 @@ namespace Auth.Features.UserManagement
                 RuleFor(X => X.RoleIds)
                     .Must(AllValidIds)
                     .WithMessage("Invalid roleId");
+                RuleFor(x => x.UserType)
+                    .Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
 
+            }
+            private bool ShouldNotBeSuperAdmin(string userType)
+            {
+                return userType.ToLower() != KDefinedRoles.SuperAdmin.ToLower();
             }
             private bool UseEmail(string UserName)
             {
@@ -45,7 +52,7 @@ namespace Auth.Features.UserManagement
             }
             private bool AllValidIds(List<string> roleIds)
             {
-                return !_roleService.IsRoleExistByRoleId(roleIds.ToArray());
+                return _roleService.IsRoleExistByRoleId(roleIds.ToArray());
             }
         }
 

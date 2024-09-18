@@ -27,6 +27,18 @@ namespace DM.DomainModels
 
 
         }
+        public User(string pId, string Createdby, DateTime pCreatedDate, string pName, string pEmail, string pUserType, Credential pCredential, List<UserRole> pUserRoles,RefreshToken pRefreshToken) : base(pId, Createdby, pCreatedDate, true)
+        {
+            Name = pName;
+            Email = pEmail;
+            Credential = pCredential;
+            UserRole = pUserRoles;
+
+            UserType = pUserType;
+            RefreshToken = pRefreshToken;
+
+
+        }
         public User(string pId, string Createdby, DateTime pCreatedDate, string pName, string pEmail, string pUserType) : base(pId, Createdby, pCreatedDate, true)
         {
             Name = pName;
