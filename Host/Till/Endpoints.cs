@@ -43,7 +43,7 @@ public static class Endpoints
         endpoints.MapTillManagementEndpoints();
         endpoints.MapInventoryManagementEndpoints();
         endpoints.MapCustomerManagementEndpoints();
-        endpoints.MapPaymentManagementEndpoints();
+        //endpoints.MapPaymentManagementEndpoints();
         endpoints.MapSaleProcessingEndpoints();
         endpoints.MapPaymentMethodEndpoints();
         endpoints.MapCustomerFeedbackEndpoints();
@@ -151,7 +151,8 @@ public static class Endpoints
             .WithTags("CashSession");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<AddCashSession>();
+            .MapEndpoint<AddCashSession>()
+            .MapEndpoint<GetCashDetailsByCashSessionId>();
     }
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
