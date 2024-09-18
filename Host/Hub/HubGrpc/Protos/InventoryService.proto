@@ -1,0 +1,43 @@
+﻿syntax = "proto3";
+
+package InventoryService;
+import "google/protobuf/empty.proto";
+
+service InventoryServiceGRPC {
+  //rpc SendData (DataRequest) returns (DataResponse);
+  rpc ReloadInventoryData (google.protobuf.Empty) returns (ReloadInventoryResponse);
+}
+
+/*
+message DataRequest {
+  string data = 1;
+}
+
+message DataResponse {
+  string message = 1;
+}
+*/
+
+
+message ReloadInventoryResponse {
+  repeated InventoryItem items = 1;
+}
+
+message InventoryItem {
+  string ItemCode = 1;
+  string ItemName = 2;
+  string Barcode = 4;
+  double price = 5;
+  InventoryGroup Group = 6;
+  repeated string categories = 7;
+}
+
+message InventoryGroup{
+	string GroupCode = 1;
+	string GroupName = 2;
+}
+
+
+
+
+

@@ -19,6 +19,7 @@ namespace Hub.Extensions
             //app.UseAuthorization();
             app.MapEndpoints();
             app.MapGrpcService<HubGrpcImpl>();
+            app.MapGrpcService<InventoryGrpcImpl>();
             app.MapEndpointsExposed();
             await app.EnsureDatabaseCreated();
             app.UseCors(x => x

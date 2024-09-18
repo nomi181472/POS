@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using HubService;
 using System.Reflection.PortableExecutable;
-using BS.Services.InventoryManagementService.Models;
+using BS.Services.InventoryManagementService.Models.Response;
+using Google.Protobuf.WellKnownTypes;
+using InventoryService;
 
 namespace BS.Services.InventoryManagementService
 {
@@ -62,6 +64,67 @@ namespace BS.Services.InventoryManagementService
            
 
             
+        }
+
+
+        public async Task<ResponseReloadInventory> ReloadInventory(CancellationToken cancellationToken)
+        {
+            var response = new ResponseReloadInventory()
+            {
+                InventoryItems = new List<InventoryItems>()
+            };
+
+            try
+            {
+
+
+                string? port = _configuration.GetSection("Hub:Port").Value;
+                string? host = _configuration.GetSection("Hub:Host").Value;
+
+                string url = "";
+                if (String.IsNullOrEmpty(port) || String.IsNullOrEmpty(host))
+                {
+                    throw new Exception("GRPC Port and Host is required.");
+                }
+                else
+                {
+                    url = $"{host}:{port}";
+                }
+
+                var channel = GrpcChannel.ForAddress(url);
+                var client = new InventoryServiceGRPC.InventoryServiceGRPCClient(channel);
+
+                var verify = await client.ReloadInventoryDataAsync(new Empty(), cancellationToken: cancellationToken);
+
+                foreach(var item in verify.Items)
+                {
+                    response.InventoryItems.Add(new InventoryItems()
+                    {
+                        Name = item.ItemName,
+                        Code = item.ItemCode,
+                        Barcode = item.Barcode,
+                        Price = item.Price,
+                        Categories = item.Categories.ToList(),
+                        ItemGroup = new ItemGroup()
+                        {
+                            Name = item.Group.GroupName,
+                            Code = item.Group.GroupCode,
+                        }
+                    });
+                }
+
+            }
+            catch (RpcException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in local", ex);
+            }
+
+
+            return response;
         }
 
     }

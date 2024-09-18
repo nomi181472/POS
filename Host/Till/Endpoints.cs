@@ -99,7 +99,8 @@ public static class Endpoints
                            .WithTags("InventoryManagement");
 
         endpoints.MapPublicGroup()
-            .MapEndpoint<GetInventory>();
+            .MapEndpoint<GetInventory>()
+            .MapEndpoint<ReloadInventory>();
     }
 
     private static void MapCustomerManagementEndpoints(this IEndpointRouteBuilder app)
