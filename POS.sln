@@ -67,7 +67,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{43D106
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Till.Test", "UnitTests\Till.Test\Till.Test.csproj", "{D9D29EAA-CEE7-4058-BF45-8410F2AC4A8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSNotificationSystem", "NATSNotificationSystem\NATSNotificationSystem.csproj", "{AACA6AC2-720D-49C6-812C-34009966984B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSNotificationSystem", "NATSNotificationSystem\NATSNotificationSystem.csproj", "{AACA6AC2-720D-49C6-812C-34009966984B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

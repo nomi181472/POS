@@ -13,7 +13,7 @@ namespace BS.Services.CashSessionManagementService.Models.Request
         public string UserId { get; set; }
         public double TotalAmount { get; set; }
 
-        public List<CashDetailsObject>? CashDetails { get; set; } = new List<CashDetailsObject>();
+        public List<CashDetailsObject>? CashDetails { get; set; }
     }
 
     public class CashDetailsObject
