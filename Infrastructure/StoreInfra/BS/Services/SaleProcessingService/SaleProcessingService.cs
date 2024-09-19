@@ -22,8 +22,9 @@ namespace BS.Services.SaleProcessingService
             _unitOfWork = unitOfWork;
             _paymentManagementService = paymentManagementService;
         }
-        public async Task<bool> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken)
+        public async Task<CreateCartResponse> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken)
         {
+            CreateCartResponse createCartResponse = new CreateCartResponse();
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request), "The request can not be null.");
@@ -36,9 +37,10 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentNullException(nameof(request), "Till Id can not be null.");
             }
+            string cartId = Guid.NewGuid().ToString();
             var response = await _unitOfWork.CustomerCartRepo.AddAsync(new DM.DomainModels.CustomerCart
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = cartId,
                 CustomerId = request.CustomerId,
                 IsConvertedToSale = request.IsConvertedToSale,
                 IsActive = true,
@@ -50,7 +52,8 @@ namespace BS.Services.SaleProcessingService
                 throw new Exception(ExceptionMessage.SWW);
             }
             await _unitOfWork.CommitAsync(cancellationToken);
-            return response.Result;
+            createCartResponse.CartId = cartId;
+            return createCartResponse;
         }
         public async Task<bool> UpdateCart(UpdateCartRequest request, string userId, CancellationToken cancellationToken)
         {
