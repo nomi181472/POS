@@ -6,7 +6,9 @@ using BS.Services.ActionsService;
 using BS.Services.ActionsService.Models.Request;
 using BS.Services.ActionsService.Models.Response;
 using FluentValidation;
+using Helpers.Auth;
 using Logger;
+using Microsoft.AspNetCore.Http;
 using PaymentGateway.API.Common;
 
 namespace Auth.Features.ActionsManagement
@@ -35,13 +37,13 @@ namespace Auth.Features.ActionsManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddAction request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(HttpContext context, RequestAddAction request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await actionService.AddAction(request, "", cancellationToken);
+                var result = await actionService.AddAction(request, HTTPContextUserRetriever.GetUserName(context), cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddAction();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
