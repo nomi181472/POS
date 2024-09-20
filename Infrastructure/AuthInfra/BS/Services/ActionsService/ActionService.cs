@@ -30,6 +30,11 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException("Request can't be null");
+            }
+
             var entity = request.ToDomain(userId);
             entity.UpdatedBy = userId;
             entity.UpdatedDate = DateTime.Now;
@@ -129,6 +134,11 @@ namespace BS.Services.ActionsService
 
         public async Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken cancellationToken)
         {
+            if(userId == null)
+            {
+                throw new ArgumentNullException("userId"); 
+            }
+
             var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
             List<ResponseGetAllActionDetails> response = new List<ResponseGetAllActionDetails>();
 
@@ -260,6 +270,11 @@ namespace BS.Services.ActionsService
 
         public async Task<ResponseGetActionsDetailsById> GetActionsDetailsById(string actionId, CancellationToken cancellationToken)
         {
+            if(actionId == null)
+            {
+                throw new ArgumentNullException("actionId can't be null");
+            }
+
             ResponseGetActionsDetailsById response = new ResponseGetActionsDetailsById();
 
             var existingActionResult = await _unitOfWork.action.GetByIdAsync(actionId, cancellationToken);

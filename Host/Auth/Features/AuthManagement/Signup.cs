@@ -39,7 +39,7 @@ namespace Auth.Features.AuthManagement
                     .NotEmpty().WithMessage("Name is required.")
                     .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
                     .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be only whitespaces.");
-                RuleFor(x => x.Email).EmailAddress().NotEmpty();
+                RuleFor(x => x.Email).EmailAddress().Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").NotEmpty();
                 RuleFor(m => m.Password)
                     .NotEmpty().WithMessage("Password is required.")
                     .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
