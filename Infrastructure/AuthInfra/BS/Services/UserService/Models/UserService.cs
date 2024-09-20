@@ -21,6 +21,11 @@ namespace BS.Services.UserService.Models
 
         public async Task<bool> AddUser(RequestAddUser request, string updatedBy, CancellationToken cancellationToken)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var now = DateTime.UtcNow;
             string ph = "";
             string ps = "";
@@ -31,6 +36,11 @@ namespace BS.Services.UserService.Models
             if (superAdminRoleExists.Data)
             {
                 throw new InvalidOperationException("Can't assign SuperAdmin role.");
+            }
+
+            if (request.ConfirmedPassword != request.Password)
+            {
+                throw new InvalidDataException("Passwords don't match");
             }
 
             var result = await _uot.user.AddAsync(User, userId, cancellationToken);
@@ -44,7 +54,12 @@ namespace BS.Services.UserService.Models
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
         {
-           var result=await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var result=await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                 x => x.SetProperty(x => x.IsActive, false)
                 .SetProperty(x => x.UpdatedBy, userId)
                 .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
@@ -65,6 +80,10 @@ namespace BS.Services.UserService.Models
 
         public async Task<ResponseGetUser> GetUser(string UserId, CancellationToken cancellationToken)
         {
+            if(UserId == null)
+            {
+                throw new ArgumentNullException("UserId can't be null");
+            }
             var result= await _uot.user.GetSingleAsync(cancellationToken,x=>x.Id == UserId && x.IsActive);
             if (result.Status)
             {
@@ -85,7 +104,10 @@ namespace BS.Services.UserService.Models
 
         public async Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken)
         {
-
+            if(id == null)
+            {
+                throw new ArgumentNullException("Id can't be null");
+            }
             #region Getting user
             var userData = await _uot.user
                 .GetSingleAsync(
@@ -106,8 +128,6 @@ namespace BS.Services.UserService.Models
             var user = userData.Data;
             response = user.ToResponseUserDetailsWithActions();
             return response;
-
-
         }
 
 
@@ -142,7 +162,7 @@ namespace BS.Services.UserService.Models
 
 
 
-        public async Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken)
+        public async Task<List<ResponseGetUser>> ListUser(CancellationToken cancellationToken)
         {
             var result = await _uot.user.GetAllAsync(cancellationToken);
             if (result.Status)
@@ -165,6 +185,11 @@ namespace BS.Services.UserService.Models
 
         public async Task<bool> UpdateUser(RequestUpdateUser request, string userId, CancellationToken cancellationToken)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var result = await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                    x => x.SetProperty(x => x.Name,request.Name)
                    .SetProperty(x=>x.Email,request.Email)
