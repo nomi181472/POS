@@ -1,11 +1,13 @@
 ﻿syntax = "proto3";
 
 package HubService;
+import "google/protobuf/empty.proto";
 
 service HubServiceGRPC {
   rpc SendData (DataRequest) returns (DataResponse);
   rpc AddCustomer (CustomerAddRequest) returns (CustomerAddResponse);
   rpc UpdateCustomer (CustomerUpdateRequest) returns (CustomerUpdateResponse);
+  rpc ReloadInventoryData (google.protobuf.Empty) returns (ReloadInventoryResponse);
 }
 
 
@@ -48,3 +50,28 @@ message CustomerUpdateResponse{
 	string Id = 2;
 	string Name = 3;
 }
+
+
+message ReloadInventoryResponse {
+  repeated InventoryItem items = 1;
+}
+
+message InventoryItem {
+  string ItemCode = 1;
+  string ItemName = 2;
+  string name = 3;
+  string Barcode = 4;
+  double price = 5;
+  InventoryGroup Group = 6;
+  repeated string categories = 7;
+}
+
+message InventoryGroup{
+	string GroupCode = 1;
+	string GroupName = 2;
+}
+
+
+
+
+

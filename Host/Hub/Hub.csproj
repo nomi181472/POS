@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <None Remove="HubGrpc\Protos\Hub.proto" />
+    <None Remove="HubGrpc\Protos\InventoryService.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +43,7 @@
 
   <ItemGroup>
     <Protobuf Include="HubGrpc\Protos\Hub.proto" GrpcServices="Server" />
+    <Protobuf Include="HubGrpc\Protos\InventoryService.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

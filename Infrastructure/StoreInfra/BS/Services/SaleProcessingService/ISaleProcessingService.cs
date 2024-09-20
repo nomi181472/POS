@@ -10,7 +10,7 @@ namespace BS.Services.SaleProcessingService
 {
     public interface ISaleProcessingService
     {
-        public Task<bool> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken);
+        public Task<CreateCartResponse> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<bool> UpdateCart(UpdateCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<bool> RemoveCart(RemoveCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken);

@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.AuthService;
 using BS.Services.RoleService.Models.Request;
@@ -51,11 +52,24 @@ namespace Auth.Features.AuthManagement
                 //result.Token = token;//.Token;
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
+            catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (InvalidOperationException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (Exception e)
             {
-
                 statusCode = HTTPStatusCode500.InternalServerError;
-                message = e.Message;
+                message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
