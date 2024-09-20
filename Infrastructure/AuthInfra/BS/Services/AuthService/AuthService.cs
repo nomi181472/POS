@@ -4,6 +4,7 @@ using BS.Services.AuthService.Models.Request;
 using BS.Services.AuthService.Models.Response;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models.Response;
+using BS.Services.UserService.Models;
 using DA;
 using DM.DomainModels;
 using Helpers.Auth.Models;
@@ -77,7 +78,7 @@ namespace BS.Services.AuthService
                 });
 
                 response.UserId = user.Id;
-                response.RoleAndActions = roles.Select(r => r.Id).ToArray();
+                response.RoleAndActions = roles.Select(x=>x.ToResponse());
                 response.Token = tokens.AccessToken;
                 response.RefreshToken = user.RefreshToken!.Token;
                 response.UserType = user.UserType;
@@ -156,7 +157,7 @@ namespace BS.Services.AuthService
 
             response.UserType = user.UserType;
             response.UserId = user.Id;
-            response.RoleAndActions = request.RoleIds.ToArray();
+            response.RoleAndActions = new List<ResponsePolicyByRoleId>();
             response.RefreshToken = tokens.RefreshToken;
             response.Token = tokens.AccessToken;
 

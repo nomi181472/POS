@@ -12,6 +12,7 @@ using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.AuthService;
 using BS.Services.AuthService.Models.Request;
+using BS.Services.AuthService.Models.Response;
 using FluentValidation;
 using Helpers.Auth.Models;
 using Logger;
@@ -25,7 +26,13 @@ namespace Auth.Features.AuthManagement
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(Login)}", Handle)
             .WithSummary("Login a user")
-            .WithRequestValidation<RequestLogin>();
+            .WithRequestValidation<RequestLogin>()
+            .Produces(200)
+            .Produces(404)
+            .Produces(400)
+            .Produces(403)
+            .Produces(500)
+            .Produces<ResponseAuthorizedUser>();
 
 
         public class RequestValidator : AbstractValidator<RequestLogin>
@@ -40,7 +47,7 @@ namespace Auth.Features.AuthManagement
         private static async Task<IResult> Handle(RequestLogin request, IAuthService _auth, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
-            int statusCode = HTTPStatusCode200.Created;
+            int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {

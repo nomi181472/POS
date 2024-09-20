@@ -1,20 +1,16 @@
 ﻿using AttendanceService.Common;
-using Auth.Extensions.RouteHandler;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.RoleService.Models;
-using BS.Services.RoleService.Models.Request;
-using BS.Services.RoleService.Models.Response;
-using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
 
 namespace Auth.Features.RoleManagement
 {
-    public class GetRole : IRoleManagementFeature
+    public class GetPoliciesByRoleId : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapGet($"/{nameof(GetRole)}/" +"{Id}", Handle)
+            .MapGet($"/{nameof(GetPoliciesByRoleId)}/" + "{Id}", Handle)
             .WithSummary("Get role")
             .Produces(200)
             .Produces<bool>();
@@ -26,9 +22,8 @@ namespace Auth.Features.RoleManagement
             string message = "Success";
             try
             {
-                var result = await roleService.GetRole(Id, cancellationToken);
-              
-                
+                var result = await roleService.GetPoliciesByRoleId(Id, cancellationToken);
+
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException e)

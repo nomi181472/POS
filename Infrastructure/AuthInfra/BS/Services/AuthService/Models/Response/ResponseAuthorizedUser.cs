@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BS.Services.RoleService.Models.Response;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,6 @@ namespace BS.Services.AuthService.Models.Response
         public string UserType { get;set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public string[] RoleAndActions { get; set; } = new string[0];
+        public IEnumerable<ResponsePolicyByRoleId> RoleAndActions { get; set; } = new List<ResponsePolicyByRoleId>();
     }
 }

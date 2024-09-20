@@ -1,4 +1,7 @@
-﻿using AttendanceService.Common;
+﻿
+
+
+using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
@@ -11,10 +14,10 @@ using PaymentGateway.API.Common;
 
 namespace Auth.Features.RoleManagement
 {
-    public class GetPoliciesByRoleId : IRoleManagementFeature
+    public class GetRole : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapGet($"/{nameof(GetPoliciesByRoleId)}/" +"{Id}", Handle)
+            .MapGet($"/{nameof(GetRole)}/" + "{Id}", Handle)
             .WithSummary("Get role")
             .Produces(200)
             .Produces<bool>();
@@ -26,9 +29,9 @@ namespace Auth.Features.RoleManagement
             string message = "Success";
             try
             {
-                var result = await roleService.GetPoliciesByRoleId(Id, cancellationToken);
-              
-                
+                var result = await roleService.GetRole(Id, cancellationToken);
+
+
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException e)
