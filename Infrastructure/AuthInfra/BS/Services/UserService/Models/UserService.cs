@@ -17,22 +17,29 @@ namespace BS.Services.UserService.Models
             _uot = unitOfWork;
         }
 
+
+
         public async Task<bool> AddUser(RequestAddUser request, string updatedBy, CancellationToken cancellationToken)
         {
             var now = DateTime.UtcNow;
             string ph = "";
             string ps = "";
             string userId = Guid.NewGuid().ToString();
-            User User = request.ToDomainModel( updatedBy, now, ph, ps, userId);
+            User User = request.ToDomainModel(updatedBy, now, ph, ps, userId);
+
+            var superAdminRoleExists = await _uot.role.AnyAsync(cancellationToken, r => request.RoleIds.Contains(r.Id) && r.Name == "SuperAdmin");
+            if (superAdminRoleExists.Data)
+            {
+                throw new InvalidOperationException("Can't assign SuperAdmin role.");
+            }
 
             var result = await _uot.user.AddAsync(User, userId, cancellationToken);
             ArgumentFalseException.ThrowIfFalse(result.Result, result.Message);
 
             await _uot.CommitAsync(cancellationToken);
             return true;
-
-
         }
+
 
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
@@ -53,7 +60,6 @@ namespace BS.Services.UserService.Models
                 throw new UnknownException(result.Message);
             }
         }
-     
 
 
 
@@ -74,6 +80,8 @@ namespace BS.Services.UserService.Models
                 throw new UnknownException(result.Message);
             }
         }
+
+
 
         public async Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken)
         {
@@ -102,6 +110,8 @@ namespace BS.Services.UserService.Models
 
         }
 
+
+
         public bool IsUserExist(string email)
         {
            var result=  _uot.user.Any(x=>x.Email.ToLower()==email.ToLower() && x.IsActive);
@@ -114,6 +124,9 @@ namespace BS.Services.UserService.Models
                 throw new UnknownException(result.Message);
             }
         }
+
+
+
         public bool IsUserExistByUserId(string pUserId)
         {
             var result = _uot.user.Any(x => x.Id.ToLower() == pUserId.ToLower() && x.IsActive);
@@ -126,6 +139,8 @@ namespace BS.Services.UserService.Models
                 throw new UnknownException(result.Message);
             }
         }
+
+
 
         public async Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken)
         {
@@ -153,12 +168,9 @@ namespace BS.Services.UserService.Models
             var result = await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                    x => x.SetProperty(x => x.Name,request.Name)
                    .SetProperty(x=>x.Email,request.Email)
-                   
                    .SetProperty(x => x.UpdatedBy, userId)
                    .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                   cancellationToken
-
-                   );
+                   cancellationToken);
             if (result.Result)
             {
                 return (int)result.Data > 0;
