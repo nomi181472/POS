@@ -126,6 +126,12 @@ namespace BS.Services.RoleService.Models
                 throw new InvalidOperationException($"User with ID {request.UserId} already has the role with ID {request.RoleId}.");
             }
 
+            var superAdminRole = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Id == request.RoleId && r.Name == "SuperAdmin");
+            if (superAdminRole.Data == true)
+            {
+                throw new InvalidOperationException("Can't assign SuperAdmin");
+            }
+
             var entity = request.ToDomain(userId);
 
             if (entity == null)

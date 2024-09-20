@@ -13,6 +13,7 @@ using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.AuthService;
 using BS.Services.AuthService.Models.Request;
 using BS.Services.AuthService.Models.Response;
+using DA.Common.CommonRoles;
 using FluentValidation;
 using Helpers.Auth.Models;
 using Logger;
@@ -46,6 +47,11 @@ namespace Auth.Features.AuthManagement
                     .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                     .Matches("[0-9]").WithMessage("Password must contain at least one number.")
                     .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
+                RuleFor(u => u.UserType).Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
+            }
+            private bool ShouldNotBeSuperAdmin(string userType)
+            {
+                return userType.ToLower() != KDefinedRoles.SuperAdmin.ToLower();
             }
         }
 

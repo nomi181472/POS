@@ -50,7 +50,7 @@ namespace BS.Services.ActionsService
 
         public  bool IsActionsAvailable(string name)
         {
-            return _unitOfWork.action.Any( a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
+            return _unitOfWork.action.Any(a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
         }
 
 
@@ -62,19 +62,28 @@ namespace BS.Services.ActionsService
                 throw new ArgumentNullException("actionId can not be null or empty");
             }
 
-            var setterResult = await _unitOfWork.action.UpdateOnConditionAsync(
-            // 1st param: matching condition
-            x => x.IsActive == true && x.Id == actionId,
-            // 2nd param: set the updated value
-            x => x.SetProperty((Func<Actions, string?>)(y => y.Id), (string?)null)
-                  .SetProperty((Func<Actions, string>)(y => y.UpdatedBy), userId)
-                  .SetProperty((Func<Actions, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
-                  , cancellationToken);
-
-            if (setterResult == null)
+            var getterResult = await _unitOfWork.action.GetSingleAsync(cancellationToken, x => x.Id == actionId && x.IsActive == true);
+            if (getterResult.Data == null)
             {
-                throw new InvalidOperationException("The update operation did not return a result.");
+                throw new RecordNotFoundException("No record found with such action ID");
             }
+
+            getterResult.Data.IsActive = false;
+            getterResult.Data.UpdatedBy = userId;
+            getterResult.Data.UpdatedDate = DateTime.UtcNow;
+
+            //var setterResult = await _unitOfWork.action.UpdateOnConditionAsync(
+            //// 1st param: matching condition
+            //x => x.IsActive == true && x.Id == actionId,
+            //// 2nd param: set the updated value
+            //x => x.SetProperty((Func<Actions, string?>)(y => y.Id), (string?)null)
+            //      .SetProperty((Func<Actions, string>)(y => y.UpdatedBy), userId)
+            //      .SetProperty((Func<Actions, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
+            //      , cancellationToken);
+            //if (setterResult.Result == false)
+            //{
+            //    throw new InvalidOperationException("Failed to update on conditions provided");
+            //}
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -167,7 +176,8 @@ namespace BS.Services.ActionsService
             {
                 return new ResponseGetAllActionDetails()
                 {
-                    Name = actions.Name
+                    Name = actions.Name,
+                    Tags = actions.Tags
                 };
             }
             else
@@ -190,6 +200,11 @@ namespace BS.Services.ActionsService
             {
                 throw new RecordNotFoundException(existingAction.Message);
             }
+            if(existingAction.Data.IsActive == true)
+            {
+                throw new RecordNotFoundException("Deleted actionId can't be accessed");
+            }
+
 
             var actionData = existingAction.Data;
             var currentTags = actionData.GetActionTag();
