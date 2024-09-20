@@ -131,6 +131,7 @@ namespace BS.Services.ActionsService
                     {
                         response.Add(new ResponseGetAllActionDetails()
                         {
+                            Id = record.Id,
                             Name = record.Name,
                             Tags = record.Tags
                         });
