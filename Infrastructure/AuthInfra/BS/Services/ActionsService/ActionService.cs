@@ -245,11 +245,19 @@ namespace BS.Services.ActionsService
             {
                 throw new RecordNotFoundException("Action with such ID doesn't exist");
             }
-
             var actionData = existingAction.Data;
-            var individualTags = actionData.GetActionTag().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            var individualTagsWithTagToTrimRemoved = individualTags.Where(tag => tag != request.tagToRemove);
-            var updatedTags = string.Join(",", individualTagsWithTagToTrimRemoved);
+
+            var individualTags = actionData.GetActionTag()
+                                           .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                           .Select(tag => tag.Trim())
+                                           .ToList();
+
+            if (!individualTags.Contains(request.tagToRemove))
+            {
+                throw new RecordNotFoundException($"Tag '{request.tagToRemove}' does not exist in the action.");
+            }
+
+            var updatedTags = string.Join(",", individualTags.Where(tag => tag != request.tagToRemove));
 
             var updateStatus = await _unitOfWork.action.UpdateOnConditionAsync(
                 x => x.IsActive && x.Id == request.actionId,
@@ -260,12 +268,13 @@ namespace BS.Services.ActionsService
 
             if (updateStatus.Result == false)
             {
-                throw new InvalidOperationException("could not remove tags");
+                throw new InvalidOperationException("Could not remove tags.");
             }
 
             return updateStatus.Result;
         }
-        
+
+
 
 
         public async Task<ResponseGetActionsDetailsById> GetActionsDetailsById(string actionId, CancellationToken cancellationToken)
