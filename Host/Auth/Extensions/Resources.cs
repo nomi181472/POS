@@ -64,7 +64,7 @@ namespace ConfigResource
 
         private static IServiceCollection AddMiddlewares(this IServiceCollection services)
         {
-            services.AddTransient<IUserContext, UserContext>();
+            services.AddScoped<IUserContext, UserContext>();
 
             return services;
         }
