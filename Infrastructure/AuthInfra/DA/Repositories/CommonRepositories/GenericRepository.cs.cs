@@ -236,13 +236,20 @@ namespace DA.Repositories.CommonRepositories
         }
         public virtual async Task<GetterResult<bool>> AnyAsync(CancellationToken cancellationToken, Expression<Func<TEntity, bool>> filter )
         {
-
             try
             {
                GetterResult<bool > getterResult = new GetterResult<bool>();
                 getterResult.Message = CommonMessages.Success;
                 getterResult.Status = true;
                 IQueryable<TEntity> query = _dbSet;
+                if (filter != null)
+                {
+                    query = query.Where(filter).Where(x => x.IsActive);
+                }
+                else
+                {
+                    query = query.Where(x => x.IsActive);
+                }
                 getterResult.Data= await query.AnyAsync(filter,cancellationToken);
                 return getterResult;
             }
@@ -298,7 +305,7 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-                var data = await _dbSet.FindAsync(id, cancellationToken);
+                var data = await _dbSet.Where(entity => entity.Id.Equals(id) && entity.IsActive).FirstOrDefaultAsync(cancellationToken);
                 GetterResult<TEntity> getterResult = new GetterResult<TEntity>();
                 getterResult.Message = CommonMessages.Success;
                 getterResult.Status = true;
@@ -372,8 +379,7 @@ namespace DA.Repositories.CommonRepositories
             try
             {
                 IQueryable<TEntity> query = _dbSet;
-                int rowsEffected = await query.Where(filter).ExecuteUpdateAsync(setPropertyCalls,cancellationToken);
-
+                int rowsEffected = await query.Where(filter).Where(x => x.IsActive).ExecuteUpdateAsync(setPropertyCalls, cancellationToken);
                 return new SetterWithDataResult() { Message = $"{CommonMessages.Success}.RowsEffected:{rowsEffected}", Result = true, IsException = false,Data=rowsEffected };
             }
             catch (Exception e)
@@ -399,6 +405,10 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
+                if (!entity.IsActive)
+                {
+                    return new SetterResult() { IsException = true, Result = false, Message = "Cannot update inactive entity." };
+                }
                 entity.UpdateRecordStatus(DateTime.UtcNow, updatedBy);
                 _dbSet.Update(entity);
 
@@ -449,20 +459,20 @@ namespace DA.Repositories.CommonRepositories
                 getterResult.Message = CommonMessages.Success;
                 getterResult.Status = true;
                 IQueryable<TEntity> query = _dbSet;
-
                 if (filter != null)
                 {
-                    query = query.Where(filter);
+                    query = query.Where(filter).Where(x => x.IsActive);
                 }
-
+                else
+                {
+                    query = query.Where(x => x.IsActive); // Ensure only active records
+                }
                 foreach (var includeProperty in includeProperties.Split
                     (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProperty);
                 }
-
                 getterResult.Data = await query.FirstOrDefaultAsync(cancellationToken);
-
                 return getterResult;
             }
             catch (Exception e)
@@ -476,11 +486,10 @@ namespace DA.Repositories.CommonRepositories
         {
             try
             {
-
                 GetterResult<IEnumerable<TEntity>> getterResult = new GetterResult<IEnumerable<TEntity>>();
                 getterResult.Message = CommonMessages.Success;
                 getterResult.Status = true;
-                getterResult.Data = await _dbSet.ToListAsync(cancellationToken);
+                getterResult.Data = await _dbSet.Where(x => x.IsActive).ToListAsync(cancellationToken);
                 return getterResult;
             }
             catch (Exception e)
