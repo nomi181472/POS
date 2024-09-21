@@ -16,9 +16,9 @@ namespace Auth.Features.UserManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPatch($"/{nameof(DeleteUser)}", Handle)
-            .WithSummary("Add Role Details")
-            .WithRequestValidation<RequestDeleteUser>().
-            Produces(HTTPStatusCode200.Ok)
+            .WithSummary("Add User Details")
+            .WithRequestValidation<RequestDeleteUser>()
+            .Produces(HTTPStatusCode200.Ok)
             .Produces(HTTPStatusCode400.NotFound)
             .Produces(HTTPStatusCode400.Forbidden)
             .Produces<ResponseAddRoleToUser>();
@@ -31,8 +31,8 @@ namespace Auth.Features.UserManagement
                 _user = user;
 
                 RuleFor(x => x.UserId)
-                    .NotEmpty().WithMessage("Role name is required.")
-                    .Must(IsRoleIdExist).WithMessage("Role not found.");
+                    .NotEmpty().WithMessage("User name is required.")
+                    .Must(IsRoleIdExist).WithMessage("User not found.");
             }
             private bool IsRoleIdExist(string userId)
             {
@@ -47,11 +47,16 @@ namespace Auth.Features.UserManagement
             try
             {
                 var result = await userService.DeleteUser(request, "", cancellationToken);
-              
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            
+            catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;

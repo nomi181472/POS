@@ -48,6 +48,7 @@ namespace Auth.Features.UserManagement
                     .Must(AllValidIds)
                     .WithMessage("Invalid roleId");
                 RuleFor(x => x.UserType)
+                    .Must(UserType => !string.IsNullOrWhiteSpace(UserType)).WithMessage("UserType cannot be only whitespaces.")
                     .Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
 
             }
@@ -77,6 +78,13 @@ namespace Auth.Features.UserManagement
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (InvalidOperationException e)
+            {
+                statusCode = HTTPStatusCode500.InternalServerError;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (RecordAlreadyExistException e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = e.Message;

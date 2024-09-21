@@ -47,7 +47,9 @@ namespace Auth.Features.AuthManagement
                     .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                     .Matches("[0-9]").WithMessage("Password must contain at least one number.")
                     .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
-                RuleFor(u => u.UserType).Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
+                RuleFor(u => u.UserType)
+                    .Must(UserType => !string.IsNullOrWhiteSpace(UserType)).WithMessage("UserType cannot be only whitespaces.")
+                    .Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
             }
             private bool ShouldNotBeSuperAdmin(string userType)
             {
