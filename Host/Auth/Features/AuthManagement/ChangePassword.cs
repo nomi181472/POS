@@ -52,6 +52,13 @@ namespace Auth.Features.AuthManagement
                 //result.Token = token;//.Token;
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
+            catch (UnauthorizedAccessException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (RecordNotFoundException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;

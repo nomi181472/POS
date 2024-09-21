@@ -38,6 +38,13 @@ namespace BS.Services.UserService.Models
                 throw new InvalidOperationException("Can't assign SuperAdmin role.");
             }
 
+            var existingUserResult = await _uot.user.GetAsync(cancellationToken, u => u.Email == request.Email);
+            var existingUser = existingUserResult.Data.FirstOrDefault();
+            if (existingUser != null)
+            {
+                throw new RecordAlreadyExistException("Email already registered");
+            }
+
             if (request.ConfirmedPassword != request.Password)
             {
                 throw new InvalidDataException("Passwords don't match");
@@ -54,26 +61,19 @@ namespace BS.Services.UserService.Models
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
         {
-            if (request == null)
+            var getterResult = await _uot.user.GetAsync(cancellationToken, x => x.Id == request.UserId && x.IsActive && x.UserType != "SuperAdmin");
+            var userToUpdate = getterResult.Data.FirstOrDefault();
+            if (userToUpdate == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new RecordNotFoundException("User not Found or is SuperAdmin that can't be deleted");
             }
 
-            var result=await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
-                x => x.SetProperty(x => x.IsActive, false)
-                .SetProperty(x => x.UpdatedBy, userId)
-                .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                cancellationToken
+            userToUpdate.IsActive = false;
+            userToUpdate.UpdatedBy = userId;
+            userToUpdate.UpdatedDate = DateTime.UtcNow;
 
-                );
-            if (result.Result)
-            {
-                return (int)result.Data > 0;
-            }
-            else
-            {
-                throw new UnknownException(result.Message);
-            }
+            await _uot.CommitAsync(cancellationToken);
+            return true;
         }
 
 
