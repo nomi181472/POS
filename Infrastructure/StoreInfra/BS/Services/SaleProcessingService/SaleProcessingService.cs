@@ -38,6 +38,11 @@ namespace BS.Services.SaleProcessingService
                 throw new ArgumentNullException(nameof(request), "Till Id can not be null.");
             }
             string cartId = Guid.NewGuid().ToString();
+            var prevCart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x=>x.CustomerId == request.CustomerId && x.IsActive==true && x.IsConvertedToSale == false).Result.Data.FirstOrDefault();
+            if(prevCart != null)
+            {
+                throw new RecordAlreadyExistException("Active cart for this customer already exists.");
+            }
             var response = await _unitOfWork.CustomerCartRepo.AddAsync(new DM.DomainModels.CustomerCart
             {
                 Id = cartId,
@@ -70,7 +75,8 @@ namespace BS.Services.SaleProcessingService
                 throw new ArgumentNullException(nameof(request), "Cart Id can not be null.");
             }
 
-            CustomerCart cart = _unitOfWork.CustomerCartRepo.GetByIdAsync(request.CartId, cancellationToken).Result.Data;
+            CustomerCart? cart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, 
+                x => x.Id == request.CartId && x.IsActive == true).Result.Data.FirstOrDefault();
             if (cart == null)
             {
                 throw new RecordNotFoundException("Invalid Cart Id.");
@@ -91,7 +97,7 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentNullException(nameof(request), "Cart Id can not be null.");
             }
-            CustomerCart cart = _unitOfWork.CustomerCartRepo.GetByIdAsync(request.CartId, cancellationToken).Result.Data;
+            CustomerCart? cart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken,x => x.Id == request.CartId && x.IsActive == true).Result.Data.FirstOrDefault();
             if (cart == null)
             {
                 throw new RecordNotFoundException("The cart you are trying to remove does not exist.");
@@ -140,7 +146,7 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentNullException("Item Ids are required.");
             }
-            var cart = await _unitOfWork.CustomerCartRepo.GetByIdAsync(request.CartId, cancellationToken);
+            var cart = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x => x.Id == request.CartId && x.IsActive == true && x.IsConvertedToSale==false);
             if(cart.Data == null)
             {
                 throw new RecordNotFoundException("The cart does not exist.");

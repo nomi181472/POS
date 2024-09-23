@@ -23,6 +23,7 @@ namespace Till.Feature.CartManagement
             .Produces(400)
             .Produces(404)
             .Produces(500)
+            .Produces(406)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<CreateCartRequest>
@@ -53,6 +54,13 @@ namespace Till.Feature.CartManagement
             catch (ArgumentNullException ex)
             {
                 statusCode = HTTPStatusCode400.BadRequest;
+                message = ex.Message;
+                _logger.LogError(message, ex);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+            }
+            catch(RecordAlreadyExistException ex)
+            {
+                statusCode = HTTPStatusCode400.NotAcceptable;
                 message = ex.Message;
                 _logger.LogError(message, ex);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, false);
