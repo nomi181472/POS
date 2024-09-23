@@ -69,6 +69,20 @@ namespace Auth.Features.UserManagement
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
+            catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (ArgumentNullException e)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;

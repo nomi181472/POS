@@ -54,16 +54,36 @@ namespace Auth.Features.UserManagement
             }
             private bool ShouldNotBeSuperAdmin(string userType)
             {
-                return userType.ToLower() != KDefinedRoles.SuperAdmin.ToLower();
+                try
+                {
+                    return userType.ToLower() != KDefinedRoles.SuperAdmin.ToLower();
+                }
+                catch (NullReferenceException ex)
+                {
+                    return false;
+                }
             }
             private bool UseEmail(string UserName)
             {
-                return !_service.IsUserExist(UserName);
+                try
+                {
+                    return !_service.IsUserExist(UserName);
+                }
+                catch (NullReferenceException ex)
+                {
+                    return false;
+                }
             }
             private bool AllValidIds(List<string> roleIds)
             {
-                
-                return  roleIds.Count==0 ||  _roleService.IsRoleExistByRoleId(roleIds.ToArray());
+                try
+                {
+                    return _roleService.IsRoleExistByRoleId(roleIds?.ToArray() ?? []);
+                }
+                catch (NullReferenceException ex)
+                {
+                    return false;
+                }
             }
         }
 
@@ -74,20 +94,25 @@ namespace Auth.Features.UserManagement
             try
             {
                 var result = await UserService.AddUser(request, "", cancellationToken);
-              
-               
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (InvalidOperationException e)
             {
-                statusCode = HTTPStatusCode500.InternalServerError;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (RecordAlreadyExistException e)
             {
-                statusCode = HTTPStatusCode500.InternalServerError;
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (InvalidDataException e)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
