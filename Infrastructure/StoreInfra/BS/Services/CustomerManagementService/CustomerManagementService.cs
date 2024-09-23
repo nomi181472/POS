@@ -30,7 +30,7 @@ namespace BS.Services.CustomerManagementService
 
 
 
-        public async Task<bool> AddCustomer(RequestAddCustomer request, string userId, CancellationToken cancellationToken)
+        public async Task<ResponseAddCustomer> AddCustomer(RequestAddCustomer request, string userId, CancellationToken cancellationToken)
         {
             if (request == null)
             {
@@ -73,7 +73,7 @@ namespace BS.Services.CustomerManagementService
 
                 var GRPCrequest = new CustomerAddRequest()
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = entity.Id,
                     Name = request.Name,
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
@@ -84,7 +84,10 @@ namespace BS.Services.CustomerManagementService
 
                 var verify = await client.AddCustomerAsync(GRPCrequest, cancellationToken: cancellationToken);
 
-                return true;
+                ResponseAddCustomer response = new ResponseAddCustomer();
+                response.Status = true;
+                response.CustomerId = entity.Id;
+                return response;
             }
             catch
             {
@@ -174,6 +177,7 @@ namespace BS.Services.CustomerManagementService
                     {
                         response.Add(new ResponseListCustomerWithDetails()
                         {
+                            CustomerId = record.Id,
                             Name = record.Name,
                             PhoneNumber = record.PhoneNumber,
                             Email = record.Email,
