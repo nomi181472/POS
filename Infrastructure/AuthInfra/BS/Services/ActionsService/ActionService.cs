@@ -30,9 +30,14 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
-            if(request.Name == null || request.Tag == null)
+            if(request.Name == null)
             {
-                throw new ArgumentNullException("Request attributes can't be null");
+                throw new ArgumentNullException("Name can't be null");
+            }
+
+            if (request.Tag == null)
+            {
+                throw new ArgumentNullException("Tag can't be null");
             }
 
             var entity = request.ToDomain(userId);
