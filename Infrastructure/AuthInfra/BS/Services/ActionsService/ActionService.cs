@@ -104,26 +104,35 @@ namespace BS.Services.ActionsService
                 throw new ArgumentException("Action IDs cannot be null or empty.", nameof(actionIds));
             }
 
-            var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
+            var actionsToDelete = new List<Actions>();
 
-            if (result == null || !result.Status || result.Data == null)
+            foreach (var actionId in actionIds)
             {
-                throw new InvalidOperationException("Could not retrieve Actions list");
+                var actionResult = await _unitOfWork.action.GetByIdAsync(actionId, cancellationToken);
+
+                if (actionResult?.Data == null)
+                {
+                    throw new RecordNotFoundException("action with id can't be found" + nameof(actionResult.Data));
+                }
+
+                var updatedActions = actionResult.Data;
+                updatedActions.IsActive = false;
+                updatedActions.UpdatedBy = userId;
+                updatedActions.UpdatedDate = DateTime.UtcNow;
+
+                actionsToDelete.Add(updatedActions);
             }
 
-            var affectedActions = result.Data.ToList();
-
-            foreach (var actions in affectedActions)
+            if (actionsToDelete.Count == 0)
             {
-                actions.IsActive = false;
-                actions.UpdatedBy = userId;
-                actions.UpdatedDate = DateTime.UtcNow;
+                throw new RecordNotFoundException("No valid actions found to delete.");
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return true;
         }
+
 
 
 
