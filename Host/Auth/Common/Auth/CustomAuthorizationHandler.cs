@@ -1,6 +1,8 @@
 ﻿using AttendanceService.Common;
 using Auth.Common.Auth.Requirements;
 using DA.Common.CommonRoles;
+using Helpers.Auth.Models;
+using Helpers.Strings;
 using Microsoft.AspNetCore.Authorization;
 using PaymentGateway.API.Common;
 using System.Security.Claims;
@@ -31,7 +33,7 @@ namespace Auth.Common.Auth
                     await _httpContextAccessor.HttpContext.Response.CompleteAsync();
                 }
                 // Optionally, check the request path
-                else if (IsUserValidated(context))
+                else if (IsUserValidated(httpContext))
                 {
 
                     context.Succeed(requirement);
@@ -65,18 +67,37 @@ namespace Auth.Common.Auth
           
         }
 
-        private static bool IsUserValidated(AuthorizationHandlerContext context)
+        private static bool IsUserValidated(HttpContext context)
         {
-            
-            var userType= context.User.Claims.FirstOrDefault(x=>x.Type==KAuthClaimTypes.UserType)?.Value;
-            if (userType == null)
+
+            var userTypeClaim = context.User.Claims.FirstOrDefault(x => x.Type == KAuthClaimTypes.UserType)?.Value;
+            if (string.IsNullOrEmpty(userTypeClaim))
             {
                 return false;
-            }else if(userType== KDefinedRoles.SuperAdmin)
+            }
+
+            if (userTypeClaim == KDefinedRoles.SuperAdmin)
             {
                 return true;
             }
-            return true;
+
+            var resourceClaim = context.User.Claims.FirstOrDefault(x => x.Type == KAuthClaimTypes.Resources)?.Value;
+            if (string.IsNullOrEmpty(resourceClaim))
+            {
+                return false;
+            }
+
+            var actions = resourceClaim.Split(KConstantToken.Separator);
+            if (actions.Length == 0)
+            {
+                return false;
+            }
+
+            var currentUrl = context.Request.Path.Value.ToLower().ToShortenUrl();
+            return actions.Any(action => action.ToLower().Equals(currentUrl));
+
+
+
         }
     }
 }

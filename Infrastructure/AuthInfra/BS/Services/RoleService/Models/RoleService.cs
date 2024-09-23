@@ -39,6 +39,7 @@ namespace BS.Services.RoleService.Models
                  actionsFromReq = actionsFromReq
                 .Where(x => !actionsInDbSet.Contains(x.ToLower()))
                 .ToList();
+                bool isUpdated = false;
                 List<RoleAction> roleActions = new List<RoleAction>();
                 foreach (var item in actionsFromReq)
                 {
@@ -65,9 +66,16 @@ namespace BS.Services.RoleService.Models
 
                 }
                 #endregion
-
-                await _unitOfWork.CommitAsync(cancellationToken);
-                return true;
+                if (isUpdated)
+                {
+                    await _unitOfWork.CommitAsync(cancellationToken);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                
 
             }
             throw new UnknownException(actionsInDb.Message);

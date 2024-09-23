@@ -41,7 +41,7 @@ public static class Endpoints
     }
     private static void MapUserManagement(this IEndpointRouteBuilder app)
     {
-        var endpoints = app.MapGroup($"/{nameof(IAuthFeature)}")
+        var endpoints = app.MapGroup($"/{nameof(IUserManagementFeature)}")
             .WithTags("UserManagement");
 
         endpoints.MapAuthorizedGroup()

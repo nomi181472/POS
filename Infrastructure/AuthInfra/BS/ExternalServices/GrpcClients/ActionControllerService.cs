@@ -27,17 +27,17 @@ namespace BS.ExternalServices.GrpcClients
                 Message="",
             });
             var timeout = TimeSpan.FromSeconds(5); // Timeout duration
-
+            var timoutInSec = 12;
             List<Task<Tuple<string, bool, ResponseGetAllActions>>> tasks = new List<Task<Tuple<string, bool, ResponseGetAllActions>>>();
 
             tasks.Add(AsyncTimeoutHelper.RunWithTimeout(
-                ct => ActionItemsOfApisGRPC.GetEndpoints(ApiConfigs.StoreApiConfig.Host, ApiConfigs.StoreApiConfig.Port, ApiConfigs.StoreApiConfig.Name, DateTime.UtcNow.AddSeconds(5), ct),
+                ct => ActionItemsOfApisGRPC.GetEndpoints(ApiConfigs.StoreApiConfig.Host, ApiConfigs.StoreApiConfig.Port, ApiConfigs.StoreApiConfig.Name, DateTime.UtcNow.AddSeconds(timoutInSec), ct),
                 timeout,
                 Tuple.Create<string, bool, ResponseGetAllActions>($"Time Expired of {ApiConfigs.StoreApiConfig.Name} api.", false, new ResponseGetAllActions(){ ApiName= ApiConfigs.StoreApiConfig.Name ,Routes=new List<string>()}),
                 token));
 
             tasks.Add(AsyncTimeoutHelper.RunWithTimeout(
-                ct => ActionItemsOfApisGRPC.GetEndpoints(ApiConfigs.HubApiConfig.Host, ApiConfigs.HubApiConfig.Port, ApiConfigs.HubApiConfig.Name, DateTime.UtcNow.AddSeconds(5), ct),
+                ct => ActionItemsOfApisGRPC.GetEndpoints(ApiConfigs.HubApiConfig.Host, ApiConfigs.HubApiConfig.Port, ApiConfigs.HubApiConfig.Name, DateTime.UtcNow.AddSeconds(timoutInSec), ct),
                 timeout,
                 Tuple.Create<string, bool, ResponseGetAllActions>($"Time Expired of {ApiConfigs.HubApiConfig.Name} api.", false, new ResponseGetAllActions() { ApiName = ApiConfigs.HubApiConfig.Name, Routes = new List<string>() }),
                 token));

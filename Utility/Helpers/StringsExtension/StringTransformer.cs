@@ -8,7 +8,7 @@ namespace Helpers.Strings
 {
     public static class StringTransformer
     {
-        public static string ShortenUrl(this string input)
+        public static string ToShortenUrl(this string input)
         {
             
             var segments = input.Split('/');
@@ -36,7 +36,7 @@ namespace Helpers.Strings
             var thirdTransformed = fourthSegment.Length >= 3
                 ? $"{fourthSegment.Substring(0, 3)}{fourthSegment.Substring(fourthSegment.Length - 3, 3)}"
                 : thirdSegment; // If less than 6, take all
-            Console.WriteLine(thirdTransformed);
+            
             // Concatenate the results
             var result = $"{firstTransformed}{secondTransformed}{thirdTransformed}";
 

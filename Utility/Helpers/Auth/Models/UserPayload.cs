@@ -23,4 +23,7 @@ namespace Helpers.Auth.Models
     {
         public static int RefreshTokenInMin { get; set; } = 10;
     }
+    public static class KConstantToken { 
+    public static string Separator = ";";
+    }
 }

@@ -17,7 +17,7 @@ namespace BS.Services.RoleService.Models.Request
         public string ConfirmedPassword { get; set; }
         public bool IsRefreshTokenRevokable { get; set; } = true;  
         public DateTime ExpiryDate { get; set; } = DateTime.UtcNow;
-        public List<string> RoleIds { get; set; }
+        public List<string> RoleIds { get; set; } = new List<string>();
         public string UserType { get;  set; }
     }
 }

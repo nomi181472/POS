@@ -52,7 +52,8 @@ namespace Auth.Features.UserManagement
             }
             private bool AllValidIds(List<string> roleIds)
             {
-                return _roleService.IsRoleExistByRoleId(roleIds.ToArray());
+                
+                return  roleIds.Count==0 ||  _roleService.IsRoleExistByRoleId(roleIds.ToArray());
             }
         }
 

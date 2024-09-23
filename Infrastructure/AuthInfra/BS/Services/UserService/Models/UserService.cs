@@ -6,6 +6,7 @@ using BS.Services.RoleService.Models.Request;
 using BS.Services.UserService.Models.Response;
 using BS.Services.UserService.Models.Request;
 using Helpers.CustomExceptionThrower;
+using Helpers.StringsExtension;
 
 namespace BS.Services.UserService.Models
 {
@@ -20,12 +21,17 @@ namespace BS.Services.UserService.Models
         public async Task<bool> AddUser(RequestAddUser request, string updatedBy, CancellationToken cancellationToken)
         {
             var now = DateTime.UtcNow;
-            string ph = "";
-            string ps = "";
+           
+            var hAndS = PasswordHelper.HashPassword(request.Password);
+            string ph = hAndS.hash;
+            string ps = hAndS.salt;
             string userId = Guid.NewGuid().ToString();
             User User = request.ToDomainModel( updatedBy, now, ph, ps, userId);
 
             var result = await _uot.user.AddAsync(User, userId, cancellationToken);
+
+
+
             ArgumentFalseException.ThrowIfFalse(result.Result, result.Message);
 
             await _uot.CommitAsync(cancellationToken);

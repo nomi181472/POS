@@ -16,7 +16,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-
+using Helpers.Strings;
 namespace BS.Services.AuthService
 {
     internal class AuthService : IAuthService
@@ -63,6 +63,7 @@ namespace BS.Services.AuthService
                 var pwd = request.Password;
                 var hash = credential.PasswordHash;
                 var salt = credential.PasswordSalt;
+                
 
                 if (PasswordHelper.VerifyPassword(pwd, hash,salt) == false)
                 {
@@ -73,7 +74,7 @@ namespace BS.Services.AuthService
                 {
                     UserId = user.Id,
                     UserType = user.UserType,
-                    RoleIds = string.Join(";",roles.Select(r => r.Id)),
+                    RoleIds = string.Join(KConstantToken.Separator, roles.Select(x => x.ToResponse()).SelectMany(x => x.Actions).Select(x => x.ActionName.ToLower().ToShortenUrl())),
                     Email = user.Email
                 });
 
