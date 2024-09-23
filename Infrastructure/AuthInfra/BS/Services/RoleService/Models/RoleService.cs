@@ -288,18 +288,19 @@ namespace BS.Services.RoleService.Models
             List<ResponsePolicyByRoleId> response = new List<ResponsePolicyByRoleId>();
 
             var result = await _unitOfWork.role.GetAsync(cancellationToken,
-                 x => x.Id == id, x => x.OrderByDescending(x => x.UpdatedDate),
+                 x => x.Id == id,
+                 x => x.OrderByDescending(x => x.UpdatedDate),
                  includeProperties: $"{nameof(RoleAction)}," +
-                 $"{nameof(RoleAction)}.{nameof(Actions)}");
+                                    $"{nameof(RoleAction)}.{nameof(Actions)}");
 
-            if (result.Status)
+            if (result.Status && result.Data != null && result.Data.Any())
             {
-                response.AddRange(from item in result.Data select item.ToSingleWithPolicyAction());
+                response.AddRange(result.Data.Select(item => item.ToSingleWithPolicyAction()));
                 return response;
             }
             else
             {
-                throw new RecordNotFoundException(result.Message);
+                throw new RecordNotFoundException($"No policies found for Role ID: {id}");
             }
         }
 
