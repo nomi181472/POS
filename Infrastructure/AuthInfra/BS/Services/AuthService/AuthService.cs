@@ -74,8 +74,13 @@ namespace BS.Services.AuthService
                 {
                     UserId = user.Id,
                     UserType = user.UserType,
-                    RoleIds = string.Join(KConstantToken.Separator, roles.Select(x => x.ToResponse()).SelectMany(x => x.Actions).Select(x => x.ActionName.ToLower().ToShortenUrl())),
-                    Email = user.Email
+                    Email = user.Email,
+                    RoleIds = string.Join(KConstantToken.Separator, roles
+                                                                        .Select(x => x.ToResponse())
+                                                                        .SelectMany(x => x.Actions)
+                                                                        .Where(x => x.IsActive)
+                                                                        .Select(x => x.ActionName.ToLower().ToShortenUrl())
+                                          )
                 });
 
                 response.UserId = user.Id;

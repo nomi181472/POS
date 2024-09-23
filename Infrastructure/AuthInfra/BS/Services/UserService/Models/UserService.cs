@@ -122,17 +122,14 @@ namespace BS.Services.UserService.Models
                 throw new ArgumentNullException("Id can't be null");
             }
             #region Getting user
-            var userData = await _uot.user
-                .GetSingleAsync(
-                cancellationToken,
-                u => u.Id == id,
-                $"{nameof(Credential)}," +
-                $"{nameof(RefreshToken)}," +
-                $"{nameof(UserRole)}," +
-                $"{nameof(UserRole)}.{nameof(Role)}," +
-                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
-                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}"
-                );
+            var userData = await _uot.user.GetSingleAsync(cancellationToken, u => u.Id == id && u.UserRole.All(ur => ur.Role.RoleAction.All(ra => ra.Actions.IsActive)),
+                                                        $"{nameof(Credential)}," +
+                                                        $"{nameof(RefreshToken)}," +
+                                                        $"{nameof(UserRole)}," +
+                                                        $"{nameof(UserRole)}.{nameof(Role)}," +
+                                                        $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
+                                                        $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}"
+            );
 
             ArgumentFalseException.ThrowIfFalse(userData.Status, userData.Message);
             ArgumentThrowCustom.ThrowIfNull<RecordNotFoundException>(userData.Data, "invalid user");
