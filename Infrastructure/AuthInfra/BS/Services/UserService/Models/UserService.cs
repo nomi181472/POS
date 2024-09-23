@@ -141,7 +141,7 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
@@ -156,7 +156,7 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
@@ -177,7 +177,7 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
@@ -202,7 +202,7 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new InvalidOperationException(result.Message);
             }
         }
     }

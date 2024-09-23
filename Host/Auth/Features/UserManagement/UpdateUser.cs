@@ -62,6 +62,13 @@ namespace Auth.Features.UserManagement
                
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
+            catch (InvalidOperationException e)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;
