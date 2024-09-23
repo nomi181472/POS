@@ -39,9 +39,16 @@ namespace Till.Feature.CustomerManagement
                 var response = new ResponseAddCustomer();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
 
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (Exception e)
+            {
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);

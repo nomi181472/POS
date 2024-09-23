@@ -22,7 +22,7 @@ namespace Auth.Features.ActionsManagement
             string message = "Success";
             try
             {
-                var result = await service.GetActionById(Id, cancellationToken);
+                var result = await service.GetActionsDetailsById(Id, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException e)

@@ -1,4 +1,5 @@
 using Auth;
+using Auth.Middlewares;
 using DA.AppDbContexts;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,9 @@ namespace MapConfig
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            
             app.MapEndpoints();
+            app.UseMiddleware<UserContextMiddleware>();
             await app.EnsureDatabaseCreated();
             app.UseCors(x => x
               .AllowAnyOrigin()

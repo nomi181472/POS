@@ -18,15 +18,40 @@ namespace BS.Services.UserService.Models
             _uot = unitOfWork;
         }
 
+
+
         public async Task<bool> AddUser(RequestAddUser request, string updatedBy, CancellationToken cancellationToken)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var now = DateTime.UtcNow;
            
             var hAndS = PasswordHelper.HashPassword(request.Password);
             string ph = hAndS.hash;
             string ps = hAndS.salt;
             string userId = Guid.NewGuid().ToString();
-            User User = request.ToDomainModel( updatedBy, now, ph, ps, userId);
+            User User = request.ToDomainModel(updatedBy, now, ph, ps, userId);
+
+            var superAdminRoleExists = await _uot.role.AnyAsync(cancellationToken, r => request.RoleIds.Contains(r.Id) && r.Name == "SuperAdmin");
+            if (superAdminRoleExists.Data)
+            {
+                throw new InvalidOperationException("Can't assign SuperAdmin role.");
+            }
+
+            var existingUserResult = await _uot.user.GetAsync(cancellationToken, u => u.Email == request.Email);
+            var existingUser = existingUserResult.Data.FirstOrDefault();
+            if (existingUser != null)
+            {
+                throw new RecordAlreadyExistException("Email already registered");
+            }
+
+            if (request.ConfirmedPassword != request.Password)
+            {
+                throw new InvalidDataException("Passwords don't match");
+            }
 
             var result = await _uot.user.AddAsync(User, userId, cancellationToken);
 
@@ -36,35 +61,35 @@ namespace BS.Services.UserService.Models
 
             await _uot.CommitAsync(cancellationToken);
             return true;
-
-
         }
+
 
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
         {
-           var result=await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
-                x => x.SetProperty(x => x.IsActive, false)
-                .SetProperty(x => x.UpdatedBy, userId)
-                .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                cancellationToken
+            var getterResult = await _uot.user.GetAsync(cancellationToken, x => x.Id == request.UserId && x.IsActive && x.UserType != "SuperAdmin");
+            var userToUpdate = getterResult.Data.FirstOrDefault();
+            if (userToUpdate == null)
+            {
+                throw new RecordNotFoundException("User not Found or is SuperAdmin that can't be deleted");
+            }
 
-                );
-            if (result.Result)
-            {
-                return (int)result.Data > 0;
-            }
-            else
-            {
-                throw new UnknownException(result.Message);
-            }
+            userToUpdate.IsActive = false;
+            userToUpdate.UpdatedBy = userId;
+            userToUpdate.UpdatedDate = DateTime.UtcNow;
+
+            await _uot.CommitAsync(cancellationToken);
+            return true;
         }
-     
 
 
 
         public async Task<ResponseGetUser> GetUser(string UserId, CancellationToken cancellationToken)
         {
+            if(UserId == null)
+            {
+                throw new ArgumentNullException("UserId can't be null");
+            }
             var result= await _uot.user.GetSingleAsync(cancellationToken,x=>x.Id == UserId && x.IsActive);
             if (result.Status)
             {
@@ -81,9 +106,14 @@ namespace BS.Services.UserService.Models
             }
         }
 
+
+
         public async Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken)
         {
-
+            if(id == null)
+            {
+                throw new ArgumentNullException("Id can't be null");
+            }
             #region Getting user
             var userData = await _uot.user
                 .GetSingleAsync(
@@ -104,9 +134,9 @@ namespace BS.Services.UserService.Models
             var user = userData.Data;
             response = user.ToResponseUserDetailsWithActions();
             return response;
-
-
         }
+
+
 
         public bool IsUserExist(string email)
         {
@@ -117,9 +147,12 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
+
+
+
         public bool IsUserExistByUserId(string pUserId)
         {
             var result = _uot.user.Any(x => x.Id.ToLower() == pUserId.ToLower() && x.IsActive);
@@ -129,11 +162,13 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
-        public async Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken)
+
+
+        public async Task<List<ResponseGetUser>> ListUser(CancellationToken cancellationToken)
         {
             var result = await _uot.user.GetAllAsync(cancellationToken);
             if (result.Status)
@@ -148,7 +183,7 @@ namespace BS.Services.UserService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
@@ -156,22 +191,24 @@ namespace BS.Services.UserService.Models
 
         public async Task<bool> UpdateUser(RequestUpdateUser request, string userId, CancellationToken cancellationToken)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var result = await _uot.user.UpdateOnConditionAsync(x => x.Id == request.UserId && x.IsActive,
                    x => x.SetProperty(x => x.Name,request.Name)
                    .SetProperty(x=>x.Email,request.Email)
-                   
                    .SetProperty(x => x.UpdatedBy, userId)
                    .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                   cancellationToken
-
-                   );
+                   cancellationToken);
             if (result.Result)
             {
                 return (int)result.Data > 0;
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new InvalidOperationException(result.Message);
             }
         }
     }

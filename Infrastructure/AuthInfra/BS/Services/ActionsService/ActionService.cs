@@ -30,6 +30,11 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
+            if(request.Name == null || request.Tag == null)
+            {
+                throw new ArgumentNullException("Request attributes can't be null");
+            }
+
             var entity = request.ToDomain(userId);
             entity.UpdatedBy = userId;
             entity.UpdatedDate = DateTime.Now;
@@ -50,7 +55,7 @@ namespace BS.Services.ActionsService
 
         public  bool IsActionsAvailable(string name)
         {
-            return _unitOfWork.action.Any( a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
+            return _unitOfWork.action.Any(a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
         }
 
 
@@ -62,19 +67,28 @@ namespace BS.Services.ActionsService
                 throw new ArgumentNullException("actionId can not be null or empty");
             }
 
-            var setterResult = await _unitOfWork.action.UpdateOnConditionAsync(
-            // 1st param: matching condition
-            x => x.IsActive == true && x.Id == actionId,
-            // 2nd param: set the updated value
-            x => x.SetProperty((Func<Actions, string?>)(y => y.Id), (string?)null)
-                  .SetProperty((Func<Actions, string>)(y => y.UpdatedBy), userId)
-                  .SetProperty((Func<Actions, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
-                  , cancellationToken);
-
-            if (setterResult == null)
+            var getterResult = await _unitOfWork.action.GetSingleAsync(cancellationToken, x => x.Id == actionId && x.IsActive == true);
+            if (getterResult.Data == null)
             {
-                throw new InvalidOperationException("The update operation did not return a result.");
+                throw new RecordNotFoundException("No record found with such action ID");
             }
+
+            getterResult.Data.IsActive = false;
+            getterResult.Data.UpdatedBy = userId;
+            getterResult.Data.UpdatedDate = DateTime.UtcNow;
+
+            //var setterResult = await _unitOfWork.action.UpdateOnConditionAsync(
+            //// 1st param: matching condition
+            //x => x.IsActive == true && x.Id == actionId,
+            //// 2nd param: set the updated value
+            //x => x.SetProperty((Func<Actions, string?>)(y => y.Id), (string?)null)
+            //      .SetProperty((Func<Actions, string>)(y => y.UpdatedBy), userId)
+            //      .SetProperty((Func<Actions, DateTime>)(y => y.UpdatedDate), DateTime.UtcNow)
+            //      , cancellationToken);
+            //if (setterResult.Result == false)
+            //{
+            //    throw new InvalidOperationException("Failed to update on conditions provided");
+            //}
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -120,6 +134,11 @@ namespace BS.Services.ActionsService
 
         public async Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken cancellationToken)
         {
+            if(userId == null)
+            {
+                throw new ArgumentNullException("userId"); 
+            }
+
             var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
             List<ResponseGetAllActionDetails> response = new List<ResponseGetAllActionDetails>();
 
@@ -167,7 +186,8 @@ namespace BS.Services.ActionsService
             {
                 return new ResponseGetAllActionDetails()
                 {
-                    Name = actions.Name
+                    Name = actions.Name,
+                    Tags = actions.Tags
                 };
             }
             else
@@ -190,6 +210,11 @@ namespace BS.Services.ActionsService
             {
                 throw new RecordNotFoundException(existingAction.Message);
             }
+            if(existingAction.Data.IsActive == true)
+            {
+                throw new RecordNotFoundException("Deleted actionId can't be accessed");
+            }
+
 
             var actionData = existingAction.Data;
             var currentTags = actionData.GetActionTag();
@@ -220,11 +245,19 @@ namespace BS.Services.ActionsService
             {
                 throw new RecordNotFoundException("Action with such ID doesn't exist");
             }
-
             var actionData = existingAction.Data;
-            var individualTags = actionData.GetActionTag().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            var individualTagsWithTagToTrimRemoved = individualTags.Where(tag => tag != request.tagToRemove);
-            var updatedTags = string.Join(",", individualTagsWithTagToTrimRemoved);
+
+            var individualTags = actionData.GetActionTag()
+                                           .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                           .Select(tag => tag.Trim())
+                                           .ToList();
+
+            if (!individualTags.Contains(request.tagToRemove))
+            {
+                throw new RecordNotFoundException($"Tag '{request.tagToRemove}' does not exist in the action.");
+            }
+
+            var updatedTags = string.Join(",", individualTags.Where(tag => tag != request.tagToRemove));
 
             var updateStatus = await _unitOfWork.action.UpdateOnConditionAsync(
                 x => x.IsActive && x.Id == request.actionId,
@@ -235,16 +268,22 @@ namespace BS.Services.ActionsService
 
             if (updateStatus.Result == false)
             {
-                throw new InvalidOperationException("could not remove tags");
+                throw new InvalidOperationException("Could not remove tags.");
             }
 
             return updateStatus.Result;
         }
-        
+
+
 
 
         public async Task<ResponseGetActionsDetailsById> GetActionsDetailsById(string actionId, CancellationToken cancellationToken)
         {
+            if(actionId == null)
+            {
+                throw new ArgumentNullException("actionId can't be null");
+            }
+
             ResponseGetActionsDetailsById response = new ResponseGetActionsDetailsById();
 
             var existingActionResult = await _unitOfWork.action.GetByIdAsync(actionId, cancellationToken);

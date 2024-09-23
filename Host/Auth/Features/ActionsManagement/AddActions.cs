@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.ActionsService;
@@ -37,13 +38,13 @@ namespace Auth.Features.ActionsManagement
             }
         }
 
-        private static async Task<IResult> Handle(HttpContext context, RequestAddAction request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddAction request, IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await actionService.AddAction(request, HTTPContextUserRetriever.GetUserName(context), cancellationToken);
+                var result = await actionService.AddAction(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddAction();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
@@ -55,7 +56,14 @@ namespace Auth.Features.ActionsManagement
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
-            catch(Exception e)
+            catch (ArgumentNullException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;

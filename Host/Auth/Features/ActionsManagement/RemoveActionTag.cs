@@ -3,6 +3,7 @@ using Auth.Extensions.RouteHandler;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.ActionsService;
+using BS.Services.ActionsService.Models.Request;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
@@ -14,11 +15,11 @@ namespace Auth.Features.ActionsManagement
         public static void Map(IEndpointRouteBuilder app) => app
                            .MapPatch($"/{nameof(RemoveActionTag)}", Handle)
                            .WithSummary("Add Role Details")
-                           .WithRequestValidation<string>()
+                           .WithRequestValidation<RequestRemoveActionTag>()
                            .Produces(200)
                            .Produces<bool>();
 
-        public class RequestValidator : AbstractValidator<string>
+        public class RequestValidator : AbstractValidator<RequestRemoveActionTag>
         {
             public RequestValidator()
             {
@@ -26,17 +27,24 @@ namespace Auth.Features.ActionsManagement
             }
         }
 
-        private static async Task<IResult> Handle(string request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestRemoveActionTag request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await actionService.DeleteAction(request, "", cancellationToken);
+                var result = await actionService.RemoveActionTag(request, "", cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (RecordNotFoundException e)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (InvalidOperationException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;

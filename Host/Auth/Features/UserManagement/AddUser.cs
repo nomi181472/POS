@@ -32,13 +32,23 @@ namespace Auth.Features.UserManagement
                 _service = service;
                 _roleService = roleService;
 
-                RuleFor(x => x.Email)
-                    .NotEmpty().WithMessage("User email is required.")
-                    .Must(UseEmail).WithMessage("User already exists.");
+                RuleFor(n => n.Name)
+                    .NotEmpty().WithMessage("Name is required.")
+                    .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                    .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be only whitespaces.");
+                RuleFor(x => x.Email).EmailAddress().Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").NotEmpty();
+                RuleFor(m => m.Password)
+                    .NotEmpty().WithMessage("Password is required.")
+                    .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                    .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+                    .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+                    .Matches("[0-9]").WithMessage("Password must contain at least one number.")
+                    .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
                 RuleFor(X => X.RoleIds)
                     .Must(AllValidIds)
                     .WithMessage("Invalid roleId");
                 RuleFor(x => x.UserType)
+                    .Must(UserType => !string.IsNullOrWhiteSpace(UserType)).WithMessage("UserType cannot be only whitespaces.")
                     .Must(ShouldNotBeSuperAdmin).WithMessage("Invalid UserType");
 
             }
@@ -68,7 +78,20 @@ namespace Auth.Features.UserManagement
                
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            
+            catch (InvalidOperationException e)
+            {
+                statusCode = HTTPStatusCode500.InternalServerError;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (RecordAlreadyExistException e)
+            {
+                statusCode = HTTPStatusCode500.InternalServerError;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
             catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;

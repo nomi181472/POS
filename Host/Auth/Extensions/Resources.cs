@@ -23,6 +23,7 @@ using BS.Services.RoleService.Models.Request;
 using System.Xml;
 using Helpers.ServiceCollectionExtensions;
 using Auth.Features.UserManagement;
+using Auth.Middlewares;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -39,6 +40,7 @@ namespace ConfigResource
 
             .AddCustomLogger(configuration)
             .AddSwagger(KConstant.ApiName)
+            .AddMiddlewares()
             //TODO: AddServicesLayers
             .AddAuthDI(configuration)
             .AddBusinessLayer(configuration)
@@ -60,6 +62,12 @@ namespace ConfigResource
             return services;
         }
 
+        private static IServiceCollection AddMiddlewares(this IServiceCollection services)
+        {
+            services.AddScoped<IUserContext, UserContext>();
+
+            return services;
+        }
         
         private static IServiceCollection AddSwagger(this IServiceCollection services,string pTitle)
         {
