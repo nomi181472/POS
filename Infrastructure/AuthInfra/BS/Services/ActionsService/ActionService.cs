@@ -104,11 +104,6 @@ namespace BS.Services.ActionsService
                 throw new ArgumentException("Action IDs cannot be null or empty.", nameof(actionIds));
             }
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentException("User ID cannot be null or empty.", nameof(userId));
-            }
-
             var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
 
             if (result == null || !result.Status || result.Data == null)
