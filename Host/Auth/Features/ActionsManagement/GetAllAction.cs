@@ -1,6 +1,7 @@
 ﻿using AttendanceService.Common;
 using Auth.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.ExternalServices.GrpcClients.Models;
@@ -18,13 +19,13 @@ namespace Auth.Features.ActionsManagement
                            .Produces(200)
                            .Produces<ResponseGetAllActions>();
 
-        private static async Task<IResult> Handle(IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await actionService.GetAllAction("", cancellationToken);
+                var result = await actionService.GetAllAction(userContext.Data.UserId, cancellationToken);
                 ResponseGetAllActions response = new ResponseGetAllActions();
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

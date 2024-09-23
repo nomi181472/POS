@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.RoleService.Models;
@@ -39,13 +40,13 @@ namespace Auth.Features.RoleManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddRole request, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddRole request, IUserContext userContext, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await roleService.AddRole(request, "", cancellationToken);
+                var result = await roleService.AddRole(request, userContext.Data.UserId, cancellationToken);
               
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

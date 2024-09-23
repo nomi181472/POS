@@ -2,6 +2,7 @@
 using Auth.Common;
 using Auth.Common.Constant;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.ExternalServices.GrpcClients;
@@ -43,7 +44,7 @@ namespace Auth.Features.RoleManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddActionsInRole request, IRoleService roleService,IActionControllerService action, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddActionsInRole request, IUserContext userContext, IRoleService roleService,IActionControllerService action, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
@@ -63,7 +64,7 @@ namespace Auth.Features.RoleManagement
                     return ApiResponseHelper.Convert(true, false, message, statusCode, isAllValid);
                 }
 
-                var result = await roleService.AddActionsInRole(request, "sadss", cancellationToken);
+                var result = await roleService.AddActionsInRole(request, userContext.Data.UserId, cancellationToken);
               
                 
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
