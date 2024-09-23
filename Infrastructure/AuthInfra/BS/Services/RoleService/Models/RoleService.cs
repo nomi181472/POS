@@ -1,7 +1,9 @@
 ﻿using BS.CustomExceptions.Common;
+using BS.EnumsAndConstants.Constant;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models.Response;
 using DA;
+using DA.Common.CommonRoles;
 using DM.DomainModels;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -116,10 +118,14 @@ namespace BS.Services.RoleService.Models
                 throw new ArgumentNullException(nameof(request), "The request cannot be null.");
             }
 
-            var userExists = await _unitOfWork.user.AnyAsync(cancellationToken, u => u.Id == request.UserId);
-            if(userExists.Data == false)
+            var userExists = await _unitOfWork.user.GetByIdAsync(request.UserId, cancellationToken);
+            if (userExists.Data == null)
             {
                 throw new RecordNotFoundException($"User with ID {request.UserId} does not exist.");
+            }
+            if (userExists.Data.UserType == KDefinedRoles.SuperAdmin)
+            {
+                throw new InvalidOperationException("Can't assign role to superadmin");
             }
 
             var roleExists = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Id == request.RoleId);
@@ -137,7 +143,7 @@ namespace BS.Services.RoleService.Models
             var superAdminRole = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Id == request.RoleId && r.Name == "SuperAdmin");
             if (superAdminRole.Data == true)
             {
-                throw new InvalidOperationException("Can't assign SuperAdmin");
+                throw new InvalidOperationException("Can't assign a SuperAdmin role to user");
             }
 
             var entity = request.ToDomain(userId);
@@ -162,20 +168,26 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> DeleteRole(RequestDeleteRole request, string userId, CancellationToken cancellationToken)
         {
-           var result=await _unitOfWork.role.UpdateOnConditionAsync(x => x.Id == request.RoleId && x.IsActive,
-                x => x.SetProperty(x => x.IsActive, false)
-                .SetProperty(x => x.UpdatedBy, userId)
-                .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                cancellationToken);
+            var getterResult = await _unitOfWork.role.GetByIdAsync(request.RoleId, cancellationToken);
+            if (getterResult.Data == null)
+            {
+                throw new RecordNotFoundException("No role with such RoleId found");
+            }
 
-            if (result.Result)
+            var role = getterResult.Data;
+
+            if (role.Name == KDefinedRoles.SuperAdmin)
             {
-                return (int)result.Data > 0;
+                throw new InvalidOperationException("Can't delete SuperAdmin role");
             }
-            else
-            {
-                throw new UnknownException(result.Message);
-            }
+
+            role.IsActive = false;
+            role.UpdatedDate = DateTime.UtcNow;
+            role.UpdatedBy = userId;
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
         }
 
 
@@ -274,6 +286,7 @@ namespace BS.Services.RoleService.Models
         public async Task<IEnumerable<ResponsePolicyByRoleId>> GetPoliciesByRoleId(string id, CancellationToken cancellationToken)
         {
             List<ResponsePolicyByRoleId> response = new List<ResponsePolicyByRoleId>();
+
             var result = await _unitOfWork.role.GetAsync(cancellationToken,
                  x => x.Id == id, x => x.OrderByDescending(x => x.UpdatedDate),
                  includeProperties: $"{nameof(RoleAction)}," +
@@ -286,7 +299,7 @@ namespace BS.Services.RoleService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
@@ -345,7 +358,7 @@ namespace BS.Services.RoleService.Models
 
         public bool IsRoleExist(string roleName)
         {
-           var result=  _unitOfWork.role.Any(x=>x.Name.ToLower()==roleName.ToLower() && x.IsActive);
+           var result=  _unitOfWork.role.Any(x=>x.Name==roleName && x.IsActive);
             if (result.Status)
             {
                 return result.Data;
@@ -402,20 +415,24 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> UpdateRole(RequestUpdateRole request, string userId, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.role.UpdateOnConditionAsync(x => x.Id == request.RoleId && x.IsActive,
-                   x => x.SetProperty(x => x.Name,request.RoleName)
-                   .SetProperty(x => x.UpdatedBy, userId)
-                   .SetProperty(x => x.UpdatedDate, DateTime.UtcNow),
-                   cancellationToken);
+            var getterResult = await _unitOfWork.role.GetByIdAsync(request.RoleId, cancellationToken);
+            if (getterResult.Status == false)
+            {
+                throw new RecordNotFoundException("Could not find role with that ID");
+            }
+            var role = getterResult.Data;
+            if(role.Name == KDefinedRoles.SuperAdmin)
+            {
+                throw new InvalidOperationException("Can not update SuperAdmin role");
+            }
 
-            if (result.Result)
-            {
-                return (int)result.Data > 0;
-            }
-            else
-            {
-                throw new UnknownException(result.Message);
-            }
+            role.Name = request.RoleName;
+            role.UpdatedBy = userId;
+            role.UpdatedDate = DateTime.UtcNow;
+
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return true;
         }
 
 
