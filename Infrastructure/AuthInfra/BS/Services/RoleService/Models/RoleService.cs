@@ -27,60 +27,76 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> AddActionsInRole(RequestAddActionsInRole request, string userId, CancellationToken cancellationToken)
         {
-            
-            var actionsFromReq = request.Actions.Select(x=>x.ToLower());
-            var actionsInDb =await  _unitOfWork.action.GetAsync(cancellationToken,
+            #region ArgumentNullValidations
+            if (request.RoleId == null)
+            {
+                throw new ArgumentNullException("RoleId can't be empty");
+            }
+
+            if (request.Actions == null || !request.Actions.Any(action => !string.IsNullOrWhiteSpace(action)))
+            {
+                throw new ArgumentNullException("Action list cannot be empty.");
+            }
+            #endregion ArgumentNullValidations
+
+            #region Fetch from DB
+            var actionsFromReq = request.Actions.Select(x => x.ToLower());
+            var actionsInDb = await _unitOfWork.action.GetAsync(cancellationToken,
                 x => actionsFromReq.Contains(x.Name.ToLower()),
                 includeProperties:
                 $"{nameof(RoleAction)},"
-                ) ;
-            if (actionsInDb.Status)
+            );
+
+            if (!actionsInDb.Status)
             {
-                #region Adding new policy and assign it to the role
-                var actionsInDbSet = new HashSet<string>(actionsInDb.Data.Select(x => x.Name.ToLower()));
-                 actionsFromReq = actionsFromReq
-                .Where(x => !actionsInDbSet.Contains(x.ToLower()))
-                .ToList();
-                bool isUpdated = false;
-                List<RoleAction> roleActions = new List<RoleAction>();
-                foreach (var item in actionsFromReq)
-                {
-                    var action = new Actions(Guid.NewGuid().ToString(),userId,DateTime.UtcNow,item,item);
-                    var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
-                    _unitOfWork.action.Add(action, userId);
-                    _unitOfWork.roleAction.Add(roleAction, userId);
-
-                }
-                #endregion
-                #region only assigning policies
-                var newActionsCreated = new HashSet<string>(actionsFromReq);
-                var oldActions = actionsInDb.Data.Where(x => !newActionsCreated.Contains(x.Name.ToLower()));
-                foreach (var action in oldActions)
-                {
-                    var alreadyAssignedSameAction = action.RoleAction;
-                    if (! alreadyAssignedSameAction.Any(x => x.IsRoleIdMatch(request.RoleId)))
-                    {
-                        var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
-
-                        _unitOfWork.roleAction.Add(roleAction, userId);
-                    }
-                   
-
-                }
-                #endregion
-                if (isUpdated)
-                {
-                    await _unitOfWork.CommitAsync(cancellationToken);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-                
-
+                throw new RecordNotFoundException(actionsInDb.Message);
             }
-            throw new UnknownException(actionsInDb.Message);
+            #endregion Fetch from DB
+
+            #region Adding new policy and assign it to the role
+            // Set for quick lookups
+            var actionsInDbSet = new HashSet<string>(actionsInDb.Data.Select(x => x.Name.ToLower()));
+
+            // Filter out actions that already exist in the database
+            var newActions = actionsFromReq.Where(x => !actionsInDbSet.Contains(x)).ToList();
+
+            bool isUpdated = false;
+            List<RoleAction> roleActions = new List<RoleAction>();
+
+            // Adding new actions and assigning them to the role
+            foreach (var item in newActions)
+            {
+                var action = new Actions(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, item, item);
+                var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
+
+                _unitOfWork.action.Add(action, userId);
+                _unitOfWork.roleAction.Add(roleAction, userId);
+
+                isUpdated = true;
+            }
+
+            // Assigning existing actions to the role
+            var oldActions = actionsInDb.Data.Where(x => !newActions.Contains(x.Name.ToLower()));
+            foreach (var action in oldActions)
+            {
+                var alreadyAssignedSameAction = action.RoleAction;
+
+                if (!alreadyAssignedSameAction.Any(x => x.IsRoleIdMatch(request.RoleId)))
+                {
+                    var roleAction = new RoleAction(Guid.NewGuid().ToString(), userId, DateTime.UtcNow, request.RoleId, action.Id);
+                    _unitOfWork.roleAction.Add(roleAction, userId);
+                    isUpdated = true; // Set the flag if any new role-actions are added
+                }
+            }
+            #endregion Adding new policy and assign it to the role
+
+            if (isUpdated)
+            {
+                await _unitOfWork.CommitAsync(cancellationToken);
+                return true;
+            }
+
+            return false;
         }
 
 
@@ -388,7 +404,7 @@ namespace BS.Services.RoleService.Models
             }
             else
             {
-                throw new UnknownException(result.Message);
+                throw new RecordNotFoundException(result.Message);
             }
         }
 
