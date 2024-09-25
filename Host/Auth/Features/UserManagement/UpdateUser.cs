@@ -33,7 +33,8 @@ namespace Auth.Features.UserManagement
                 RuleFor(x => x.Email)
                     .NotEmpty().WithMessage("Email is required.")
                   
-                    .Must(IsUserExist).WithMessage("Email already exists.");
+                    //.Must(IsUserExist).WithMessage("Email already exists.")
+                    ;
 
                 RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage("UserId is required.")
@@ -71,7 +72,7 @@ namespace Auth.Features.UserManagement
             }
             catch (RecordNotFoundException e)
             {
-                statusCode = HTTPStatusCode400.BadRequest;
+                statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
