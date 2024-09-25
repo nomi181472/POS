@@ -72,12 +72,12 @@ namespace Auth.Features.AuthManagement
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
-            catch (UnauthorizedAccessException e)
+            catch (ArgumentException e)
             {
-                statusCode = HTTPStatusCode400.Unauthorized;
+                statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
             catch (UnknownException e)
             {
