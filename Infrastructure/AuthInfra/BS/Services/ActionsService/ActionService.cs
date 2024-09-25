@@ -30,12 +30,12 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
-            if(request.Name == null)
+            if(string.IsNullOrWhiteSpace(request.Name))
             {
                 throw new ArgumentNullException("Name can't be null");
             }
 
-            if (request.Tag == null)
+            if (string.IsNullOrWhiteSpace(request.Tag))
             {
                 throw new ArgumentNullException("Tag can't be null");
             }
