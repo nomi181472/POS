@@ -145,7 +145,7 @@ namespace BS.Services.AuthService
 
             Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
 
-            User user = new User(userId, userId, now, request.Name, request.Email, "", credential, userRoles);
+            User user = new User(userId, userId, now, request.Name, request.Email, request.UserType, credential, userRoles);
 
             var result = _uot.user.Add(user, userId);
             if (result.Result)

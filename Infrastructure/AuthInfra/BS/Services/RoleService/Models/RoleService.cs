@@ -304,7 +304,7 @@ namespace BS.Services.RoleService.Models
             List<ResponsePolicyByRoleId> response = new List<ResponsePolicyByRoleId>();
 
             var result = await _unitOfWork.role.GetAsync(cancellationToken,
-                 x => x.Id == id,
+                 x => x.Id == id && x.RoleAction.Any(ra => ra.Actions.IsActive),
                  x => x.OrderByDescending(x => x.UpdatedDate),
                  includeProperties: $"{nameof(RoleAction)}," +
                                     $"{nameof(RoleAction)}.{nameof(Actions)}");
