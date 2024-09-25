@@ -66,7 +66,7 @@ namespace BS.Services.AuthService
 
                 if (PasswordHelper.VerifyPassword(pwd, hash,salt) == false)
                 {
-                    throw new UnauthorizedAccessException("Invalid password.");
+                    throw new ArgumentException("Invalid password.");
                 }
 
                 var tokens = _generateToken(new UserPayload()

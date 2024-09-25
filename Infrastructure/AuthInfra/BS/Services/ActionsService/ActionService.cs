@@ -30,9 +30,14 @@ namespace BS.Services.ActionsService
 
         public async Task<bool> AddAction(RequestAddAction request, string userId, CancellationToken cancellationToken)
         {
-            if(request.Name == null || request.Tag == null)
+            if(string.IsNullOrWhiteSpace(request.Name))
             {
-                throw new ArgumentNullException("Request attributes can't be null");
+                throw new ArgumentNullException("Name can't be null or whitespace");
+            }
+
+            if(string.IsNullOrWhiteSpace(request.Tag))
+            {
+                throw new ArgumentNullException("Name can't be null or whitespace");
             }
 
             var entity = request.ToDomain(userId);
