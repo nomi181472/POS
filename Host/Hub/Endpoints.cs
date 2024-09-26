@@ -36,8 +36,7 @@ namespace Hub
 
             endpoints.MapPublicGroup()
                 .MapEndpoint<AddItemData>()
-                .MapEndpoint<UpdateItemData>()
-                .MapEndpoint<AddItemGroup>();
+                .MapEndpoint<UpdateItemData>();
 
         }
 

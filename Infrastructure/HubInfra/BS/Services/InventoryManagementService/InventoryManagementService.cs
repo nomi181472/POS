@@ -42,85 +42,31 @@ namespace BS.Services.InventoryManagementService
                         throw new Exception("Item Already exists");
                     }
 
-                    var itemgroup = await _unit.InventoryGroupsRepo.GetSingleAsync(token, x => x.Code == item.ItemGrpCod);
-                    if (itemgroup.Data == null)
+                    var entity = new Items()
                     {
-                        var entity = new InventoryGroups()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Name = item.ItemGrpName,
-                            Code = item.ItemGrpCod,
-                            CreatedBy = userId,
-                            CreatedDate = DateTime.UtcNow,
-                            UpdatedBy = userId,
-                            UpdatedDate = DateTime.UtcNow,
-                            IsActive = true,
-                            IsArchived = false,
-                        };
+                        Id = Guid.NewGuid().ToString(),
+                        ItemName = item.ItemName,
+                        ItemCode = item.ItemCode,
+                        CreatedBy = userId,
+                        CreatedDate = DateTime.Now,
+                        UpdatedBy = userId,
+                        UpdatedDate = DateTime.Now,
+                        IsActive = true,
+                        IsArchived = false,
 
-                        entity.InventoryItems = new List<InventoryItems>()
-                        {
-                            new InventoryItems()
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Name = item.ItemName,
-                                ItemCode = item.ItemCode,
-                                Barcode = item.Barcode,
-                                CreatedBy = userId,
-                                CreatedDate = DateTime.Now,
-                                UpdatedBy = userId,
-                                UpdatedDate = DateTime.Now,
-                                IsActive = true,
-                                IsArchived = false,
-                            }
+                    };
 
-                        };
+                    await _unit.InventoryItemsRepo.AddAsync(entity, userId, token);
+                    await _unit.CommitAsync(token);
 
-                        await _unit.InventoryGroupsRepo.AddAsync(entity, userId, token);
-                        await _unit.CommitAsync();
-
-                        response.ItemResponse.Add(new ItemResponseDetails
-                        {
-                            Id = entity.Id,
-                            Code = item.ItemCode,
-                            Name = item.ItemName,
-                            IsSuccess = true,
-                            Status = "Success"
-                        });
-
-                    }
-                    else
-                    {
-                        var entity = new InventoryItems()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Name = item.ItemName,
-                            ItemCode = item.ItemCode,
-                            Barcode = item.Barcode,
-                            GroupId = itemgroup.Data.Id,
-                            CreatedBy = userId,
-                            CreatedDate = DateTime.Now,
-                            UpdatedBy = userId,
-                            UpdatedDate = DateTime.Now,
-                            IsActive = true,
-                            IsArchived = false,
-
-                        };
-
-                        await _unit.InventoryItemsRepo.AddAsync(entity, userId, token);
-                        await _unit.CommitAsync(token);
-
-                        response.ItemResponse.Add(new ItemResponseDetails
-                        {
-                            Id = entity.Id,
-                            Code = entity.ItemCode,
-                            Name = entity.Name,
-                            IsSuccess = true,
-                            Status = "Success"
-                        });
-                    }
-
-
+                    response.ItemResponse.Add(new ItemResponseDetails
+                     {
+                         Id = entity.Id,
+                         Code = entity.ItemCode,
+                         Name = entity.ItemName,
+                         IsSuccess = true,
+                         Status = "Success"
+                     });
                 }
                 catch (Exception ex)
                 {
@@ -139,7 +85,7 @@ namespace BS.Services.InventoryManagementService
         }
 
 
-        public bool IsItemExist(int Code)
+        public bool IsItemExist(string Code)
         {
             var result = _unit.InventoryItemsRepo.Any(x => x.ItemCode == Code && x.IsActive);
             if (result.Status)
@@ -152,7 +98,7 @@ namespace BS.Services.InventoryManagementService
             }
         }
 
-        public bool IsItemGroupExist(int Code)
+/*        public bool IsItemGroupExist(int Code)
         {
             var result = _unit.InventoryGroupsRepo.Any(x => x.Code == Code && x.IsActive);
             if (result.Status)
@@ -163,7 +109,7 @@ namespace BS.Services.InventoryManagementService
             {
                 throw new UnknownException(result.Message);
             }
-        }
+        }*/
 
 
         public async Task<ResponseUpdateItemData> UpdateItemData(RequestUpdateItemData request, string userId, CancellationToken token)
@@ -182,15 +128,10 @@ namespace BS.Services.InventoryManagementService
             {
                 try
                 {
-                    if (!IsItemGroupExist(item.ItemGrpCod))
-                    {
-                        throw new Exception("Item Group does not exists");
-                    }
-
                     var result = await _unit.InventoryItemsRepo.GetSingleAsync(token, x => x.ItemCode == item.ItemCode && x.IsActive);
 
 
-                    result.Data.Name = item.ItemName;
+                    result.Data.ItemName = item.ItemName;
                     result.Data.ItemCode = item.ItemCode;
                     result.Data.UpdatedBy = userId;
                     result.Data.UpdatedDate = DateTime.Now;
@@ -203,7 +144,7 @@ namespace BS.Services.InventoryManagementService
                     {
                         Id = result.Data.Id,
                         Code = result.Data.ItemCode,
-                        Name = result.Data.Name,
+                        Name = result.Data.ItemName,
                         IsSuccess = true,
                         Status = "Success"
                     });
@@ -227,7 +168,7 @@ namespace BS.Services.InventoryManagementService
 
         }
 
-        public async Task<ResponseAddItemGroup> AddItemGroup(RequestAddItemGroup request, string userId, CancellationToken token)
+        /*public async Task<ResponseAddItemGroup> AddItemGroup(RequestAddItemGroup request, string userId, CancellationToken token)
         {
             var response = new ResponseAddItemGroup()
             {
@@ -289,7 +230,7 @@ namespace BS.Services.InventoryManagementService
 
 
             return response;
-        }
+        }*/
 
     }
 }

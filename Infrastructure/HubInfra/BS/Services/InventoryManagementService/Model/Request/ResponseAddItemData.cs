@@ -15,7 +15,7 @@ namespace BS.Services.InventoryManagementService.Model.Request
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public int Code { get; set; }
+        public string Code { get; set; }
         public bool IsSuccess { get; set; }
         public string Status { get; set;}
     }

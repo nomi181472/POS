@@ -21,6 +21,9 @@ namespace DA.AppDbContexts
         public DbSet<CustomerCartItems> CustomerCartItems { get; set; }
         public DbSet<CashSession> CashSessions { get; set; }
         public DbSet<CashDetails> CashDetails  { get; set; }
+        public DbSet<Items> Items { get; set; }
+        public DbSet<ItemImage> ItemImages { get; set; }
+        public DbSet<Tax> Taxes { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -107,10 +110,10 @@ namespace DA.AppDbContexts
             {
                 entity.HasData(
                     new PaymentMethods { 
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "f69246eb-c27e-4964-bb11-373baab02634",
                         Name = "Cash",
                         CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
                         UpdatedBy = "",
                         UpdatedDate = DateTime.MinValue,
                         IsArchived = false,
@@ -118,10 +121,10 @@ namespace DA.AppDbContexts
                     },
                     new PaymentMethods
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "c2d15ca4-04f9-4531-9645-ccfd75429252",
                         Name = "Card",
                         CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
                         UpdatedBy = "",
                         UpdatedDate = DateTime.MinValue,
                         IsArchived = false,
@@ -129,10 +132,54 @@ namespace DA.AppDbContexts
                     },
                     new PaymentMethods
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "bb8b2f52-f3da-4704-80e3-db641c337bb5",
                         Name = "Gift Card",
                         CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = "a5fc46ab-35c4-4ac6-9773-e4bdff743f94",
+                        Name = "Cheque",
+                        CreatedBy = "Default",
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = "a0977129-9878-499e-a912-4156a7ead1c9",
+                        Name = "Online Transfer",
+                        CreatedBy = "Default",
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = "647a1871-3dbe-434b-bd2c-877cecdeb964",
+                        Name = "Loyalty Points",
+                        CreatedBy = "Default",
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
+                        UpdatedBy = "",
+                        UpdatedDate = DateTime.MinValue,
+                        IsArchived = false,
+                        IsActive = true
+                    },
+                    new PaymentMethods
+                    {
+                        Id = "9fabcd90-1a72-4825-b813-f821c088bac6",
+                        Name = "Discount Voucher",
+                        CreatedBy = "Default",
+                        CreatedDate = Convert.ToDateTime("2024-09-16").ToUniversalTime(),
                         UpdatedBy = "",
                         UpdatedDate = DateTime.MinValue,
                         IsArchived = false,
@@ -141,54 +188,11 @@ namespace DA.AppDbContexts
                 );
             });
 
-            builder.Entity<PaymentMethods>(entity =>
+            builder.Entity<Items>(entity =>
             {
-                entity.HasData(
-                    new PaymentMethods
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = "Cheque",
-                        CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
-                        UpdatedBy = "",
-                        UpdatedDate = DateTime.MinValue,
-                        IsArchived = false,
-                        IsActive = true
-                    },
-                    new PaymentMethods
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = "Online Transfer",
-                        CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
-                        UpdatedBy = "",
-                        UpdatedDate = DateTime.MinValue,
-                        IsArchived = false,
-                        IsActive = true
-                    },
-                    new PaymentMethods
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = "Loyalty Points",
-                        CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
-                        UpdatedBy = "",
-                        UpdatedDate = DateTime.MinValue,
-                        IsArchived = false,
-                        IsActive = true
-                    },
-                    new PaymentMethods
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Name = "Discount Voucher",
-                        CreatedBy = "Default",
-                        CreatedDate = DateTime.Now.ToUniversalTime(),
-                        UpdatedBy = "",
-                        UpdatedDate = DateTime.MinValue,
-                        IsArchived = false,
-                        IsActive = true
-                    }
-                );
+                entity.HasMany(x => x.ItemImages).WithOne(x => x.Items).HasForeignKey(x => x.ItemId);
+                entity.HasMany(x => x.Taxes).WithOne(x => x.Items).HasForeignKey(x => x.ItemId);
+                entity.HasMany(x => x.CustomerCartItems).WithOne(x=>x.Items).HasForeignKey(x => x.ItemId);
             });
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

@@ -46,11 +46,11 @@ namespace Till.Feature.SaleProcessing
                 response.Message = message;
                 return ApiResponseHelper.Convert(false, false, message, statusCode, response);
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentException ex)
             {
                 statusCode = HTTPStatusCode400.BadRequest;
                 message = ex.Message;
-                _logger.LogError(message, ex);
+                _logger.LogError(ex.Message, ex);
                 response.Success = false;
                 response.Message = message;
                 return ApiResponseHelper.Convert(false, false, message, statusCode, response);

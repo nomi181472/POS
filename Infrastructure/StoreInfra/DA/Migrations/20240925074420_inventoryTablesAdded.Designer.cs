@@ -3,6 +3,7 @@ using System;
 using DA.AppDbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DA.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240925074420_inventoryTablesAdded")]
+    partial class inventoryTablesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,8 +236,6 @@ namespace DA.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("ItemId");
 
                     b.ToTable("CustomerCartItems");
                 });
@@ -802,15 +803,7 @@ namespace DA.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DM.DomainModels.Items", "Items")
-                        .WithMany("CustomerCartItems")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("CustomerCart");
-
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("DM.DomainModels.ItemImage", b =>
@@ -883,8 +876,6 @@ namespace DA.Migrations
 
             modelBuilder.Entity("DM.DomainModels.Items", b =>
                 {
-                    b.Navigation("CustomerCartItems");
-
                     b.Navigation("ItemImages");
 
                     b.Navigation("Taxes");

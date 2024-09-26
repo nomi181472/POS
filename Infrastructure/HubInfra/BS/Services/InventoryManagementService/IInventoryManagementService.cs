@@ -13,8 +13,8 @@ namespace BS.Services.InventoryManagementService
     {
         Task<ResponseAddItemData> AddItemData(RequestAddItemData request, string userId, CancellationToken token);
         Task<ResponseUpdateItemData> UpdateItemData(RequestUpdateItemData request, string userId, CancellationToken token);
-        Task<ResponseAddItemGroup> AddItemGroup(RequestAddItemGroup request, string userId, CancellationToken token);
-        public bool IsItemExist(int Code);
-        public bool IsItemGroupExist(int Code);
+        //Task<ResponseAddItemGroup> AddItemGroup(RequestAddItemGroup request, string userId, CancellationToken token);
+        public bool IsItemExist(string Code);
+        //public bool IsItemGroupExist(int Code);
     }
 }

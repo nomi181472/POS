@@ -13,9 +13,7 @@ namespace DA
     public interface IUnitOfWork
     {
         IGenericRepository<Location, string> LocationRepo { get; }
-        IGenericRepository<InventoryItems, string> InventoryItemsRepo { get; }
-        IGenericRepository<InventoryGroups, string> InventoryGroupsRepo { get; }
-        IGenericRepository<InventoryCategories, string> InventoryCategoriesRepo { get; }
+        IGenericRepository<Items, string> InventoryItemsRepo { get; }
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);
         Task CommitAsync();

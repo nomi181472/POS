@@ -10,5 +10,8 @@ namespace BS.Services.SaleProcessingService.Models.Response
     {
         public virtual string? Id { get; set; }
         public virtual string? CustomerId { get; set; }
+        public virtual string? CustomerName { get; set; }
+        public virtual int? TotalItems { get; set; }
+        public virtual int? TotalAmount { get; set; }
     }
 }

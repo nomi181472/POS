@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DM.DomainModels
 {
-    public class InventoryCategories : Base<string>
+    public class ItemImage:Base<string>
     {
-        public string Name { get; set; }
-        public int Code { get; set; }
+        public virtual string? ItemCode { get; set; }
+        public virtual string? ImagePath { get; set; }
     }
 }

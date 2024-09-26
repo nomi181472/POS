@@ -13,6 +13,8 @@ using System.Reflection.PortableExecutable;
 using BS.Services.InventoryManagementService.Models.Response;
 using Google.Protobuf.WellKnownTypes;
 using InventoryService;
+using DM.DomainModels;
+using BS.CustomExceptions.Common;
 
 namespace BS.Services.InventoryManagementService
 {
@@ -28,11 +30,25 @@ namespace BS.Services.InventoryManagementService
         }
 
 
-        public async Task<ResponseGetInventory> GetInventoryData(string filter, CancellationToken cancellationToken)
+        public async Task<List<ResponseGetInventory>> GetInventoryData(string filter, CancellationToken cancellationToken)
         {
-           
-
-            string? port = _configuration.GetSection("Hub:Port").Value;
+           List<ResponseGetInventory> response = new List<ResponseGetInventory>();
+            var itemsGetter = await _unit.ItemsRepo.GetAsync(cancellationToken, x => x.IsActive == true,
+                includeProperties: $"ItemImages");
+            var items = itemsGetter?.Data?.Select(x=>new ResponseGetInventory
+                {
+                    ItemId = x.Id,
+                    ItemName = x.ItemName,
+                    ImagePath = x.ItemImages?.FirstOrDefault()?.ImagePath ?? "",
+                    ItemCode = x.ItemCode,
+                    Price = x.Price
+                });
+            if(items == null)
+            {
+                throw new RecordNotFoundException("No items are there in the inventory, try reloading the inventory.");
+            }
+            response = items.ToList();
+           /*string? port = _configuration.GetSection("Hub:Port").Value;
             string? host = _configuration.GetSection("Hub:Host").Value;
 
             string url = "";
@@ -57,13 +73,9 @@ namespace BS.Services.InventoryManagementService
             {
                 Message = verify.Message,
                 IsSuccess = true
-            };
+            };*/
 
             return response;
-
-           
-
-            
         }
 
 

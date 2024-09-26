@@ -10,13 +10,10 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class InventoryItemsConfiguration : IEntityTypeConfiguration<InventoryItems>
+    public class InventoryItemsConfiguration : IEntityTypeConfiguration<Items>
     {
-        public void Configure(EntityTypeBuilder<InventoryItems> builder)
+        public void Configure(EntityTypeBuilder<Items> builder)
         {
-            builder.HasOne(i => i.InventoryGroups)              
-                .WithMany(g => g.InventoryItems)             
-                .HasForeignKey(i => i.GroupId);
         }
     }
 }

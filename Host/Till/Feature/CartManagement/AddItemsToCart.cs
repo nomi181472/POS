@@ -48,11 +48,11 @@ namespace Till.Feature.CartManagement
                 _logger.LogError(message, ex);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, false);
             }
-            catch (ArgumentNullException ex)
+            catch (ArgumentException ex)
             {
                 statusCode = HTTPStatusCode400.BadRequest;
                 message = ex.Message;
-                _logger.LogError(message, ex);
+                _logger.LogError(ex.Message, ex);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, false);
             }
             catch (Exception ex)

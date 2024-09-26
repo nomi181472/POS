@@ -11,6 +11,7 @@ using PaymentGateway.API.Common;
 using System.Reflection.Metadata;
 using Till.Extensions.RouteHandler;
 using Till.Feature.OrderManagement;
+using BS.CustomExceptions.Common;
 
 namespace Till.Feature.InventoryManagement
 {
@@ -39,13 +40,32 @@ namespace Till.Feature.InventoryManagement
                 var response = new ResponseAddOrderDetails();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
+            catch (RecordNotFoundException ex)
+            {
+                statusCode = HTTPStatusCode400.NotFound;
+                message = ex.Message;
+                _logger.LogError(message, ex);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+            }
+            catch (ArgumentNullException ex)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
+                message = ex.Message;
+                _logger.LogError(message, ex);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+            }
+            catch (RecordAlreadyExistException ex)
+            {
+                statusCode = HTTPStatusCode400.NotAcceptable;
+                message = ex.Message;
+                _logger.LogError(message, ex);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, false);
+            }
             catch (Exception e)
             {
                 statusCode = HTTPStatusCode500.InternalServerError;
                 message = ExceptionMessage.SWW;
                 _logger.LogError(message, e);
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
             }
         }

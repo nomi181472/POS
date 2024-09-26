@@ -11,6 +11,7 @@ namespace DM.DomainModels
         public virtual string CartId { get; set; }
         public virtual string ItemId { get; set; }
         public virtual int Quantity { get; set; }
+        public virtual Items? Items { get; set; }
         public virtual CustomerCart? CustomerCart {get; set;}
     }
 }

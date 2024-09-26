@@ -9,7 +9,10 @@ namespace BS.Services.InventoryManagementService.Models.Response
 {
     public class ResponseGetInventory
     {
-        public string Message { get; set; }
-        public bool IsSuccess { get; set; }
+        public virtual string? ItemId { get; set; }
+        public virtual string? ItemCode { get; set; }
+        public virtual string? ItemName { get; set; }
+        public virtual int? Price { get; set; }
+        public virtual string? ImagePath { get; set; }
     }
 }

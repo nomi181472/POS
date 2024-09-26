@@ -13,7 +13,7 @@ namespace BS.Services.InventoryManagementService.Model.Request
 
     public class ItemsDetail
     {
-        public int ItemCode { get; set; }
+        public string ItemCode { get; set; }
         public string ItemName { get; set; }
         public int ItemGrpCod { get; set; }
         public string ItemGrpName { get; set; }

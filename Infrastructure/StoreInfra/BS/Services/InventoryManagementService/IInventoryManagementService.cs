@@ -10,7 +10,7 @@ namespace BS.Services.InventoryManagementService
 {
     public interface IInventoryManagementService
     {
-        Task<ResponseGetInventory> GetInventoryData(string filter, CancellationToken cancellationToken);
-        Task<ResponseReloadInventory> ReloadInventory(CancellationToken cancellationToken);
+        public Task<List<ResponseGetInventory>> GetInventoryData(string filter, CancellationToken cancellationToken);
+        public Task<ResponseReloadInventory> ReloadInventory(CancellationToken cancellationToken);
     }
 }

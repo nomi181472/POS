@@ -10,6 +10,7 @@ using BS.Services.SaleProcessingService.Models.Request;
 using BS.Services.SaleProcessingService.Models.Response;
 using DA;
 using DM.DomainModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BS.Services.SaleProcessingService
 {
@@ -27,15 +28,15 @@ namespace BS.Services.SaleProcessingService
             CreateCartResponse createCartResponse = new CreateCartResponse();
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request), "The request can not be null.");
+                throw new ArgumentException("The request can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CustomerId))
             {
-                throw new ArgumentNullException(nameof(request), "Customer Id can not be null.");
+                throw new ArgumentException("Customer Id can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.TillId))
             {
-                throw new ArgumentNullException(nameof(request), "Till Id can not be null.");
+                throw new ArgumentException("Till Id can not be null.");
             }
             string cartId = Guid.NewGuid().ToString();
             var prevCart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x=>x.CustomerId == request.CustomerId && x.IsActive==true && x.IsConvertedToSale == false).Result.Data.FirstOrDefault();
@@ -64,15 +65,15 @@ namespace BS.Services.SaleProcessingService
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request), "The request can not be null.");
+                throw new ArgumentException("The request can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CustomerId))
             {
-                throw new ArgumentNullException(nameof(request), "Customer Id can not be null.");
+                throw new ArgumentException("Customer Id can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CartId))
             {
-                throw new ArgumentNullException(nameof(request), "Cart Id can not be null.");
+                throw new ArgumentException("Cart Id can not be null.");
             }
 
             CustomerCart? cart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, 
@@ -81,6 +82,19 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordNotFoundException("Invalid Cart Id.");
             }
+            if(cart.IsConvertedToSale == true)
+            {
+                throw new RecordNotFoundException("The cart you are trying to update has already been converted to sale.");
+            }
+
+            var customerPrevCart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, 
+                x => x.CustomerId == request.CustomerId && x.Id != request.CartId
+                 && x.IsActive == true && x.IsConvertedToSale == false).Result.Data.FirstOrDefault();
+            if(customerPrevCart != null)
+            {
+                throw new ArgumentException("The customer you are trying to assign the cart already has an active cart.");
+            }
+
             cart.IsConvertedToSale = request.IsConvertedToSale;
             cart.CustomerId = request.CustomerId;
             var response = await _unitOfWork.CustomerCartRepo.UpdateAsync(cart, userId, cancellationToken);
@@ -91,16 +105,20 @@ namespace BS.Services.SaleProcessingService
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request), "The request can not be null.");
+                throw new ArgumentException("The request can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CartId))
             {
-                throw new ArgumentNullException(nameof(request), "Cart Id can not be null.");
+                throw new ArgumentException("Cart Id can not be null.");
             }
             CustomerCart? cart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken,x => x.Id == request.CartId && x.IsActive == true).Result.Data.FirstOrDefault();
             if (cart == null)
             {
                 throw new RecordNotFoundException("The cart you are trying to remove does not exist.");
+            }
+            if (cart.IsConvertedToSale)
+            {
+                throw new ArgumentException("Unable to delete the cart that has been converted to sale.");
             }
             cart.IsActive = false;
             var response = await _unitOfWork.CustomerCartRepo.UpdateAsync(cart, userId, cancellationToken);
@@ -109,15 +127,22 @@ namespace BS.Services.SaleProcessingService
         }
         public async Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken)
         {
-            List<Carts> carts = new List<Carts>();
+            List<Carts>? carts = new List<Carts>();
             if (string.IsNullOrWhiteSpace(tillId))
             {
-                throw new ArgumentNullException("The Till Id can not be null.");
+                throw new ArgumentException("The Till Id can not be null.");
             }
+            int totalAmount = 0;
             carts = _unitOfWork.CustomerCartRepo
                 .GetAsync(cancellationToken, x => x.TillId == tillId && x.IsActive == true && x.IsConvertedToSale == false, 
-                orderBy: q => q.OrderByDescending(p => p.CreatedDate)).Result.Data
-                .Select(x=>new Carts { Id = x.Id, CustomerId = x.CustomerId }).ToList();
+                orderBy: q => q.OrderByDescending(p => p.CreatedDate), includeProperties: $"{nameof(CustomerManagement)},{nameof(CustomerCartItems)}.{nameof(Items)}")?.Result?.Data?
+                .Select(x=>new Carts { 
+                    Id = x.Id, 
+                    CustomerId = x.CustomerId,
+                    CustomerName = x?.CustomerManagement?.Name ?? "",
+                    TotalItems = x?.CustomerCartItems?.Count(y=>y.CartId == x.Id && y.IsActive==true),
+                    TotalAmount = x?.CustomerCartItems?.Where(y => y.CartId == x.Id && y.IsActive == true).Sum(x=>x?.Items?.Price * x?.Quantity ?? 0)
+                }).ToList();
             if(carts == null)
             {
                 throw new RecordNotFoundException("No active carts found for the till.");
@@ -132,29 +157,57 @@ namespace BS.Services.SaleProcessingService
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request), "The request can not be null.");
+                throw new ArgumentException("The request can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CartId))
             {
-                throw new ArgumentNullException("Cart Id can not be null.");
+                throw new ArgumentException("Cart Id can not be null.");
             }
             if(request.Items == null)
             {
-                throw new ArgumentNullException("Item Id is required.");
+                throw new ArgumentException("Item Id is required.");
             }
             if (request.Items.Count == 0)
             {
-                throw new ArgumentNullException("Item Ids are required.");
+                throw new ArgumentException("Item Id is required.");
             }
-            var cart = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x => x.Id == request.CartId && x.IsActive == true && x.IsConvertedToSale==false);
+            if (!request.Items.All(x => _unitOfWork.ItemsRepo.GetQueryable().Data.Select(x=>x.Id).ToList().Contains(x.ItemId ?? "")))
+            {
+                throw new RecordNotFoundException("Some of the items you are trying to add does not exist.");
+            }
+
+            var cart = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x => x.Id == request.CartId && 
+            x.IsActive == true && x.IsConvertedToSale==false,
+            includeProperties:$"{nameof(CustomerCartItems)}");
+
             if(cart.Data == null)
             {
                 throw new RecordNotFoundException("The cart does not exist.");
             }
-
+            if(cart.Data.Count() == 0)
+            {
+                throw new RecordNotFoundException("The cart does not exist.");
+            }
+            var cartItems = cart.Data.FirstOrDefault()?.CustomerCartItems?.Where(x => x.IsActive == true).ToList();
+            if(cartItems != null)
+            {
+                foreach (var item in cartItems)
+                {
+                    item.IsActive = false;
+                    await _unitOfWork.CustomerCartItemsRepo.UpdateAsync(item, userId, cancellationToken);
+                }
+            }
             foreach (var item in request.Items)
             {
-                if(item.Quantity > 0)
+                if (string.IsNullOrWhiteSpace(item.ItemId))
+                {
+                    throw new ArgumentException("Item Id is required.");
+                }
+                if (item.Quantity == null)
+                {
+                    throw new ArgumentException("Item quantity is required.");
+                }
+                if (item.Quantity > 0)
                 {
                     await _unitOfWork.CustomerCartItemsRepo.AddAsync(new CustomerCartItems
                     {
@@ -165,6 +218,10 @@ namespace BS.Services.SaleProcessingService
                         ItemId = item.ItemId,
                         Quantity = item.Quantity ?? 0
                     }, userId, cancellationToken);
+                }
+                else
+                {
+                    throw new ArgumentException("Item quantity must be greater than 0 for all the items.");
                 }
             }
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -178,23 +235,23 @@ namespace BS.Services.SaleProcessingService
             #region Request validation
             if (request == null)
             {
-                throw new ArgumentNullException("The request can not be null.");
+                throw new ArgumentException("The request can not be null.");
             }
             if (string.IsNullOrWhiteSpace(request.CartId))
             {
-                throw new ArgumentNullException("Cart Id can not be null.");
+                throw new ArgumentException("Cart Id can not be null.");
             }
             if(request.OrderSplitPayments == null)
             {
-                throw new ArgumentNullException("Payment method is required.");
+                throw new ArgumentException("Payment method is required.");
             }
             if(request.OrderSplitPayments.Count == 0)
             {
-                throw new ArgumentNullException("Payment method is required.");
+                throw new ArgumentException("Payment method is required.");
             }
             if (request.TotalAmount <= 0)
             {
-                throw new ArgumentNullException("Total amount must be greater than 0.");
+                throw new ArgumentException("Total amount must be greater than 0.");
             }
             #endregion
 
