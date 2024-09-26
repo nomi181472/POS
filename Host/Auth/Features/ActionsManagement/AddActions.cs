@@ -28,9 +28,14 @@ namespace Auth.Features.ActionsManagement
             IActionService _actionService;
             public RequestValidator(IActionService actionService)
             {
-                
-                RuleFor(x => x.Name).Must(IsActionAvailable).WithMessage("Action already available");
-                _actionService = actionService; 
+                _actionService = actionService;
+
+                RuleFor(x => x.Name)
+                    .Must(IsActionAvailable).WithMessage("Action already available")
+                    .NotEmpty().WithMessage("Name is required.")
+                    .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                    .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be only whitespaces.");
+
             }
             public bool IsActionAvailable(string name)
             {
@@ -58,7 +63,7 @@ namespace Auth.Features.ActionsManagement
             }
             catch (ArgumentNullException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);

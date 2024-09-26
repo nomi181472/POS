@@ -67,15 +67,20 @@ namespace BS.Services.AuthService
 
                 if (PasswordHelper.VerifyPassword(pwd, hash,salt) == false)
                 {
-                    throw new UnauthorizedAccessException("Invalid password.");
+                    throw new ArgumentException("Invalid password.");
                 }
 
                 var tokens = _generateToken(new UserPayload()
                 {
                     UserId = user.Id,
                     UserType = user.UserType,
-                    RoleIds = string.Join(KConstantToken.Separator, roles.Select(x => x.ToResponse()).SelectMany(x => x.Actions).Select(x => x.ActionName.ToLower().ToShortenUrl())),
-                    Email = user.Email
+                    Email = user.Email,
+                    RoleIds = string.Join(KConstantToken.Separator, roles
+                                                                        .Select(x => x.ToResponse())
+                                                                        .SelectMany(x => x.Actions)
+                                                                        .Where(x => x.IsActive)
+                                                                        .Select(x => x.ActionName.ToLower().ToShortenUrl())
+                                          )
                 });
 
                 response.UserId = user.Id;
@@ -140,7 +145,7 @@ namespace BS.Services.AuthService
 
             Credential credential = new Credential(Guid.NewGuid().ToString(), userId, now, passwordSalt, passwordHash, userId);
 
-            User user = new User(userId, userId, now, request.Name, request.Email, "", credential, userRoles);
+            User user = new User(userId, userId, now, request.Name, request.Email, request.UserType, credential, userRoles);
 
             var result = _uot.user.Add(user, userId);
             if (result.Result)

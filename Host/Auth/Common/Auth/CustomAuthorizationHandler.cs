@@ -44,7 +44,7 @@ namespace Auth.Common.Auth
                     int statusCode = HTTPStatusCode400.Forbidden;
                     _httpContextAccessor.HttpContext.Response.StatusCode = statusCode;
                     _httpContextAccessor.HttpContext.Response.ContentType = "application/json";
-                    await _httpContextAccessor.HttpContext.Response.WriteAsJsonAsync(ApiResponseHelper.Convert(true, false, $"User is not authorizeed to access this resource: {path}", statusCode, null));
+                    await _httpContextAccessor.HttpContext.Response.WriteAsJsonAsync(ApiResponseHelper.Convert(true, false, $"User is not authorized to access this resource: {path}", statusCode, null));
                     await _httpContextAccessor.HttpContext.Response.CompleteAsync();
 
                     context.Fail();
