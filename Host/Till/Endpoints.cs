@@ -57,7 +57,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(ICashFeature)}")
                            .WithTags("CashManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddCash>()
                  .MapEndpoint<ListCashWithDetails>()
                  .MapEndpoint<UpdateCash>();
@@ -68,7 +68,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IPaymentMethodFeature)}")
             .WithTags("PaymentMethods");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<ListAllPaymentMethods>();
     }
 
@@ -77,7 +77,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(ITillFeature)}")
             .WithTags("TillManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddTill>()
             .MapEndpoint<ListAllTills>();
     }
@@ -87,7 +87,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IOrderFeature)}")
                            .WithTags("OrderManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddOrderDetails>()
                  .MapEndpoint<ListOrderDetailsWithDetails>()
                  .MapEndpoint<UpdateOrderDetails>();
@@ -99,7 +99,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IInventoryFeature)}")
                            .WithTags("InventoryManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<GetInventory>()
             .MapEndpoint<ReloadInventory>();
     }
@@ -109,7 +109,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(ICustomerFeature)}")
                            .WithTags("CustomerManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddCustomer>()
                  .MapEndpoint<UpdateCustomer>()
                  .MapEndpoint<ListCustomerWithDetails>();
@@ -120,7 +120,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"/{nameof(IPaymentManagementFeature)}")
                            .WithTags("PaymentManagement");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddSurchargeDiscount>();
     }
 
@@ -129,7 +129,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"{nameof(ISaleFeature)}")
             .WithTags("SalesProcessing");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<CreateCart>()
             .MapEndpoint<UpdateCart>()
             .MapEndpoint<RemoveCart>()
@@ -152,7 +152,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"{nameof(ICashSessionFeature)}")
             .WithTags("CashSession");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddCashSession>()
             .MapEndpoint<GetCashDetailsByCashSessionId>();
     }
