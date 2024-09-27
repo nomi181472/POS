@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\AuthInfra\BS\BS.csproj" />
     <ProjectReference Include="..\..\NATSNotificationSystem\NATSNotificationSystem.csproj" />
+    <ProjectReference Include="..\..\SessionManager\SessionManager.csproj" />
     <ProjectReference Include="..\..\Utility\CustomHTTP\CustomHTTP.csproj" />
     <ProjectReference Include="..\..\Utility\EndpointExposerGRPC\EndpointGRPC.csproj" />
     <ProjectReference Include="..\..\Utility\Helpers\Helpers.csproj" />
