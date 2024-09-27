@@ -41,7 +41,8 @@ namespace BS.Services.InventoryManagementService
                     ItemName = x.ItemName,
                     ImagePath = x.ItemImages?.FirstOrDefault()?.ImagePath ?? "",
                     ItemCode = x.ItemCode,
-                    Price = x.Price
+                    Price = x.Price,
+                    Quantity = x.Quantity
                 });
             if(items == null)
             {

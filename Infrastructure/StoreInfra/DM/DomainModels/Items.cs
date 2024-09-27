@@ -23,6 +23,7 @@ namespace DM.DomainModels
         public virtual string? TaxType { get; set; }
         public virtual string? TaxCode { get; set; }
         public virtual int? Price { get; set; }
+        public virtual int? Quantity { get; set; }
         public virtual ICollection<ItemImage>? ItemImages { get; set; }
         public virtual ICollection<Tax>? Taxes { get; set; }
         public virtual ICollection<CustomerCartItems>? CustomerCartItems { get; set; }

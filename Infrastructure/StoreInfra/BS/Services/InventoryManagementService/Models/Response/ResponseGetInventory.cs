@@ -14,5 +14,6 @@ namespace BS.Services.InventoryManagementService.Models.Response
         public virtual string? ItemName { get; set; }
         public virtual int? Price { get; set; }
         public virtual string? ImagePath { get; set; }
+        public virtual int? Quantity { get; set; }
     }
 }
