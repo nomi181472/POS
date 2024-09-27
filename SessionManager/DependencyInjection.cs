@@ -15,10 +15,15 @@ namespace SessionManager
         {
             var redisConnectionString = configuration.GetConnectionString("Redis");
 
-            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            // Replace IConnectionMultiplexer in RedisSessionManager.cs with ConnectionMultiplexer
+            services.AddSingleton<IConnectionMultiplexer>(x =>
             {
-                var configurationOptions = ConfigurationOptions.Parse(redisConnectionString, true);
-                return ConnectionMultiplexer.Connect(configurationOptions);
+                var multiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions()
+                {
+                    EndPoints = { "redis_container:6379" }
+                });
+
+                return multiplexer;
             });
 
             services.AddScoped<RedisSessionManager>();
