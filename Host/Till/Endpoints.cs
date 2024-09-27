@@ -15,22 +15,23 @@ using Till.Feature.CartManagement;
 using Till.Feature.PaymentMethod;
 using Till.Feature.CustomerFeedbackManagement;
 using Till.Feature.CashSessionManagement;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Till;
 
 public static class Endpoints
 {
-    //private static readonly OpenApiSecurityScheme securityScheme = new()
-    //{
-    //    Type = SecuritySchemeType.Http,
-    //    Name = JwtBearerDefaults.AuthenticationScheme,
-    //    Scheme = JwtBearerDefaults.AuthenticationScheme,
-    //    Reference = new()
-    //    {
-    //        Type = ReferenceType.SecurityScheme,
-    //        Id = JwtBearerDefaults.AuthenticationScheme
-    //    }
-    //};
+    private static readonly OpenApiSecurityScheme securityScheme = new()
+    {
+        Type = SecuritySchemeType.Http,
+        Name = JwtBearerDefaults.AuthenticationScheme,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Reference = new()
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = JwtBearerDefaults.AuthenticationScheme
+        }
+    };
 
     public static void MapEndpoints(this WebApplication app)
     {
@@ -142,7 +143,7 @@ public static class Endpoints
         var endpoints = app.MapGroup($"{nameof(ICustomerFeedbackFeature)}")
             .WithTags("CustomerFeedback");
 
-        endpoints.MapPublicGroup()
+        endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddCustomerFeedback>();
     }
 
@@ -162,15 +163,15 @@ public static class Endpoints
                   .AllowAnonymous();
     }
 
-    //private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
-    //{
-    //    return app.MapGroup(prefix ?? string.Empty)
-    //        .RequireAuthorization()
-    //        .WithOpenApi(x => new(x)
-    //        {
-    //            Security = [new() { [securityScheme] = [] }],
-    //        });
-    //}
+    private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
+    {
+        return app.MapGroup(prefix ?? string.Empty)
+            .RequireAuthorization()
+            .WithOpenApi(x => new(x)
+            {
+                Security = [new() { [securityScheme] = [] }],
+            });
+    }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app) where TEndpoint : IFeature
     {

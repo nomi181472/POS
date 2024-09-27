@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Reflection;
 using Till.Common;
+using Till.Extensions.Validators;
+using Till.Common.JWT;
 namespace Till.Extensions
 {
     public static class ConfigDI
@@ -27,7 +29,7 @@ namespace Till.Extensions
                     .AddSwagger(KConstant.ApiName)
                     //TODO: AddServicesLayers
                     //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
-                    //.AddAuthDI(configuration)
+                    .AddAuthDI(configuration)
                    
                     .AddBusinessLayer(configuration)
                     .AddHelpers(configuration)
@@ -45,6 +47,21 @@ namespace Till.Extensions
             return services;
         }
 
+        public static IServiceCollection AddAuthDI(this IServiceCollection services, IConfiguration configuration)
+        {
+
+
+
+            services
+
+            .AddJwtValidator(configuration)
+            .AddCustomAuthorization();
+
+            services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+            services.AddTransient<Jwt>();
+
+            return services;
+        }
 
         private static IServiceCollection AddSwagger(this IServiceCollection services, string pTitle)
         {
