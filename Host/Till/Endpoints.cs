@@ -134,7 +134,8 @@ public static class Endpoints
             .MapEndpoint<RemoveCart>()
             .MapEndpoint<GetActiveCartsByTill>()
             .MapEndpoint<AddItemsToCart>()
-            .MapEndpoint<CreateOrder>();
+            .MapEndpoint<CreateOrder>()
+            .MapEndpoint<ViewCart>();
     }
 
     private static void MapCustomerFeedbackEndpoints(this IEndpointRouteBuilder app)

@@ -227,7 +227,6 @@ namespace BS.Services.SaleProcessingService
             await _unitOfWork.CommitAsync(cancellationToken);
             return true;
         }
-
         public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, string userId, CancellationToken cancellationToken)
         {
             CreateOrderResponse createOrderResponse = new CreateOrderResponse();
@@ -311,6 +310,32 @@ namespace BS.Services.SaleProcessingService
                 return createOrderResponse;
             }
             #endregion
+        }
+        public async Task<ViewCartResponse> ViewCart(string? cartId, string userId, CancellationToken cancellationToken)
+        {
+            ViewCartResponse response = new ViewCartResponse();
+            var cartResult = await _unitOfWork.CustomerCartRepo.GetSingleAsync(cancellationToken, 
+                x => x.Id == cartId && x.IsActive == true,
+                includeProperties: $"{nameof(CustomerCartItems)}.{nameof(Items)}");
+            CustomerCart cart = cartResult.Data;
+            if(cart == null)
+            {
+                throw new ArgumentException("Cart was not found.");
+            }
+            if (cart.IsConvertedToSale)
+            {
+                throw new ArgumentException("Cart has already been converted to sale.");
+            }
+            response.CartItems = cart.CustomerCartItems?.Where(x => x.IsActive).Select(x => new CartItems
+            {
+                ItemId = x.ItemId,
+                ItemCode = x.Items?.ItemCode ?? "",
+                ItemName = x.Items?.ItemName ?? "",
+                Price = x.Items?.Price ?? 0,
+                Quantity = x.Quantity,
+            }).ToList();
+            response.CustomerId = cart.CustomerId;
+            return response;
         }
     }
 }

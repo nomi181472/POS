@@ -16,5 +16,6 @@ namespace BS.Services.SaleProcessingService
         public Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken);
         public Task<bool> AddItemsToCart(AddItemsToCartRequest request, string userId, CancellationToken cancellationToken);
         public Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, string userId, CancellationToken cancellationToken);
+        public Task<ViewCartResponse> ViewCart(string? cartId, string userId, CancellationToken cancellationToken);
     }
 }
