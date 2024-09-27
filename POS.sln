@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Till.Test", "UnitTests\Till
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSNotificationSystem", "NATSNotificationSystem\NATSNotificationSystem.csproj", "{AACA6AC2-720D-49C6-812C-34009966984B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionManager", "SessionManager\SessionManager.csproj", "{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{AACA6AC2-720D-49C6-812C-34009966984B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AACA6AC2-720D-49C6-812C-34009966984B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AACA6AC2-720D-49C6-812C-34009966984B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +184,7 @@ Global
 		{058CBC14-07E1-473D-9DF8-EB81A6495B16} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
 		{D9D29EAA-CEE7-4058-BF45-8410F2AC4A8A} = {5A42174A-2924-4142-A46A-FAA83AA5DA1A}
 		{AACA6AC2-720D-49C6-812C-34009966984B} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
+		{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A} = {C15D9C1E-C389-4382-8166-0ADF64DE4EFB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FDBB5A72-8894-422F-AE01-5D42AF7B7EAD}

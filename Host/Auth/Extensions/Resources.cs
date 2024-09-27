@@ -24,6 +24,8 @@ using System.Xml;
 using Helpers.ServiceCollectionExtensions;
 using Auth.Features.UserManagement;
 using Auth.Middlewares;
+using StackExchange.Redis;
+using SessionManager;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -37,8 +39,8 @@ namespace ConfigResource
             string validatorName = "RequestValidator";
             services
 
-
             .AddCustomLogger(configuration)
+            .AddRedisSessionManager(configuration)
             .AddSwagger(KConstant.ApiName)
             .AddMiddlewares()
             //TODO: AddServicesLayers
@@ -57,7 +59,22 @@ namespace ConfigResource
                 });
             });
 
+            return services;
+        }
 
+
+
+        public static IServiceCollection AddRedisSessionManager(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("Redis");
+
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configurationOptions = ConfigurationOptions.Parse(redisConnectionString, true);
+                return ConnectionMultiplexer.Connect(configurationOptions);
+            });
+
+            services.AddScoped<RedisSessionManager>();
 
             return services;
         }

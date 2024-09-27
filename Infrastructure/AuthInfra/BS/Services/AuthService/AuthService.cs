@@ -17,15 +17,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Helpers.Strings;
+using SessionManager;
 namespace BS.Services.AuthService
 {
     internal class AuthService : IAuthService
     {
         private readonly Func<UserPayload, AccessAndRefreshTokens> _generateToken;
         readonly IUnitOfWork _uot;
-        public AuthService(IUnitOfWork unit, Func<UserPayload, AccessAndRefreshTokens> generateToken) {
+        private readonly RedisSessionManager _sessionManager;
+        public AuthService(IUnitOfWork unit, Func<UserPayload, AccessAndRefreshTokens> generateToken, RedisSessionManager sessionManager)
+        {
             _uot = unit;
             _generateToken = generateToken;
+            _sessionManager = sessionManager;
         }
 
 
@@ -34,18 +38,17 @@ namespace BS.Services.AuthService
         {
             ResponseAuthorizedUser response = new ResponseAuthorizedUser();
 
-
             #region Getting user
             var userData = await _uot.user
                 .GetSingleAsync(
-                token, 
+                token,
                 u => u.Email.ToLower() == request.Email.ToLower(),
                 $"{nameof(Credential)}," +
                 $"{nameof(UserRole)}," +
                 $"{nameof(RefreshToken)}," +
                 $"{nameof(UserRole)}.{nameof(Role)}," +
                 $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}," +
-                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}" 
+                $"{nameof(UserRole)}.{nameof(Role)}.{nameof(RoleAction)}.{nameof(Actions)}"
                 );
             #endregion
 
@@ -63,11 +66,17 @@ namespace BS.Services.AuthService
                 var pwd = request.Password;
                 var hash = credential.PasswordHash;
                 var salt = credential.PasswordSalt;
-                
 
-                if (PasswordHelper.VerifyPassword(pwd, hash,salt) == false)
+                if (!PasswordHelper.VerifyPassword(pwd, hash, salt))
                 {
                     throw new ArgumentException("Invalid password.");
+                }
+
+                /// Redis: check existing tokens
+                var existingAccessToken = await _sessionManager.GetTokenAsync($"{user.Id}:accessToken");
+                if (!string.IsNullOrEmpty(existingAccessToken))
+                {
+                    await _sessionManager.RemoveTokenAsync($"{user.Id}:accessToken");
                 }
 
                 var tokens = _generateToken(new UserPayload()
@@ -76,19 +85,24 @@ namespace BS.Services.AuthService
                     UserType = user.UserType,
                     Email = user.Email,
                     RoleIds = string.Join(KConstantToken.Separator, roles
-                                                                        .Select(x => x.ToResponse())
-                                                                        .SelectMany(x => x.Actions)
-                                                                        .Where(x => x.IsActive)
-                                                                        .Select(x => x.ActionName.ToLower().ToShortenUrl())
-                                          )
+                        .Select(x => x.ToResponse())
+                        .SelectMany(x => x.Actions)
+                        .Where(x => x.IsActive)
+                        .Select(x => x.ActionName.ToLower().ToShortenUrl()))
                 });
 
-                response.UserId = user.Id;
-                response.RoleAndActions = roles.Select(x=>x.ToResponse());
-                response.Token = tokens.AccessToken;
-                response.RefreshToken = user.RefreshToken!.Token;
-                response.UserType = user.UserType;
+                var accessTokenExpiration = TimeSpan.FromMinutes(10);
+                var refreshTokenExpiration = TimeSpan.FromDays(7);
 
+                /// Redis: store new tokens
+                await _sessionManager.StoreTokenAsync($"{user.Id}:accessToken", tokens.AccessToken, accessTokenExpiration);
+                await _sessionManager.StoreTokenAsync($"{user.Id}:refreshToken", tokens.RefreshToken, refreshTokenExpiration);
+
+                response.UserId = user.Id;
+                response.RoleAndActions = roles.Select(x => x.ToResponse());
+                response.Token = tokens.AccessToken;
+                response.RefreshToken = tokens.RefreshToken;
+                response.UserType = user.UserType;
                 response.Name = user.Name;
                 response.Email = user.Email;
 
@@ -98,8 +112,8 @@ namespace BS.Services.AuthService
             {
                 throw new UnknownException(userData.Message);
             }
-            
         }
+
 
 
 
