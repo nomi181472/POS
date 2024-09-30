@@ -9,6 +9,7 @@ using PaymentGateway.API.Common;
 using BS.Services.RoleService.Models.Request;
 using BS.Services.RoleService.Models;
 using DA.Common.CommonRoles;
+using Auth.Middlewares;
 
 namespace Auth.Features.UserManagement
 {
@@ -87,13 +88,13 @@ namespace Auth.Features.UserManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddUser request, IUserService UserService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddUser request, IUserContext userContext, IUserService UserService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await UserService.AddUser(request, "", cancellationToken);
+                var result = await UserService.AddUser(request, userContext.Data.UserId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (InvalidOperationException e)

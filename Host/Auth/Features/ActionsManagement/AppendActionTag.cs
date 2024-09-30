@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.ActionsService;
@@ -28,13 +29,13 @@ namespace Auth.Features.ActionsManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAppendActionTag request, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAppendActionTag request, IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await actionService.AppendActionTag(request, "", cancellationToken);
+                var result = await actionService.AppendActionTag(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAppendActionTag();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
