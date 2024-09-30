@@ -18,6 +18,10 @@ using System.Reflection;
 using Till.Common;
 using Till.Extensions.Validators;
 using Till.Common.JWT;
+using Till.Common.Auth;
+using Till.Common.Auth.Requirements;
+using Microsoft.AspNetCore.Authorization;
+using Helpers.Auth.Models;
 namespace Till.Extensions
 {
     public static class ConfigDI
@@ -63,6 +67,59 @@ namespace Till.Extensions
             return services;
         }
 
+        private static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
+        {
+
+            services.AddHttpContextAccessor();
+
+            services.AddAuthorization(options =>
+            {
+                // options.AddPolicy(KPolicyDescriptor.SuperAdminPolicy, policy=>policy.RequireAuthenticatedUser());
+                options.AddPolicy(KPolicyDescriptor.CustomPolicy, policy => policy.RequireAuthenticatedUser()
+                .AddRequirements(new CustomAuthorizationRequirement()));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+            services.AddSingleton<Func<UserPayload, AccessAndRefreshTokens>>(sp =>
+            {
+                var jwt = sp.GetRequiredService<Jwt>();
+                return (user) => jwt.GenerateToken(user);
+            });
+            /* services.AddAuthorization(options =>
+             {
+                 options.AddPolicy(KPolicyDescriptor.SuperAdminPolicy, policy =>
+                 {
+                     policy.RequireAssertion(context =>
+                     {
+                         // Ensure the Resource is an HttpContext
+                         if (context.Resource is HttpContext httpContext)
+                         {
+                             var roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
+                             var userRoles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+
+                             foreach (var role in userRoles)
+                             {
+                                 var roleEntity = roleManager.FindByNameAsync(role).Result;
+                                 if (roleEntity != null)
+                                 {
+                                     *//*var rolePolicies = roleEntity.Policies; // Assuming roleEntity has a Policies property
+
+                                     if (rolePolicies.Any(p => p.Name == "RequiredPolicy"))
+                                     {
+                                         return true;
+                                     }*//*
+                                     return true;
+                                 }
+                             }
+                         }
+
+                         return false;
+                     });
+                 });
+             });*/
+            return services;
+        }
+
         private static IServiceCollection AddSwagger(this IServiceCollection services, string pTitle)
         {
             services.AddEndpointsApiExplorer();
@@ -92,41 +149,41 @@ namespace Till.Extensions
             return services;
         }*/
 
-        private static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
-        {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("CustomPolicy", policy =>
-                {
-                    policy.RequireAssertion(context =>
-                    {
-                        // Ensure the Resource is an HttpContext
-                        if (context.Resource is HttpContext httpContext)
-                        {
-                            var roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
-                            var userRoles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
+        //private static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
+        //{
+        //    services.AddAuthorization(options =>
+        //    {
+        //        options.AddPolicy("CustomPolicy", policy =>
+        //        {
+        //            policy.RequireAssertion(context =>
+        //            {
+        //                // Ensure the Resource is an HttpContext
+        //                if (context.Resource is HttpContext httpContext)
+        //                {
+        //                    var roleManager = httpContext.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
+        //                    var userRoles = context.User.FindAll(ClaimTypes.Role).Select(r => r.Value);
 
-                            foreach (var role in userRoles)
-                            {
-                                var roleEntity = roleManager.FindByNameAsync(role).Result;
-                                if (roleEntity != null)
-                                {
-                                    /*var rolePolicies = roleEntity.Policies; // Assuming roleEntity has a Policies property
+        //                    foreach (var role in userRoles)
+        //                    {
+        //                        var roleEntity = roleManager.FindByNameAsync(role).Result;
+        //                        if (roleEntity != null)
+        //                        {
+        //                            /*var rolePolicies = roleEntity.Policies; // Assuming roleEntity has a Policies property
 
-                                    if (rolePolicies.Any(p => p.Name == "RequiredPolicy"))
-                                    {
-                                        return true;
-                                    }*/
-                                    return true;
-                                }
-                            }
-                        }
+        //                            if (rolePolicies.Any(p => p.Name == "RequiredPolicy"))
+        //                            {
+        //                                return true;
+        //                            }*/
+        //                            return true;
+        //                        }
+        //                    }
+        //                }
 
-                        return false;
-                    });
-                });
-            });
-            return services;
-        }
+        //                return false;
+        //            });
+        //        });
+        //    });
+        //    return services;
+        //}
     }
 }

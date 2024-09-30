@@ -16,6 +16,7 @@ using Till.Feature.PaymentMethod;
 using Till.Feature.CustomerFeedbackManagement;
 using Till.Feature.CashSessionManagement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Till.Common.Auth;
 
 namespace Till;
 
@@ -167,7 +168,7 @@ public static class Endpoints
     private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
-            .RequireAuthorization()
+            .RequireAuthorization(KPolicyDescriptor.CustomPolicy)
             .WithOpenApi(x => new(x)
             {
                 Security = [new() { [securityScheme] = [] }],
