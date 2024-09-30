@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.RoleService.Models.Request;
@@ -52,13 +53,13 @@ namespace Auth.Features.UserManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestUpdateUser request, IUserService service, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestUpdateUser request, IUserContext userContext, IUserService service, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await service.UpdateUser(request, "", cancellationToken);
+                var result = await service.UpdateUser(request, userContext.Data.UserId, cancellationToken);
 
                
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

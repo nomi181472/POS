@@ -1,5 +1,6 @@
 ﻿using AttendanceService.Common;
 using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
 using BS.Services.RoleService.Models;
@@ -40,13 +41,13 @@ namespace Auth.Features.UserManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestDeleteUser request, IUserService userService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestDeleteUser request, IUserContext userContext, IUserService userService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await userService.DeleteUser(request, "", cancellationToken);
+                var result = await userService.DeleteUser(request, userContext.Data.UserId, cancellationToken);
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
