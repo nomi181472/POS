@@ -3,7 +3,7 @@ version: '3.8'  # Specify the docker-compose version
 services:
 
   authdb:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: authdb
     environment:
       POSTGRES_USER: postgres
@@ -16,7 +16,7 @@ services:
 
 
   hubdb:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: hubdb
     environment:
       POSTGRES_USER: postgres
@@ -29,7 +29,7 @@ services:
 
   
   storedb:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: storedb
     environment:
       POSTGRES_USER: postgres
