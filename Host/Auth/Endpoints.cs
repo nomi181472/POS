@@ -51,7 +51,8 @@ public static class Endpoints
             .MapEndpoint<GetUser>()
             .MapEndpoint<GetUserDetailsWithActions>()
             .MapEndpoint<ListUsers>()
-            .MapEndpoint<UpdateUser>();
+            .MapEndpoint<UpdateUser>()
+            .MapEndpoint<GetTotalUsers>();
     }
     private static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
@@ -82,7 +83,8 @@ public static class Endpoints
             .MapEndpoint<DetachUserRole>()
             .MapEndpoint<DetachUserRoles>()
             .MapEndpoint<DetachUserRoleByUserId>()
-            .MapEndpoint<DetachUserRolesByUserId>();
+            .MapEndpoint<DetachUserRolesByUserId>()
+            .MapEndpoint<ListRolesWithActions>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {
