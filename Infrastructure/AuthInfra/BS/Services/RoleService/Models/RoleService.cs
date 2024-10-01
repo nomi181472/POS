@@ -295,7 +295,7 @@ namespace BS.Services.RoleService.Models
         {
             if (roleId == null)
             {
-                throw new ArgumentNullException("roleId can not be null or empty");
+                throw new ArgumentException("roleId can not be null or empty");
             }
 
             var setterResult = await _unitOfWork.userRole.UpdateOnConditionAsync(
@@ -309,7 +309,7 @@ namespace BS.Services.RoleService.Models
 
             if (setterResult == null)
             {
-                throw new InvalidOperationException("The update operation did not return a result.");
+                throw new RecordNotFoundException("The update operation did not return a result.");
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -335,7 +335,7 @@ namespace BS.Services.RoleService.Models
 
             if (result == null || !result.Status || result.Data == null)
             {
-                throw new InvalidOperationException("Could not retrieve UserRoles list");
+                throw new RecordNotFoundException("Could not retrieve UserRoles list");
             }
 
             var affectedRoles = result.Data.ToList();
@@ -345,6 +345,82 @@ namespace BS.Services.RoleService.Models
                 role.IsActive = false;
                 role.UpdatedBy = userId;
                 role.UpdatedDate = DateTime.UtcNow;
+            }
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+
+
+
+        public async Task<bool> DetachUserRoleByUserId(string roleId, string userToDetach, string userId, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(roleId))
+            {
+                throw new ArgumentException("roleId cannot be null or empty", nameof(roleId));
+            }
+
+            if (string.IsNullOrWhiteSpace(userToDetach))
+            {
+                throw new ArgumentException("userToDetach cannot be null or empty", nameof(userToDetach));
+            }
+
+            var userRoleResult = await _unitOfWork.userRole.GetAsync(
+                cancellationToken,
+                ur => ur.RoleId == roleId && ur.UserId == userToDetach && ur.IsActive
+            );
+
+            if (userRoleResult == null || !userRoleResult.Status || userRoleResult.Data == null || !userRoleResult.Data.Any())
+            {
+                throw new RecordNotFoundException("No matching UserRole found to detach.");
+            }
+
+            var userRole = userRoleResult.Data.FirstOrDefault();
+            if (userRole == null)
+            {
+                throw new RecordNotFoundException("The matching UserRole record could not be found.");
+            }
+
+            userRole.RoleId = null;
+            userRole.UpdatedBy = userId;
+            userRole.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+
+
+
+
+        public async Task<bool> DetachUserRolesByUserId(string[] roleIds, string userToDetach, string userId, CancellationToken cancellationToken)
+        {
+            if (roleIds == null || roleIds.Length == 0)
+            {
+                throw new ArgumentException("Role IDs cannot be null or empty.", nameof(roleIds));
+            }
+
+            if (string.IsNullOrWhiteSpace(userToDetach))
+            {
+                throw new ArgumentException("User to detach cannot be null or empty.", nameof(userToDetach));
+            }
+
+            var userRoles = await _unitOfWork.userRole.GetAsync(
+                cancellationToken,
+                ur => ur.IsActive && ur.UserId == userToDetach && roleIds.Contains(ur.RoleId)
+            );
+
+            if (userRoles == null || !userRoles.Status || userRoles.Data == null)
+            {
+                throw new RecordNotFoundException("No matching UserRoles found to detach.");
+            }
+
+            foreach (var userRole in userRoles.Data)
+            {
+                userRole.RoleId = null;
+                userRole.UpdatedBy = userId;
+                userRole.UpdatedDate = DateTime.UtcNow;
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);

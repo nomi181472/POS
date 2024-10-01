@@ -1,40 +1,32 @@
 ﻿using AttendanceService.Common;
-using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
-using BS.Services.UserService.Models;
-using BS.Services.UserService.Models.Request;
-using BS.Services.UserService.Models.Response;
-using FluentValidation;
-using Helpers.CustomExceptionThrower;
+using BS.Services.RoleService.Models;
 using Logger;
 using PaymentGateway.API.Common;
 
-namespace Auth.Features.UserManagement
+namespace Auth.Features.RoleManagement
 {
-    public class GetUserDetailsWithActions : IUserManagementFeature
+    public class DetachUserRolesByUserId : IRoleManagementFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapGet($"/{nameof(GetUserDetailsWithActions)}/" +"{Id}", Handle)
-            .WithSummary("Get user")
+            .MapPatch($"/{nameof(DetachUserRolesByUserId)}", Handle)
+            .WithSummary("Delete Role Details")
             .Produces(HTTPStatusCode200.Ok)
-            .Produces(HTTPStatusCode400.Forbidden)
             .Produces(HTTPStatusCode400.NotFound)
             .Produces<bool>();
 
-
-        private static async Task<IResult> Handle(string Id, IUserService userService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(string[] roleIds, string userToDetach, IUserContext userContext, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await userService.GetUserDetailsWithActions(Id, cancellationToken);
-              
-                
+                var result = await roleService.DetachUserRolesByUserId(roleIds, userToDetach, userContext.Data.UserId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            catch (ArgumentFalseException e)
+            catch (ArgumentException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
