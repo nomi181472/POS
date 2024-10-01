@@ -182,6 +182,75 @@ namespace BS.Services.RoleService.Models
 
 
 
+        public async Task<IEnumerable<ResponseListRolesWithUsers>> ListRolesWithUsers(CancellationToken cancellationToken)
+        {
+            // Fetch all roles from the database
+            var roleResult = await _unitOfWork.role.GetAllAsync(cancellationToken);
+
+            if (roleResult.Status && roleResult.Data != null)
+            {
+                var rolesWithUsers = new List<ResponseListRolesWithUsers>();
+
+                var roles = roleResult.Data.ToList();
+
+                // Iterate through each role to find associated users
+                foreach (var role in roles)
+                {
+                    // Fetch UserRoles for this Role
+                    var userRolesResult = await _unitOfWork.userRole.GetAsync(
+                        cancellationToken,
+                        ur => ur.RoleId == role.Id && ur.IsActive
+                    );
+
+                    if (userRolesResult.Status && userRolesResult.Data != null)
+                    {
+                        var userIds = userRolesResult.Data
+                            .Where(ur => ur.UserId != null)
+                            .Select(ur => ur.UserId)
+                            .Distinct()
+                            .ToList();
+
+                        if (userIds.Any())
+                        {
+                            // Fetch Users for the selected UserIds
+                            var userResult = await _unitOfWork.user.GetAsync(
+                                cancellationToken,
+                                u => userIds.Contains(u.Id) && u.IsActive
+                            );
+
+                            if (userResult.Status && userResult.Data != null)
+                            {
+                                // Prepare the list of users for this role
+                                var users = userResult.Data.ToList();
+
+                                // Add the role with associated users to the final result
+                                rolesWithUsers.Add(new ResponseListRolesWithUsers
+                                {
+                                    RoleId = role.Id,
+                                    RoleName = role.Name,
+                                    Users = users.Select(u => new UsersInResponseListRolesWithUsers
+                                    {
+                                        UserId = u.Id,
+                                        UserName = u.Name
+                                    }).ToList()
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return rolesWithUsers;
+            }
+            else
+            {
+                throw new RecordNotFoundException("No roles found.");
+            }
+        }
+
+
+
+
+
         public async Task<bool> DeleteRole(RequestDeleteRole request, string userId, CancellationToken cancellationToken)
         {
             var getterResult = await _unitOfWork.role.GetByIdAsync(request.RoleId, cancellationToken);
@@ -196,6 +265,20 @@ namespace BS.Services.RoleService.Models
             {
                 throw new InvalidOperationException("Can't delete SuperAdmin role");
             }
+
+            #region Detach from all Users
+            var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.RoleId == request.RoleId && x.IsActive);
+            if (userRolesResult.Status && userRolesResult.Data.Any())
+            {
+                foreach (var userRole in userRolesResult.Data)
+                {
+                    userRole.IsActive = false;
+                    userRole.UpdatedBy = userId;
+                    userRole.UpdatedDate = DateTime.UtcNow;
+                }
+                await _unitOfWork.CommitAsync(cancellationToken);
+            }
+            #endregion Detach from all Users
 
             role.IsActive = false;
             role.UpdatedDate = DateTime.UtcNow;
