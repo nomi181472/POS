@@ -220,5 +220,23 @@ namespace BS.Services.UserService.Models
 
             return true;
         }
+
+
+        public async Task<int> GetTotalUsers(CancellationToken cancellationToken)
+        {
+            var result = await _uot.user.GetAllAsync(cancellationToken);
+
+            if (result.Status)
+            {
+                return result.Data?.Count() ?? 0;
+            }
+            else
+            {
+                throw new UnknownException(result.Message);
+            }
+        }
+
+
+
     }
 }

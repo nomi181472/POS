@@ -430,6 +430,53 @@ namespace BS.Services.RoleService.Models
 
 
 
+        public async Task<IEnumerable<ResponseListRolesWithActions>> ListRolesWithActions(CancellationToken cancellationToken)
+        {
+            // Step 1: Fetch all roles from the database
+            var rolesResult = await _unitOfWork.role.GetAllAsync(cancellationToken);
+
+            if (!rolesResult.Status || rolesResult.Data == null)
+            {
+                throw new RecordNotFoundException("No roles found.");
+            }
+
+            var rolesWithActions = new List<ResponseListRolesWithActions>();
+            var roles = rolesResult.Data.ToList();
+
+            // Step 2: Iterate through each role to find associated actions
+            foreach (var role in roles)
+            {
+                // Fetch RoleActions for this Role
+                var roleActionsResult = await _unitOfWork.roleAction.GetAsync(
+                    cancellationToken,
+                    ra => ra.RoleId == role.Id && ra.Actions.IsActive,
+                    includeProperties: nameof(RoleAction.Actions)
+                );
+
+                if (roleActionsResult.Status && roleActionsResult.Data != null)
+                {
+                    var actions = roleActionsResult.Data
+                        .Select(ra => new ActionInResponseListRolesWithActions
+                        {
+                            ActionId = ra.ActionId,
+                            ActionName = ra.Actions.Name
+                        }).ToList();
+
+                    // Add the role with associated actions to the final result
+                    rolesWithActions.Add(new ResponseListRolesWithActions
+                    {
+                        RoleId = role.Id,
+                        RoleName = role.Name,
+                        Actions = actions
+                    });
+                }
+            }
+
+            return rolesWithActions;
+        }
+
+
+
         public async Task<List<ResponseGetAllUserRoles>> GetAllUserRoles(string userId, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.userRole.GetAllAsync(cancellationToken);

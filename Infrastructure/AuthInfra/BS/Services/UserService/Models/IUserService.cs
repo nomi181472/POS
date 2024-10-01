@@ -23,5 +23,6 @@ namespace BS.Services.UserService.Models
         Task<ResponseGetUser> GetUser(string UserId, CancellationToken cancellationToken);
         Task<List<ResponseGetUser>> ListUser( CancellationToken cancellationToken);
         Task<ResponseUserDetailsWithRoleAndPolicies> GetUserDetailsWithActions(string id, CancellationToken cancellationToken);
+        Task<int> GetTotalUsers(CancellationToken cancellationToken);
     }
 }
