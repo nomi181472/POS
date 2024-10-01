@@ -8,6 +8,7 @@ using Auth.Features.AuthManagement;
 using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
 using Auth.Features.UserManagement;
+using BS.Services.RoleService.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
@@ -76,7 +77,8 @@ public static class Endpoints
               .MapEndpoint<GetPoliciesByRoleId>()
             .MapEndpoint<GetRole>()
             .MapEndpoint<ListRoles>()
-            .MapEndpoint<UpdateRole>();
+            .MapEndpoint<UpdateRole>()
+            .MapEndpoint<ListRolesWithUsers>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {

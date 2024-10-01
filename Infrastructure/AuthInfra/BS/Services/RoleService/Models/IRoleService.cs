@@ -25,5 +25,6 @@ namespace BS.Services.RoleService.Models
         Task<List<ResponseGetRole>> ListRole( CancellationToken cancellationToken);
         Task<bool> AddActionsInRole(RequestAddActionsInRole request, string v, CancellationToken cancellationToken);
         Task<IEnumerable<ResponsePolicyByRoleId>> GetPoliciesByRoleId(string id, CancellationToken cancellationToken);
+        Task<IEnumerable<ResponseListRolesWithUsers>> ListRolesWithUsers(CancellationToken cancellationToken);
     }
 }
