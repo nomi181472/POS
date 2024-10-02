@@ -41,12 +41,12 @@ namespace BS.Services.SaleProcessingService
             var customer = _unitOfWork.CustomerManagementRepo.GetAsync(cancellationToken, x => x.Id == request.CustomerId.Trim() && x.IsActive == true).Result.Data.FirstOrDefault();
             if(customer == null)
             {
-                throw new KeyNotFoundException("Invalid Customer Id.");
+                throw new RecordNotFoundException("Invalid Customer Id.");
             }
             var till = _unitOfWork.TillRepo.GetAsync(cancellationToken, x => x.Id == request.TillId.Trim() && x.IsActive == true).Result.Data.FirstOrDefault();
             if (till == null)
             {
-                throw new KeyNotFoundException("Invalid Till Id.");
+                throw new RecordNotFoundException("Invalid Till Id.");
             }
             string cartId = Guid.NewGuid().ToString();
             var prevCart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x=>x.CustomerId == request.CustomerId.Trim() && x.IsActive==true && x.IsConvertedToSale == false).Result.Data.FirstOrDefault();
@@ -88,7 +88,7 @@ namespace BS.Services.SaleProcessingService
             var customer = _unitOfWork.CustomerManagementRepo.GetAsync(cancellationToken, x => x.Id == request.CustomerId.Trim() && x.IsActive == true).Result.Data.FirstOrDefault();
             if (customer == null)
             {
-                throw new KeyNotFoundException("Invalid Customer Id.");
+                throw new RecordNotFoundException("Invalid Customer Id.");
             }
             CustomerCart? cart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, 
                 x => x.Id == request.CartId.Trim() && x.IsActive == true).Result.Data.FirstOrDefault();
@@ -150,7 +150,7 @@ namespace BS.Services.SaleProcessingService
             var till = _unitOfWork.TillRepo.GetAsync(cancellationToken, x => x.Id == tillId && x.IsActive == true).Result.Data.FirstOrDefault();
             if (till == null)
             {
-                throw new KeyNotFoundException("Invalid Till Id.");
+                throw new RecordNotFoundException("Invalid Till Id.");
             }
             int totalAmount = 0;
             carts = _unitOfWork.CustomerCartRepo
