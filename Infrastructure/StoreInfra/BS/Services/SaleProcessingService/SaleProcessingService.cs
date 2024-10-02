@@ -142,9 +142,15 @@ namespace BS.Services.SaleProcessingService
         public async Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken)
         {
             List<Carts>? carts = new List<Carts>();
+            tillId = tillId.Trim();
             if (string.IsNullOrWhiteSpace(tillId))
             {
                 throw new ArgumentException("The Till Id can not be null.");
+            }
+            var till = _unitOfWork.TillRepo.GetAsync(cancellationToken, x => x.Id == tillId && x.IsActive == true).Result.Data.FirstOrDefault();
+            if (till == null)
+            {
+                throw new KeyNotFoundException("Invalid Till Id.");
             }
             int totalAmount = 0;
             carts = _unitOfWork.CustomerCartRepo
