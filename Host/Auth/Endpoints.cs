@@ -84,7 +84,8 @@ public static class Endpoints
             .MapEndpoint<DetachUserRoles>()
             .MapEndpoint<DetachUserRoleByUserId>()
             .MapEndpoint<DetachUserRolesByUserId>()
-            .MapEndpoint<ListRolesWithActions>();
+            .MapEndpoint<ListRolesWithActions>()
+            .MapEndpoint<GetRbacMatrix>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {
