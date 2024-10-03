@@ -91,7 +91,7 @@ namespace BS.Services.AuthService
                         .Select(x => x.ActionName.ToLower().ToShortenUrl()))
                 });
 
-                var accessTokenExpiration = TimeSpan.FromMinutes(10);
+                var accessTokenExpiration = TimeSpan.FromMinutes(540);
                 var refreshTokenExpiration = TimeSpan.FromDays(7);
 
                 /// Redis: store new tokens
