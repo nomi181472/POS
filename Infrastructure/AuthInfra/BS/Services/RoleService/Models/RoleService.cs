@@ -660,5 +660,78 @@ namespace BS.Services.RoleService.Models
 
 
 
+        public async Task<ResponseGetRbacMatrix> GetRbacMatrix(string featureName, CancellationToken cancellationToken)
+        {
+            ResponseGetRbacMatrix response = new ResponseGetRbacMatrix
+            {
+                ActionsInFeature = new List<ActionDto>(),
+                AllRoles = new List<RoleDto>(),
+                ActionsAssociatedWithRole = new List<RoleActionDto>()
+            };
+
+            if (string.IsNullOrWhiteSpace(featureName))
+            {
+                throw new ArgumentException("Feature name cannot be null or empty.", nameof(featureName));
+            }
+
+            #region Fetch Actions in Feature
+            var actionsResult = await _unitOfWork.action.GetAllAsync(cancellationToken);
+            if (!actionsResult.Status || actionsResult.Data == null)
+            {
+                throw new RecordNotFoundException("No actions found.");
+            }
+
+            var actionsInFeature = actionsResult.Data
+                                                    .Where(a => a.Name.Contains(featureName.Split('/').Last(), StringComparison.OrdinalIgnoreCase))
+                                                    .Select(a => new ActionDto
+                                                    {
+                                                        Id = a.Id,
+                                                        Name = a.Name
+                                                    }).ToList();
+
+            response.ActionsInFeature.AddRange(actionsInFeature);
+            #endregion Fetch Actions in Feature
+
+            #region Fetch Roles
+            var rolesResult = await _unitOfWork.role.GetAllAsync(cancellationToken);
+            if (!rolesResult.Status || rolesResult.Data == null)
+            {
+                throw new RecordNotFoundException("No roles found.");
+            }
+
+            var roles = rolesResult.Data.Select(r => new RoleDto
+            {
+                Id = r.Id,
+                Name = r.Name
+            }).ToList();
+
+            response.AllRoles.AddRange(roles);
+            #endregion Fetch Roles
+
+            #region Find RoleActions
+            var roleActionsResult = await _unitOfWork.roleAction.GetAsync(
+                cancellationToken,
+                ra => ra.IsActive
+            );
+
+            if (roleActionsResult.Status && roleActionsResult.Data != null)
+            {
+                var roleActions = roleActionsResult.Data.Select(ra => new RoleActionDto
+                {
+                    RoleId = ra.RoleId,
+                    ActionId = ra.ActionId
+                }).ToList();
+
+                response.ActionsAssociatedWithRole.AddRange(roleActions);
+            }
+            #endregion Find RoleActions
+
+
+
+            return response;
+        }
+
+
+
     }
 }
