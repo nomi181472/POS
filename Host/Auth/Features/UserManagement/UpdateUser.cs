@@ -32,10 +32,11 @@ namespace Auth.Features.UserManagement
                 _service = service;
 
                 RuleFor(n => n.Name)
-                    .NotEmpty().WithMessage("Name is required.");
+                    .NotEmpty().WithMessage("Name is required.")
+                    .MinimumLength(3).WithMessage("Name must be at least 3 characters long.")
+                    .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be only whitespaces.");
 
-                RuleFor(x => x.Email)
-                    .NotEmpty().WithMessage("Email is required.");
+                RuleFor(x => x.Email).EmailAddress().Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").NotEmpty();
 
                 RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage("UserId is required.")

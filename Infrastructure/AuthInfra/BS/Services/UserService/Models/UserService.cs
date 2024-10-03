@@ -25,7 +25,11 @@ namespace BS.Services.UserService.Models
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new InvalidDataException(nameof(request));
+            }
+            if (request.RoleIds.Count != request.RoleIds.Distinct().Count())
+            {
+                throw new InvalidDataException("Duplicate RoleIds are not allowed.");
             }
 
             var now = DateTime.UtcNow;
@@ -208,6 +212,11 @@ namespace BS.Services.UserService.Models
             if (getterResult.Data.UserType == KDefinedRoles.SuperAdmin)
             {
                 throw new InvalidOperationException("Can't update SuperAdmin");
+            }
+            var userWithSameEmail = await _uot.user.GetAsync(cancellationToken, x => x.Email == request.Email && x.Id != request.UserId);
+            if (userWithSameEmail != null)
+            {
+                throw new InvalidOperationException("The provided email is already assigned to a different user.");
             }
 
             var user = getterResult.Data;
