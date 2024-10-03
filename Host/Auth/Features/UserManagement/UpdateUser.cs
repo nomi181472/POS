@@ -31,11 +31,11 @@ namespace Auth.Features.UserManagement
             {
                 _service = service;
 
+                RuleFor(n => n.Name)
+                    .NotEmpty().WithMessage("Name is required.");
+
                 RuleFor(x => x.Email)
-                    .NotEmpty().WithMessage("Email is required.")
-                  
-                    //.Must(IsUserExist).WithMessage("Email already exists.")
-                    ;
+                    .NotEmpty().WithMessage("Email is required.");
 
                 RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage("UserId is required.")
