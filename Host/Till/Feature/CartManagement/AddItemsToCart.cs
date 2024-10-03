@@ -7,6 +7,7 @@ using Logger;
 using PaymentGateway.API.Common;
 using Till.Common;
 using Till.Extensions.RouteHandler;
+using Till.Middlewares;
 
 namespace Till.Feature.CartManagement
 {
@@ -31,13 +32,13 @@ namespace Till.Feature.CartManagement
             }
         }
 
-        private static async Task<IResult> Handle(AddItemsToCartRequest request, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(AddItemsToCartRequest request, IUserContext userContext, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                string userId = "";//fetch from header
+                string userId = userContext.Data.UserId;
                 var result = await _saleProcessing.AddItemsToCart(request, userId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }

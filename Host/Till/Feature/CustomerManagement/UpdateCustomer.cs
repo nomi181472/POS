@@ -6,6 +6,7 @@ using BS.Services.CustomerManagementService.Models.Response;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
+using Till.Middlewares;
 
 namespace Till.Feature.CustomerManagement
 {
@@ -24,14 +25,14 @@ namespace Till.Feature.CustomerManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestUpdateCustomer request, ICustomerManagementService customerManagementService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestUpdateCustomer request, IUserContext userContext, ICustomerManagementService customerManagementService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await customerManagementService.UpdateCustomer(request, "", cancellationToken);
+                var result = await customerManagementService.UpdateCustomer(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseUpdateCustomer();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

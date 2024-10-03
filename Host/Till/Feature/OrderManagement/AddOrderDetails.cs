@@ -8,6 +8,7 @@ using Logger;
 using PaymentGateway.API.Common;
 using Till.Extensions.RouteHandler;
 using Till.Feature.CashManagement;
+using Till.Middlewares;
 
 namespace Till.Feature.OrderManagement
 {
@@ -28,14 +29,14 @@ namespace Till.Feature.OrderManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddOrderDetails request, IOrderDetailsService orderDetails, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddOrderDetails request, IUserContext userContext, IOrderDetailsService orderDetails, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await orderDetails.AddOrders(request, "", cancellationToken);
+                var result = await orderDetails.AddOrders(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddOrderDetails();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

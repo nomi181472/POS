@@ -2,6 +2,7 @@
 using MapConfig;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Till.Middlewares;
 
 namespace Till.Extensions
 {
@@ -17,6 +18,7 @@ namespace Till.Extensions
             //app.UseAuthorization();
             app.MapEndpointsExposed();
             app.MapEndpoints();
+            app.UseMiddleware<UserContextMiddleware>();
             await app.EnsureDatabaseCreated();
             app.UseCors(x => x
               .AllowAnyOrigin()

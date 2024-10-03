@@ -22,6 +22,7 @@ using Till.Common.Auth;
 using Till.Common.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Helpers.Auth.Models;
+using Till.Middlewares;
 namespace Till.Extensions
 {
     public static class ConfigDI
@@ -31,6 +32,7 @@ namespace Till.Extensions
             services
                     .AddCustomLogger(configuration)
                     .AddSwagger(KConstant.ApiName)
+                    .AddMiddlewares()
                     //TODO: AddServicesLayers
                     //TODO: AddFluentValidation.AddValidatorsFromAssembly(typeof(ConfigureServices).Assembly)
                     .AddAuthDI(configuration)
@@ -48,6 +50,12 @@ namespace Till.Extensions
                         });
                     });
 
+            return services;
+        }
+
+        private static IServiceCollection AddMiddlewares(this IServiceCollection services)
+        {
+            services.AddScoped<IUserContext, UserContext>();
             return services;
         }
 

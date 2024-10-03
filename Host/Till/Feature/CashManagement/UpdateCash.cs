@@ -6,6 +6,7 @@ using BS.Services.CashManagementService.Models.Response;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
+using Till.Middlewares;
 
 namespace Till.Feature.CashManagement
 {
@@ -24,14 +25,14 @@ namespace Till.Feature.CashManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestUpdateCash request, ICashManagementService cash, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestUpdateCash request, IUserContext userContext, ICashManagementService cash, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await cash.UpdateCash(request, "", cancellationToken);
+                var result = await cash.UpdateCash(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseUpdateCash();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

@@ -19,6 +19,7 @@ using BS.Services.CashManagementService.Models.Response;
 using BS.Services.CashManagementService;
 using BS.CustomExceptions.CustomExceptionMessage;
 using Till.Feature.CashManagement;
+using Till.Middlewares;
 
 namespace Till.Features.CashManagement
 {
@@ -39,14 +40,14 @@ namespace Till.Features.CashManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddCash request, ICashManagementService cash, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddCash request, IUserContext userContext, ICashManagementService cash, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await cash.AddCash(request, "", cancellationToken);
+                var result = await cash.AddCash(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddCash();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

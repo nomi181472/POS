@@ -6,6 +6,7 @@ using BS.Services.OrderService.Models.Response;
 using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
+using Till.Middlewares;
 
 namespace Till.Feature.OrderManagement
 {
@@ -24,14 +25,14 @@ namespace Till.Feature.OrderManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestUpdateOrderDetails request, IOrderDetailsService cash, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestUpdateOrderDetails request, IUserContext userContext, IOrderDetailsService cash, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await cash.UpdateOrderDetails(request, "", cancellationToken);
+                var result = await cash.UpdateOrderDetails(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseUpdateOrderDetails();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
