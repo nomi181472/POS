@@ -7,6 +7,7 @@ using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
 using Till.Extensions.RouteHandler;
+using Till.Middlewares;
 
 namespace Till.Feature.PaymentManagement
 {
@@ -27,14 +28,14 @@ namespace Till.Feature.PaymentManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddSurchargeDiscount request, IPaymentManagementService service, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddSurchargeDiscount request, IUserContext userContext, IPaymentManagementService service, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = true;// await service.AddSurchargeDiscount(request, "", cancellationToken);
+                var result = true;// await service.AddSurchargeDiscount(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 var response = new ResponseAddSurchargeDiscount();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);

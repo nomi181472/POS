@@ -8,6 +8,7 @@ using Logger;
 using PaymentGateway.API.Common;
 using Till.Common;
 using Till.Extensions.RouteHandler;
+using Till.Middlewares;
 
 namespace Till.Feature.CashSessionManagement
 {
@@ -28,14 +29,14 @@ namespace Till.Feature.CashSessionManagement
             }
         }
 
-        private static async Task<IResult> Handle(RequestAddCashSession request, ICashSessionService service, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddCashSession request, IUserContext userContext, ICashSessionService service, ICustomLogger _logger, CancellationToken cancellationToken)
         {
 
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await service.AddCashSession(request, "", cancellationToken);
+                var result = await service.AddCashSession(request, userContext.Data.UserId, cancellationToken);
                 //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }

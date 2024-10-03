@@ -10,6 +10,7 @@ using System.Reflection.Metadata;
 using Till.Common;
 using Till.Extensions.RouteHandler;
 using Till.Feature.CartManagement;
+using Till.Middlewares;
 
 namespace Till.Feature.SaleProcessing
 {
@@ -26,14 +27,14 @@ namespace Till.Feature.SaleProcessing
             .Produces(500)
             .Produces<CreateOrderResponse>();
 
-        private static async Task<IResult> Handle(CreateOrderRequest request, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(CreateOrderRequest request, IUserContext userContext, ISaleProcessingService _saleProcessing, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             CreateOrderResponse response = new CreateOrderResponse();
             try
             {
-                string userId = "";//fetch from header
+                string userId = userContext.Data.UserId;//fetch from header
                 var result = await _saleProcessing.CreateOrder(request, userId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
