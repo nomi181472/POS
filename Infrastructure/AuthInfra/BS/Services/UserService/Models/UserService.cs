@@ -85,6 +85,16 @@ namespace BS.Services.UserService.Models
                 throw new InvalidOperationException("Can't delete SuperAdmin user");
             }
 
+            var existingUserRoles = await _uot.userRole.GetAsync(cancellationToken, x => x.UserId == userToUpdate.Id);
+            var userRolesToDelete = existingUserRoles.Data;
+            if (userRolesToDelete.Count() != 0)
+            {
+                foreach (var role in userRolesToDelete)
+                {
+                    role.IsActive = false;
+                }
+            }
+
             userToUpdate.IsActive = false;
             userToUpdate.UpdatedBy = userId;
             userToUpdate.UpdatedDate = DateTime.UtcNow;
