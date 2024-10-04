@@ -43,7 +43,7 @@ public static class Endpoints
     private static void MapUserManagement(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IUserManagementFeature)}")
-            .WithTags("UserManagement");
+            .WithTags("IUserManagementFeature");
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddUser>()
@@ -57,7 +57,7 @@ public static class Endpoints
     private static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IAuthFeature)}")
-            .WithTags("Authentication");
+            .WithTags("IAuthFeature");
 
         endpoints.MapPublicGroup()
             .MapEndpoint<SignUp>()
@@ -69,7 +69,7 @@ public static class Endpoints
     private static void MapRoleManagementEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IRoleManagementFeature)}")
-            .WithTags("Role");
+            .WithTags("IRoleManagementFeature");
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddRole>()
@@ -84,12 +84,13 @@ public static class Endpoints
             .MapEndpoint<DetachUserRoles>()
             .MapEndpoint<DetachUserRoleByUserId>()
             .MapEndpoint<DetachUserRolesByUserId>()
-            .MapEndpoint<ListRolesWithActions>();
+            .MapEndpoint<ListRolesWithActions>()
+            .MapEndpoint<GetRbacMatrix>();
     }
     private static void MapActionsManagementEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IActionsFeature)}")
-            .WithTags("Actions");
+            .WithTags("IActionsFeature");
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddActionsInRole>()

@@ -29,5 +29,6 @@ namespace BS.Services.RoleService.Models
         Task<bool> DetachUserRoleByUserId(string roleId, string userToDetach, string userId, CancellationToken cancellationToken);
         Task<bool> DetachUserRolesByUserId(string[] roleId, string userToDetach, string userId, CancellationToken cancellationToken);
         Task<IEnumerable<ResponseListRolesWithActions>> ListRolesWithActions(CancellationToken cancellationToken);
+        Task<ResponseGetRbacMatrix> GetRbacMatrix (string featureName, CancellationToken cancellationToken);
     }
 }
