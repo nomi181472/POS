@@ -358,12 +358,19 @@ namespace BS.Services.RoleService.Models
         {
             if (string.IsNullOrWhiteSpace(roleId))
             {
-                throw new ArgumentException("roleId cannot be null or empty", nameof(roleId));
+                throw new ArgumentException("Role ID cannot be null or empty.", nameof(roleId));
             }
 
             if (string.IsNullOrWhiteSpace(userToDetach))
             {
-                throw new ArgumentException("userToDetach cannot be null or empty", nameof(userToDetach));
+                throw new ArgumentException("User to detach cannot be null or empty.", nameof(userToDetach));
+            }
+
+            var userToUpdate = await _unitOfWork.user.GetAsync(cancellationToken, u => u.Id == userToDetach);
+
+            if (userToUpdate.Data.Any(u => u.UserType == KDefinedRoles.SuperAdmin))
+            {
+                throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
             }
 
             var userRoleResult = await _unitOfWork.userRole.GetAsync(
@@ -377,10 +384,6 @@ namespace BS.Services.RoleService.Models
             }
 
             var userRole = userRoleResult.Data.FirstOrDefault();
-            if (userRole == null)
-            {
-                throw new RecordNotFoundException("The matching UserRole record could not be found.");
-            }
 
             userRole.RoleId = null;
             userRole.UpdatedBy = userId;
@@ -390,7 +393,6 @@ namespace BS.Services.RoleService.Models
 
             return true;
         }
-
 
 
 
@@ -406,17 +408,24 @@ namespace BS.Services.RoleService.Models
                 throw new ArgumentException("User to detach cannot be null or empty.", nameof(userToDetach));
             }
 
-            var userRoles = await _unitOfWork.userRole.GetAsync(
+            var userToUpdate = await _unitOfWork.user.GetAsync(cancellationToken, u => u.Id == userToDetach);
+
+            if (userToUpdate.Data.Any(u => u.UserType == KDefinedRoles.SuperAdmin))
+            {
+                throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
+            }
+
+            var userRolesResult = await _unitOfWork.userRole.GetAsync(
                 cancellationToken,
                 ur => ur.IsActive && ur.UserId == userToDetach && roleIds.Contains(ur.RoleId)
             );
 
-            if (userRoles == null || !userRoles.Status || userRoles.Data == null)
+            if (userRolesResult == null || !userRolesResult.Status || userRolesResult.Data == null || !userRolesResult.Data.Any())
             {
                 throw new RecordNotFoundException("No matching UserRoles found to detach.");
             }
 
-            foreach (var userRole in userRoles.Data)
+            foreach (var userRole in userRolesResult.Data)
             {
                 userRole.RoleId = null;
                 userRole.UpdatedBy = userId;
@@ -709,9 +718,11 @@ namespace BS.Services.RoleService.Models
             #endregion Fetch Roles
 
             #region Find RoleActions
+            var actionIdsInFeature = actionsInFeature.Select(a => a.Id).ToList();
+
             var roleActionsResult = await _unitOfWork.roleAction.GetAsync(
                 cancellationToken,
-                ra => ra.IsActive
+                ra => ra.IsActive && actionIdsInFeature.Contains(ra.ActionId)
             );
 
             if (roleActionsResult.Status && roleActionsResult.Data != null)
@@ -725,6 +736,7 @@ namespace BS.Services.RoleService.Models
                 response.ActionsAssociatedWithRole.AddRange(roleActions);
             }
             #endregion Find RoleActions
+
 
 
 
