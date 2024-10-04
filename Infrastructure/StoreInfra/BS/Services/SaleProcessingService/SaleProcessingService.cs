@@ -110,7 +110,7 @@ namespace BS.Services.SaleProcessingService
             }
 
             cart.IsConvertedToSale = request.IsConvertedToSale;
-            cart.CustomerId = request.CustomerId;
+            cart.CustomerId = request.CustomerId.Trim();
             var response = await _unitOfWork.CustomerCartRepo.UpdateAsync(cart, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
             return response.Result;
