@@ -75,7 +75,7 @@ public static class Endpoints
             .MapEndpoint<AddRole>()
             .MapEndpoint<AddRoleToUser>()
             .MapEndpoint<DeleteRole>()
-              .MapEndpoint<GetPoliciesByRoleId>()
+            .MapEndpoint<GetPoliciesByRoleId>()
             .MapEndpoint<GetRole>()
             .MapEndpoint<ListRoles>()
             .MapEndpoint<UpdateRole>()
@@ -102,7 +102,8 @@ public static class Endpoints
             .MapEndpoint<GetOverallActions>()
             .MapEndpoint<RemoveActionTag>()
             .MapEndpoint<GetActionById>()
-            .MapEndpoint<GetActionsDetailsById>();
+            .MapEndpoint<GetActionsDetailsById>()
+            .MapEndpoint<GetAllFeatures>();
     }
     
    

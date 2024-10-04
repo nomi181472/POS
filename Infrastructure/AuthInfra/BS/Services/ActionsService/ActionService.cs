@@ -309,6 +309,30 @@ namespace BS.Services.ActionsService
 
 
 
+        public async Task<ResponseGetAllFeatures> GetAllFeatures(CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.action.GetAllAsync(cancellationToken);
 
+            if (!result.Status || result.Data == null)
+            {
+                throw new RecordNotFoundException("Failed to retrieve Actions data.");
+            }
+
+            var featureList = result.Data
+                .Where(record => record.IsActive && !string.IsNullOrWhiteSpace(record.Name))
+                .Select(record =>
+                {
+                    var parts = record.Name.Split('/');
+                    return parts.Length >= 3 ? parts[2] : string.Empty;
+                })
+                .Where(feature => !string.IsNullOrWhiteSpace(feature))
+                .Distinct()
+                .ToList();
+
+            return new ResponseGetAllFeatures
+            {
+                Features = featureList
+            };
+        }
     }
 }
