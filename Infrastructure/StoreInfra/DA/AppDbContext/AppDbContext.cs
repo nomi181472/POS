@@ -24,6 +24,7 @@ namespace DA.AppDbContexts
         public DbSet<Items> Items { get; set; }
         public DbSet<ItemImage> ItemImages { get; set; }
         public DbSet<Tax> Taxes { get; set; }
+        public DbSet<ItemGroup> ItemGroups { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -190,9 +191,13 @@ namespace DA.AppDbContexts
 
             builder.Entity<Items>(entity =>
             {
-                entity.HasMany(x => x.ItemImages).WithOne(x => x.Items).HasForeignKey(x => x.ItemId);
-                entity.HasMany(x => x.Taxes).WithOne(x => x.Items).HasForeignKey(x => x.ItemId);
+                
                 entity.HasMany(x => x.CustomerCartItems).WithOne(x=>x.Items).HasForeignKey(x => x.ItemId);
+            });
+
+            builder.Entity<Tax>(entity =>
+            {
+                entity.HasOne(x => x.Items).WithOne(y => y.Taxes).HasForeignKey<Tax>(t => t.ItemId);
             });
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

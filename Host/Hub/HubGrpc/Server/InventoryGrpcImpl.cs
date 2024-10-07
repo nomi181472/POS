@@ -16,12 +16,18 @@ namespace Hub.HubGrpc.Server
                 ItemName = "Product A",
                 Barcode = "123456789",
                 Price = 10.99,
-                Group = new InventoryGroup
+                Group = new ItemGroup
                 {
                     GroupCode = "G001",
                     GroupName = "Electronics"
                 },
-                Categories = { "Category1", "Category2" }
+                Categories = { "Category1", "Category2" },
+                Tax = new TaxDetails
+                {
+                    TaxCode = "T002",
+                    Percentage = 5
+                },
+                ImagePath = "sampleImage",
             });
 
             response.Items.Add(new InventoryItem
@@ -30,12 +36,18 @@ namespace Hub.HubGrpc.Server
                 ItemName = "Product B",
                 Barcode = "987654321",
                 Price = 15.49,
-                Group = new InventoryGroup
+                Group = new ItemGroup
                 {
                     GroupCode = "G002",
                     GroupName = "Furniture"
                 },
-                Categories = { "Category3", "Category4" }
+                Categories = { "Category3", "Category4" },
+                Tax = new TaxDetails
+                {
+                    TaxCode = "T002",
+                    Percentage = 5
+                },
+                ImagePath = "sampleImage",
             });
 
             return response;

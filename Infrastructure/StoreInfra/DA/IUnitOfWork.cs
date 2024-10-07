@@ -25,6 +25,7 @@ namespace DA
         IGenericRepository<Items, string> ItemsRepo { get; }
         IGenericRepository<ItemImage, string> ItemImageRepo { get; }
         IGenericRepository<Tax, string> TaxRepo { get; }
+        IGenericRepository<ItemGroup, string> ItemGroupRepo { get; }
 
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);

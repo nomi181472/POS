@@ -10,7 +10,7 @@ namespace DM.DomainModels
     {
         public virtual string? ItemCode {  get; set; }
         public virtual string? ItemName { get; set; }
-        public virtual int? ItemGroupCode { get; set; }
+        public virtual string? ItemGroupId { get; set; }
         public virtual string? PurchaseItem { get; set; }
         public virtual string? SellItem { get; set; }
         public virtual string? InventoryItem { get; set; }
@@ -25,7 +25,8 @@ namespace DM.DomainModels
         public virtual int? Price { get; set; }
         public virtual int? Quantity { get; set; }
         public virtual ICollection<ItemImage>? ItemImages { get; set; }
-        public virtual ICollection<Tax>? Taxes { get; set; }
+        public virtual Tax? Taxes { get; set; }
         public virtual ICollection<CustomerCartItems>? CustomerCartItems { get; set; }
+        public virtual ItemGroup ItemGroup { get; set; }
     }
 }

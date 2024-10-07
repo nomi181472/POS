@@ -31,6 +31,7 @@ namespace DA
         public IGenericRepository<Items, string> ItemsRepo => new GenericRepository<Items, string>(_db);
         public IGenericRepository<ItemImage, string> ItemImageRepo => new GenericRepository<ItemImage, string>(_db);
         public IGenericRepository<Tax, string> TaxRepo => new GenericRepository<Tax, string>(_db);
+        public IGenericRepository<ItemGroup, string> ItemGroupRepo => new GenericRepository<ItemGroup, string>(_db);
 
         public void Commit()
         {

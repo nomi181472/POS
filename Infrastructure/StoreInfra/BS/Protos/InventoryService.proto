@@ -28,14 +28,22 @@ message InventoryItem {
   string ItemName = 2;
   string Barcode = 4;
   double price = 5;
-  InventoryGroup Group = 6;
+  ItemGroup Group = 6;
   repeated string categories = 7;
+  TaxDetails Tax = 8;
+  string ImagePath = 9;
 }
 
-message InventoryGroup{
+message ItemGroup{
 	string GroupCode = 1;
 	string GroupName = 2;
 }
+
+message TaxDetails{
+	string TaxCode = 1;
+	double Percentage = 2;
+}
+
 
 
 
