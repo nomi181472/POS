@@ -37,6 +37,10 @@ namespace BS.Services.RoleService.Models
             {
                 throw new ArgumentNullException("Action list cannot be empty.");
             }
+            if (request.Actions.Count != request.Actions.Select(action => action.ToLower()).Distinct().Count())
+            {
+                throw new ArgumentNullException("Duplicate actions are not allowed.");
+            }
             #endregion ArgumentNullValidations
 
             #region Fetch from DB
