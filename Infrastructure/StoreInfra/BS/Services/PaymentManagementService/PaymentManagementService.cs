@@ -22,7 +22,12 @@ namespace BS.Services.PaymentManagementService
 
         public async Task<ResponseAddSurchargeDiscount> AddSurchargeDiscount(CreateOrderRequest request, Order order, string userId, CancellationToken token)
         {
+            //var orderResult = await _unitOfWork.OrderRepo.GetByIdAsync(order.Id, token);
+            //var order = orderResult.Data;
+
             double remainingAmount = request.TotalAmount;
+            order.TotalAmount = request.TotalAmount;
+            order.PaidAmount = 0;
             ResponseAddSurchargeDiscount response = new ResponseAddSurchargeDiscount();
             Dictionary<string, string?> paymentMethods = _unitOfWork.PaymentMethodsRepo.GetAsync(token, x => x.IsActive).Result.Data.ToDictionary(x => x.Id, x => x.Name);
 
@@ -53,6 +58,7 @@ namespace BS.Services.PaymentManagementService
                         response.ChequeSurchargeAmount = chequeSurchargeAmount;
                         remainingAmount += chequeSurchargeAmount;
                         remainingAmount -= splitPayment.PaidAmount;
+                        order.PaidAmount += splitPayment.PaidAmount;
                     }
 
                     if (value == KConstantPaymentMethods.OnlineTransfer)
@@ -61,6 +67,7 @@ namespace BS.Services.PaymentManagementService
                         response.OnlineTransferSurchargeAmount = onlineTransferSurchargeAmount;
                         remainingAmount += onlineTransferSurchargeAmount;
                         remainingAmount -= splitPayment.PaidAmount;
+                        order.PaidAmount += splitPayment.PaidAmount;
                     }
 
                     if (value == KConstantPaymentMethods.Cash)
@@ -69,6 +76,7 @@ namespace BS.Services.PaymentManagementService
                         response.CashDiscountAmount = discountAmount;
                         remainingAmount -= discountAmount;
                         remainingAmount -= splitPayment.PaidAmount;
+                        order.PaidAmount += splitPayment.PaidAmount;
                     }
 
                     if (value == KConstantPaymentMethods.Card)
@@ -78,6 +86,8 @@ namespace BS.Services.PaymentManagementService
                         remainingAmount += cardSurchargeAmount;
                         // TODO: Pass remaining amount to bool PayWCard()
                         remainingAmount -= splitPayment.PaidAmount;
+
+                        order.PaidAmount += splitPayment.PaidAmount;
                     }
 
                     /*if (remainingAmount > 0)
@@ -94,6 +104,7 @@ namespace BS.Services.PaymentManagementService
                 }
             }
 
+            await _unitOfWork.CommitAsync();
             return response;
         }
     }
