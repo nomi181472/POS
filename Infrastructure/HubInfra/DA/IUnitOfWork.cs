@@ -14,6 +14,8 @@ namespace DA
     {
         IGenericRepository<Location, string> LocationRepo { get; }
         IGenericRepository<Items, string> InventoryItemsRepo { get; }
+        IGenericRepository<Store, string> StoreRepo { get; }
+        IGenericRepository<StorageLocation, string> StorageLocationRepo { get; }
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);
         Task CommitAsync();
