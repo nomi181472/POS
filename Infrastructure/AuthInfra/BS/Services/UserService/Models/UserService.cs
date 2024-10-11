@@ -25,7 +25,11 @@ namespace BS.Services.UserService.Models
         {
             if (request == null)
             {
-                throw new InvalidDataException(nameof(request));
+                throw new InvalidDataException("request can't be null");
+            }
+            if (request.RoleIds.Count() == 0)
+            {
+                throw new InvalidDataException("Atleast one role required");
             }
             if (request.RoleIds.Count != request.RoleIds.Distinct().Count())
             {
