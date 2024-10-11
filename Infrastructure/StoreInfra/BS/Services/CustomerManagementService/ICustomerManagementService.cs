@@ -12,8 +12,9 @@ namespace BS.Services.CustomerManagementService
 {
     public interface ICustomerManagementService
     {
-        public Task<ResponseAddCustomer> AddCustomer(RequestAddCustomer request, string userId, CancellationToken token);
-        public Task<bool> UpdateCustomer(RequestUpdateCustomer request, string userId, CancellationToken token);
+        Task<ResponseAddCustomer> AddCustomer(RequestAddCustomer request, string userId, CancellationToken token);
+        Task<bool> UpdateCustomer(RequestUpdateCustomer request, string userId, CancellationToken token);
         Task<List<ResponseListCustomerWithDetails>> ListCustomerWithDetails(string userId, CancellationToken cancellationToken);
+        Task<ResponseGetCustomerHistoryById> GetCustomerHistoryById(string customerId, CancellationToken cancellationToken);
     }
 }
