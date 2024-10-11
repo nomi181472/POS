@@ -50,23 +50,30 @@ namespace Auth.Features.RoleManagement
             string message = "Success";
             try
             {
-
+                #region Setup API and Assembly Details
                 string ApiBaseName = KConstant.ApiName;
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 var iFeature = typeof(IFeature);
+                #endregion Setup API and Assembly Details
+
+                #region Retrieve Actions from API
                 var actions = await action.GetAllActionsOfAllApis(ApiBaseName, assembly, iFeature, cancellationToken);
                 var allActions = new HashSet<string>(actions.SelectMany(x => x.Routes).Select(x => x.ToLower()));
-                var isAllValid=request.Actions.All(x =>allActions.Contains( x.ToLower()));
+                #endregion
+
+                #region Validations
+                bool hasNullAction = request.Actions.Any(x => string.IsNullOrWhiteSpace(x));
+                var isAllValid = !hasNullAction && request.Actions.All(x => allActions.Contains(x.ToLower()));
                 if (!isAllValid)
                 {
                     statusCode = HTTPStatusCode400.NotFound;
                     message = "Invalid actions";
                     return ApiResponseHelper.Convert(true, false, message, statusCode, isAllValid);
                 }
+                #endregion Validations
+
 
                 var result = await roleService.AddActionsInRole(request, userContext.Data.UserId, cancellationToken);
-              
-                
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
             catch (ArgumentNullException e)
