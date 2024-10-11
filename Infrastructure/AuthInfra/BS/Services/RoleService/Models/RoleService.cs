@@ -377,14 +377,16 @@ namespace BS.Services.RoleService.Models
                 throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
             }
 
-            var userRoleResult = await _unitOfWork.userRole.GetAsync(
-                cancellationToken,
-                ur => ur.RoleId == roleId && ur.UserId == userToDetach && ur.IsActive
-            );
+            var userRoleResult = await _unitOfWork.userRole.GetAsync(cancellationToken, ur => ur.RoleId == roleId && ur.UserId == userToDetach && ur.IsActive);
 
             if (userRoleResult == null || !userRoleResult.Status || userRoleResult.Data == null || !userRoleResult.Data.Any())
             {
                 throw new RecordNotFoundException("No matching UserRole found to detach.");
+            }
+
+            if (userRoleResult.Data.Count() <= 1)
+            {
+                throw new ArgumentException("Cannot detach the only remaining role from the user.");
             }
 
             var userRole = userRoleResult.Data.FirstOrDefault();
@@ -419,10 +421,23 @@ namespace BS.Services.RoleService.Models
                 throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
             }
 
-            var userRolesResult = await _unitOfWork.userRole.GetAsync(
-                cancellationToken,
-                ur => ur.IsActive && ur.UserId == userToDetach && roleIds.Contains(ur.RoleId)
-            );
+            var allActiveRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken,ur => ur.UserId == userToDetach && ur.IsActive);
+
+            if (allActiveRolesResult == null || !allActiveRolesResult.Status || allActiveRolesResult.Data == null || !allActiveRolesResult.Data.Any())
+            {
+                throw new RecordNotFoundException("No active roles found for the user.");
+            }
+
+            var activeRolesCount = allActiveRolesResult.Data.Count();
+
+            var rolesToDetachCount = allActiveRolesResult.Data.Count(ur => roleIds.Contains(ur.RoleId));
+
+            if (activeRolesCount - rolesToDetachCount < 1)
+            {
+                throw new ArgumentException("Cannot detach roles such that the user is left with no roles.");
+            }
+
+            var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, ur => ur.IsActive && ur.UserId == userToDetach && roleIds.Contains(ur.RoleId));
 
             if (userRolesResult == null || !userRolesResult.Status || userRolesResult.Data == null || !userRolesResult.Data.Any())
             {
