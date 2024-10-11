@@ -22,6 +22,7 @@ namespace Till;
 
 public static class Endpoints
 {
+    #region Auth
     private static readonly OpenApiSecurityScheme securityScheme = new()
     {
         Type = SecuritySchemeType.Http,
@@ -33,6 +34,7 @@ public static class Endpoints
             Id = JwtBearerDefaults.AuthenticationScheme
         }
     };
+    #endregion Auth
 
     public static void MapEndpoints(this WebApplication app)
     {
@@ -61,26 +63,29 @@ public static class Endpoints
         endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddCash>()
                  .MapEndpoint<ListCashWithDetails>()
-                 .MapEndpoint<UpdateCash>();
+                 .MapEndpoint<UpdateCash>()
+                 ;
     }
 
     private static void MapPaymentMethodEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(IPaymentMethodFeature)}")
-            .WithTags("PaymentMethods");
+                           .WithTags("PaymentMethods");
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<ListAllPaymentMethods>();
+                 .MapEndpoint<ListAllPaymentMethods>()
+                 ;
     }
 
     private static void MapTillManagementEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"/{nameof(ITillFeature)}")
-            .WithTags("TillManagement");
+                           .WithTags("TillManagement");
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<AddTill>()
-            .MapEndpoint<ListAllTills>();
+                 .MapEndpoint<AddTill>()
+                 .MapEndpoint<ListAllTills>()
+                 ;
     }
 
     private static void MapOrderManagementEndpoints(this IEndpointRouteBuilder app)
@@ -91,7 +96,8 @@ public static class Endpoints
         endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddOrderDetails>()
                  .MapEndpoint<ListOrderDetailsWithDetails>()
-                 .MapEndpoint<UpdateOrderDetails>();
+                 .MapEndpoint<UpdateOrderDetails>()
+                 ;
     }
 
 
@@ -101,8 +107,9 @@ public static class Endpoints
                            .WithTags("InventoryManagement");
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<GetInventory>()
-            .MapEndpoint<ReloadInventory>();
+                 .MapEndpoint<GetInventory>()
+                 .MapEndpoint<ReloadInventory>()
+                 ;
     }
 
     private static void MapCustomerManagementEndpoints(this IEndpointRouteBuilder app)
@@ -113,7 +120,9 @@ public static class Endpoints
         endpoints.MapAuthorizedGroup()
                  .MapEndpoint<AddCustomer>()
                  .MapEndpoint<UpdateCustomer>()
-                 .MapEndpoint<ListCustomerWithDetails>();
+                 .MapEndpoint<ListCustomerWithDetails>()
+                 .MapEndpoint<GetCustomerHistoryById>()
+                 ;
     }
 
     private static void MapPaymentManagementEndpoints(this IEndpointRouteBuilder app)
@@ -128,7 +137,7 @@ public static class Endpoints
     private static void MapSaleProcessingEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"{nameof(ISaleFeature)}")
-            .WithTags("SalesProcessing");
+                           .WithTags("SalesProcessing");
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<CreateCart>()
@@ -143,22 +152,23 @@ public static class Endpoints
     private static void MapCustomerFeedbackEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"{nameof(ICustomerFeedbackFeature)}")
-            .WithTags("CustomerFeedback");
+                           .WithTags("CustomerFeedback");
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<AddCustomerFeedback>();
+                 .MapEndpoint<AddCustomerFeedback>();
     }
 
     private static void MapCashSessionEndpoints(this IEndpointRouteBuilder app)
     {
         var endpoints = app.MapGroup($"{nameof(ICashSessionFeature)}")
-            .WithTags("CashSession");
+                           .WithTags("CashSession");
 
         endpoints.MapAuthorizedGroup()
-            .MapEndpoint<AddCashSession>()
-            .MapEndpoint<GetCashDetailsByCashSessionId>();
+                 .MapEndpoint<AddCashSession>()
+                 .MapEndpoint<GetCashDetailsByCashSessionId>();
     }
 
+    #region RouteGroup & Endpoint Builders
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
@@ -168,11 +178,11 @@ public static class Endpoints
     private static RouteGroupBuilder MapAuthorizedGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
         return app.MapGroup(prefix ?? string.Empty)
-            .RequireAuthorization(KPolicyDescriptor.CustomPolicy)
-            .WithOpenApi(x => new(x)
-            {
-                Security = [new() { [securityScheme] = [] }],
-            });
+                  .RequireAuthorization(KPolicyDescriptor.CustomPolicy)
+                  .WithOpenApi(x => new(x)
+                  {
+                        Security = [new() { [securityScheme] = [] }],
+                  });
     }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app) where TEndpoint : IFeature
@@ -180,4 +190,5 @@ public static class Endpoints
         TEndpoint.Map(app);
         return app;
     }
+    #endregion RouteGroup & Endpoint Builders
 }

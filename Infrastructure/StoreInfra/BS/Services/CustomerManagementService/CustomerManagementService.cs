@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using System.Threading;
 using BS.Services.CashManagementService.Models.Response;
 using BS.Services.CustomerManagementService.Models.Response;
+using BS.CustomExceptions.Common;
+using DM.DomainModels;
 
 namespace BS.Services.CustomerManagementService
 {
@@ -195,6 +197,59 @@ namespace BS.Services.CustomerManagementService
             }
         }
 
+
+
+        public async Task<ResponseGetCustomerHistoryById> GetCustomerHistoryById(string customerId, CancellationToken cancellationToken)
+        {
+            /// SELECT ItemId AS itemid, Quantity FROM CustomerCartItems WHERE CartId = (SELECT Id FROM CustomerCart WHERE CustomerId = request.CustomerId AND IsConvertedToSale)
+            /// SELECT ItemName, ItemGroupCode FROM Items WHERE Id = itemid
+            /// SELECT GroupCodeName FROM ItemGroup WHERE Code = ItemGroupCode
+
+            ResponseGetCustomerHistoryById response = new ResponseGetCustomerHistoryById();
+
+            #region Validations
+            if (customerId == null)
+            {
+                throw new ArgumentException("No record can exist for null customer ID");
+            }
+            var existingCustomerResult = await _unitOfWork.CustomerManagementRepo.GetByIdAsync(customerId, cancellationToken);
+            if (existingCustomerResult.Data == null)
+            {
+                throw new RecordNotFoundException("Customer ID not found");
+            }
+            var customerCartResults = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x => x.CustomerId == customerId && x.IsConvertedToSale);
+            if (customerCartResults.Data == null || !customerCartResults.Data.Any())
+            {
+                throw new RecordNotFoundException("No cart for customer ID found");
+            }
+            #endregion Validations
+
+            #region Query
+            var customerHistoryList = new List<CustomerHistoryDTO>();
+            foreach (var customerCartResult in customerCartResults.Data)
+            {
+                var customerCartItemsResults = await _unitOfWork.CustomerCartItemsRepo.GetAsync(cancellationToken, x => x.Id == customerCartResult.Id);
+                if (customerCartItemsResults.Data == null) { throw new RecordNotFoundException("No Cart Items Found for customer ID"); }
+                foreach (var customerCartItemsResult in customerCartItemsResults.Data)
+                {
+                    var itemResult = await _unitOfWork.ItemsRepo.GetByIdAsync(customerCartItemsResult.ItemId, cancellationToken);
+                    if (itemResult.Data == null) { throw new RecordNotFoundException("No items found for the cart"); }
+                    var itemGroupResult = await _unitOfWork.ItemGroupRepo.GetByIdAsync(itemResult.Data.ItemGroupId, cancellationToken);
+
+                    customerHistoryList.Add(new CustomerHistoryDTO
+                    {
+                        ItemName = itemResult.Data.ItemName,
+                        Quantity = customerCartItemsResult.Quantity,
+                        GroupCodeName = itemGroupResult.Data.Name
+                    });
+                }
+            }
+            #endregion Query
+
+            response.CustomerName = existingCustomerResult.Data.Name;
+            response.CustomerHistory = customerHistoryList;
+            return response;
+        }
 
     }
 }
