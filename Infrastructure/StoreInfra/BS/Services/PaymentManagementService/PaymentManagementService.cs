@@ -86,13 +86,12 @@ namespace BS.Services.PaymentManagementService
                         remainingAmount += cardSurchargeAmount;
                         // TODO: Pass remaining amount to bool PayWCard()
                         remainingAmount -= splitPayment.PaidAmount;
-
                         order.PaidAmount += splitPayment.PaidAmount;
                     }
 
-                    /*if (remainingAmount > 0)
+                    if (remainingAmount > 0)
                     {
-                        if (request.IsCredit == true)
+                        if (request.IsPartial || request.IsLayaway)
                         {
                             response.CreditAmount = remainingAmount;
                         }
@@ -100,7 +99,7 @@ namespace BS.Services.PaymentManagementService
                         {
                             response.RemainingAmounnt = remainingAmount;
                         }
-                    }*/
+                    }
                 }
             }
 

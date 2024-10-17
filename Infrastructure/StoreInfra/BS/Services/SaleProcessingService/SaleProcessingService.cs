@@ -23,9 +23,14 @@ namespace BS.Services.SaleProcessingService
             _unitOfWork = unitOfWork;
             _paymentManagementService = paymentManagementService;
         }
+
+
+
         public async Task<CreateCartResponse> CreateCart(CreateCartRequest request, string userId, CancellationToken cancellationToken)
         {
             CreateCartResponse createCartResponse = new CreateCartResponse();
+
+            #region Request Validations
             if (request == null)
             {
                 throw new ArgumentException("The request can not be null.");
@@ -54,6 +59,8 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordAlreadyExistException("Active cart for this customer already exists.");
             }
+            #endregion Request Validations
+
             var response = await _unitOfWork.CustomerCartRepo.AddAsync(new DM.DomainModels.CustomerCart
             {
                 Id = cartId,
@@ -62,7 +69,7 @@ namespace BS.Services.SaleProcessingService
                 IsActive = true,
                 IsArchived = false,
                 TillId = request.TillId.Trim()
-            },userId, cancellationToken);
+            }, userId, cancellationToken);
             if (response.IsException)
             {
                 throw new Exception(ExceptionMessage.SWW);
@@ -71,8 +78,12 @@ namespace BS.Services.SaleProcessingService
             createCartResponse.CartId = cartId;
             return createCartResponse;
         }
+
+
+
         public async Task<bool> UpdateCart(UpdateCartRequest request, string userId, CancellationToken cancellationToken)
         {
+            #region Request Validations
             if (request == null)
             {
                 throw new ArgumentException("The request can not be null.");
@@ -100,7 +111,6 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordNotFoundException("The cart you are trying to update has already been converted to sale.");
             }
-
             var customerPrevCart = _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, 
                 x => x.CustomerId == request.CustomerId.Trim() && x.Id != request.CartId.Trim()
                  && x.IsActive == true && x.IsConvertedToSale == false).Result.Data.FirstOrDefault();
@@ -108,6 +118,7 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentException("The customer you are trying to assign the cart already has an active cart.");
             }
+            #endregion Request Validations
 
             cart.IsConvertedToSale = request.IsConvertedToSale;
             cart.CustomerId = request.CustomerId.Trim();
@@ -115,8 +126,12 @@ namespace BS.Services.SaleProcessingService
             await _unitOfWork.CommitAsync(cancellationToken);
             return response.Result;
         }
+
+
+
         public async Task<bool> RemoveCart(RemoveCartRequest request, string userId, CancellationToken cancellationToken)
         {
+            #region Request Validations
             if (request == null)
             {
                 throw new ArgumentException("The request can not be null.");
@@ -134,15 +149,22 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentException("Unable to delete the cart that has been converted to sale.");
             }
+            #endregion Request Validations
+
             cart.IsActive = false;
             var response = await _unitOfWork.CustomerCartRepo.UpdateAsync(cart, userId, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
             return response.Result;
         }
+
+
+
         public async Task<List<Carts>> GetActiveCartsByTill(string tillId, CancellationToken cancellationToken)
         {
             List<Carts>? carts = new List<Carts>();
             tillId = tillId.Trim();
+
+            #region Request Validations
             if (string.IsNullOrWhiteSpace(tillId))
             {
                 throw new ArgumentException("The Till Id can not be null.");
@@ -152,6 +174,8 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordNotFoundException("Invalid Till Id.");
             }
+            #endregion Request Validations
+
             int totalAmount = 0;
             carts = _unitOfWork.CustomerCartRepo
                 .GetAsync(cancellationToken, x => x.TillId == tillId && x.IsActive == true && x.IsConvertedToSale == false, 
@@ -163,6 +187,7 @@ namespace BS.Services.SaleProcessingService
                     TotalItems = x?.CustomerCartItems?.Count(y=>y.CartId == x.Id && y.IsActive==true),
                     TotalAmount = x?.CustomerCartItems?.Where(y => y.CartId == x.Id && y.IsActive == true).Sum(x=>x?.Items?.Price * x?.Quantity ?? 0)
                 }).ToList();
+
             if(carts == null)
             {
                 throw new RecordNotFoundException("No active carts found for the till.");
@@ -173,8 +198,12 @@ namespace BS.Services.SaleProcessingService
             }
             return carts;
         }
+
+
+
         public async Task<bool> AddItemsToCart(AddItemsToCartRequest request, string userId, CancellationToken cancellationToken)
         {
+            #region Request Validations
             if (request == null)
             {
                 throw new ArgumentException("The request can not be null.");
@@ -195,12 +224,12 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordNotFoundException("Some of the items you are trying to add does not exist.");
             }
+            #endregion Request Validations
 
-            var cart = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x => x.Id == request.CartId.Trim() && 
-            x.IsActive == true && x.IsConvertedToSale==false,
-            includeProperties:$"{nameof(CustomerCartItems)}");
+            var cart = await _unitOfWork.CustomerCartRepo.GetAsync(cancellationToken, x=>x.Id==request.CartId.Trim() && x.IsConvertedToSale==false, includeProperties:$"{nameof(CustomerCartItems)}");
 
-            if(cart.Data == null)
+            #region Validate Cart Existence to Update
+            if (cart.Data == null)
             {
                 throw new RecordNotFoundException("The cart does not exist.");
             }
@@ -208,7 +237,10 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new RecordNotFoundException("The cart does not exist.");
             }
-            var cartItems = cart.Data.FirstOrDefault()?.CustomerCartItems?.Where(x => x.IsActive == true).ToList();
+            #endregion Validate Cart Existence to Update
+
+            #region If Cart Not Empty
+            var cartItems = cart.Data.FirstOrDefault()?.CustomerCartItems?.ToList();
             if(cartItems != null)
             {
                 foreach (var item in cartItems)
@@ -217,6 +249,9 @@ namespace BS.Services.SaleProcessingService
                     await _unitOfWork.CustomerCartItemsRepo.UpdateAsync(item, userId, cancellationToken);
                 }
             }
+            #endregion If Cart Not Empty
+
+            #region Add Each Item
             foreach (var item in request.Items)
             {
                 if (string.IsNullOrWhiteSpace(item.ItemId))
@@ -244,9 +279,14 @@ namespace BS.Services.SaleProcessingService
                     throw new ArgumentException("Item quantity must be greater than 0 for all the items.");
                 }
             }
+            #endregion Add Each Item
+
             await _unitOfWork.CommitAsync(cancellationToken);
             return true;
         }
+
+
+
         public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, string userId, CancellationToken cancellationToken)
         {
             CreateOrderResponse createOrderResponse = new CreateOrderResponse();
@@ -301,14 +341,18 @@ namespace BS.Services.SaleProcessingService
             }
             await _unitOfWork.CommitAsync(cancellationToken);
             #endregion
+
+            #region Split & Partial-Layaway
             await _paymentManagementService.AddSurchargeDiscount(request, orderInit, userId, cancellationToken);
             var order = await _unitOfWork.OrderRepo.GetByIdAsync(orderId, cancellationToken);
             if (order.Data == null)
             {
-                throw new RecordNotFoundException("Something went wrong");
+                throw new RecordNotFoundException("Order was not found");
             }
-            #region Return response
-            if (order.Data.PaidAmount == order.Data.TotalAmount)
+            #endregion Split & Partial-Layaway
+
+            #region Return Response
+            if (order.Data.PaidAmount == order.Data.TotalAmount || request.IsPartial || request.IsLayaway)
             {
                 order.Data.IsPaid = true;
                 await _unitOfWork.OrderRepo.UpdateAsync(order.Data, userId, cancellationToken);
@@ -331,13 +375,14 @@ namespace BS.Services.SaleProcessingService
             }
             #endregion
         }
+
+
+
         public async Task<ViewCartResponse> ViewCart(string? cartId, string userId, CancellationToken cancellationToken)
         {
             ViewCartResponse response = new ViewCartResponse();
             cartId = cartId?.Trim() ?? "";
-            var cartResult = await _unitOfWork.CustomerCartRepo.GetSingleAsync(cancellationToken, 
-                x => x.Id == cartId && x.IsActive == true,
-                includeProperties: $"{nameof(CustomerCartItems)}.{nameof(Items)}");
+            var cartResult = await _unitOfWork.CustomerCartRepo.GetSingleAsync(cancellationToken, x=>x.Id==cartId, includeProperties:$"{nameof(CustomerCartItems)}.{nameof(Items)}");
             CustomerCart cart = cartResult.Data;
             if(cart == null)
             {
