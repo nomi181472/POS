@@ -227,10 +227,10 @@ namespace BS.Services.UserService.Models
             {
                 throw new InvalidOperationException("Can't update SuperAdmin");
             }
-            var userWithSameEmail = await _uot.user.GetAsync(cancellationToken, x => x.Email == request.Email && x.Id != request.UserId);
-            if (userWithSameEmail.Data.Any())
+            var userWithSameEmail = await _uot.user.GetAsync(cancellationToken, x => x.Email == request.Email && x.Id == request.UserId);
+            if (!userWithSameEmail.Data.Any())
             {
-                throw new InvalidOperationException("The provided email is already assigned to a different user.");
+                throw new InvalidOperationException("Email can't be updated");
             }
 
             var user = getterResult.Data;
