@@ -51,7 +51,7 @@ namespace Auth.Features.RoleManagement
                 var response = new ResponseAddRoleToUser();
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            catch (InvalidOperationException e)
+            catch (ArgumentException e)
             {
                 statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;

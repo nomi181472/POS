@@ -76,18 +76,22 @@ namespace BS.Services.UserService.Models
         
         public async Task<bool> DeleteUser(RequestDeleteUser request, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
+            if(request.UserId == userId)
+            {
+                throw new InvalidOperationException("User can not delete themselves");
+            }
             var getterResult = await _uot.user.GetByIdAsync(request.UserId, cancellationToken);
             if(getterResult.Data == null)
             {
                 throw new RecordNotFoundException("No user with such ID found");
             }
-
             var userToUpdate = getterResult.Data;
-
             if (userToUpdate.UserType == KDefinedRoles.SuperAdmin)
             {
                 throw new InvalidOperationException("Can't delete SuperAdmin user");
             }
+            #endregion Validations
 
             var existingUserRoles = await _uot.userRole.GetAsync(cancellationToken, x => x.UserId == userToUpdate.Id);
             var userRolesToDelete = existingUserRoles.Data;

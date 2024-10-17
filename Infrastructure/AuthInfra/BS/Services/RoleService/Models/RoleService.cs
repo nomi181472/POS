@@ -32,7 +32,6 @@ namespace BS.Services.RoleService.Models
             {
                 throw new ArgumentNullException("RoleId can't be empty");
             }
-
             if (request.Actions == null || !request.Actions.Any(action => !string.IsNullOrWhiteSpace(action)))
             {
                 throw new ArgumentNullException("Action list cannot be empty.");
@@ -40,6 +39,11 @@ namespace BS.Services.RoleService.Models
             if (request.Actions.Count != request.Actions.Select(action => action.ToLower()).Distinct().Count())
             {
                 throw new ArgumentNullException("Duplicate actions are not allowed.");
+            }
+            var userRoleResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.UserId == userId && x.RoleId == request.RoleId);
+            if(userRoleResult.Data != null)
+            {
+                throw new ArgumentNullException("Can't assign actions to own role");
             }
             #endregion ArgumentNullValidations
 
@@ -50,10 +54,9 @@ namespace BS.Services.RoleService.Models
                 includeProperties:
                 $"{nameof(RoleAction)},"
             );
-
-            if (!actionsInDb.Status)
+            if (!actionsInDb.Status || actionsInDb.Data == null)
             {
-                throw new RecordNotFoundException(actionsInDb.Message);
+                throw new RecordNotFoundException("Actions not found");
             }
             #endregion Fetch from DB
 
@@ -107,10 +110,15 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> AddRole(RequestAddRole request, string userId, CancellationToken cancellationToken)
         {
+            if(request == null || string.IsNullOrEmpty(request.RoleName))
+            {
+                throw new ArgumentException("RoleName can't be null");
+            }
+
             var roleExists = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Name.ToLower() == request.RoleName.ToLower() && r.IsActive);
             if (roleExists.Data)
             {
-                throw new InvalidOperationException($"Role with name '{request.RoleName}' already exists.");
+                throw new ArgumentException($"Role with name '{request.RoleName}' already exists.");
             }
 
             Role role = new Role(
@@ -133,11 +141,15 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> AddRoleToUser(RequestAddRoleToUser request, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request), "The request cannot be null.");
             }
-
+            if (request.UserId == userId)
+            {
+                throw new InvalidOperationException("Can't add role to self");
+            }    
             var userExists = await _unitOfWork.user.GetByIdAsync(request.UserId, cancellationToken);
             if (userExists.Data == null)
             {
@@ -147,27 +159,24 @@ namespace BS.Services.RoleService.Models
             {
                 throw new InvalidOperationException("Can't assign role to superadmin");
             }
-
             var roleExists = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Id == request.RoleId);
             if (roleExists.Data == false)
             {
                 throw new RecordNotFoundException($"Role with ID {request.RoleId} does not exist.");
             }
-
             var userHasRole = await _unitOfWork.userRole.AnyAsync(cancellationToken, ur => ur.UserId == request.UserId && ur.RoleId == request.RoleId);
             if (userHasRole.Data)
             {
                 throw new InvalidOperationException($"User with ID {request.UserId} already has the role with ID {request.RoleId}.");
             }
-
             var superAdminRole = await _unitOfWork.role.AnyAsync(cancellationToken, r => r.Id == request.RoleId && r.Name == "SuperAdmin");
             if (superAdminRole.Data == true)
             {
                 throw new InvalidOperationException("Can't assign a SuperAdmin role to user");
             }
+            #endregion Validations
 
             var entity = request.ToDomain(userId);
-
             if (entity == null)
             {
                 throw new ArgumentException("The request is invalid and could not be converted to a domain entity.", nameof(request));
@@ -257,21 +266,31 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> DeleteRole(RequestDeleteRole request, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
             var getterResult = await _unitOfWork.role.GetByIdAsync(request.RoleId, cancellationToken);
             if (getterResult.Data == null)
             {
                 throw new RecordNotFoundException("No role with such RoleId found");
             }
-
             var role = getterResult.Data;
-
             if (role.Name == KDefinedRoles.SuperAdmin)
             {
                 throw new InvalidOperationException("Can't delete SuperAdmin role");
             }
+            var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.RoleId == request.RoleId && x.IsActive);
+            if (userRolesResult.Data != null)
+            {
+                foreach (var userRole in userRolesResult.Data)
+                {
+                    if (userRole.UserId == userId)
+                    {
+                        throw new InvalidOperationException("Can't delete role assigned to themselves");
+                    }
+                }
+            }
+            #endregion Validations
 
             #region Detach from all Users
-            var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.RoleId == request.RoleId && x.IsActive);
             if (userRolesResult.Status && userRolesResult.Data.Any())
             {
                 foreach (var userRole in userRolesResult.Data)
@@ -360,34 +379,34 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> DetachUserRoleByUserId(string roleId, string userToDetach, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
+            if(userToDetach == userId)
+            {
+                throw new ArgumentException("Can't own detach role");
+            }
             if (string.IsNullOrWhiteSpace(roleId))
             {
                 throw new ArgumentException("Role ID cannot be null or empty.", nameof(roleId));
             }
-
             if (string.IsNullOrWhiteSpace(userToDetach))
             {
                 throw new ArgumentException("User to detach cannot be null or empty.", nameof(userToDetach));
             }
-
             var userToUpdate = await _unitOfWork.user.GetAsync(cancellationToken, u => u.Id == userToDetach);
-
             if (userToUpdate.Data.Any(u => u.UserType == KDefinedRoles.SuperAdmin))
             {
                 throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
             }
-
             var userRoleResult = await _unitOfWork.userRole.GetAsync(cancellationToken, ur => ur.RoleId == roleId && ur.UserId == userToDetach && ur.IsActive);
-
             if (userRoleResult == null || !userRoleResult.Status || userRoleResult.Data == null || !userRoleResult.Data.Any())
             {
                 throw new RecordNotFoundException("No matching UserRole found to detach.");
             }
-
             if (userRoleResult.Data.Count() <= 1)
             {
                 throw new ArgumentException("Cannot detach the only remaining role from the user.");
             }
+            #endregion Validations
 
             var userRole = userRoleResult.Data.FirstOrDefault();
 
@@ -404,45 +423,41 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> DetachUserRolesByUserId(string[] roleIds, string userToDetach, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
+            if(userToDetach == userId)
+            {
+                throw new ArgumentException("Can't detach own roles");
+            }
             if (roleIds == null || roleIds.Length == 0)
             {
                 throw new ArgumentException("Role IDs cannot be null or empty.", nameof(roleIds));
             }
-
             if (string.IsNullOrWhiteSpace(userToDetach))
             {
                 throw new ArgumentException("User to detach cannot be null or empty.", nameof(userToDetach));
             }
-
             var userToUpdate = await _unitOfWork.user.GetAsync(cancellationToken, u => u.Id == userToDetach);
-
             if (userToUpdate.Data.Any(u => u.UserType == KDefinedRoles.SuperAdmin))
             {
                 throw new ArgumentException("Cannot detach roles from a SuperAdmin user.");
             }
-
             var allActiveRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken,ur => ur.UserId == userToDetach && ur.IsActive);
-
             if (allActiveRolesResult == null || !allActiveRolesResult.Status || allActiveRolesResult.Data == null || !allActiveRolesResult.Data.Any())
             {
                 throw new RecordNotFoundException("No active roles found for the user.");
             }
-
             var activeRolesCount = allActiveRolesResult.Data.Count();
-
             var rolesToDetachCount = allActiveRolesResult.Data.Count(ur => roleIds.Contains(ur.RoleId));
-
             if (activeRolesCount - rolesToDetachCount < 1)
             {
                 throw new ArgumentException("Cannot detach roles such that the user is left with no roles.");
             }
-
             var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, ur => ur.IsActive && ur.UserId == userToDetach && roleIds.Contains(ur.RoleId));
-
             if (userRolesResult == null || !userRolesResult.Status || userRolesResult.Data == null || !userRolesResult.Data.Any())
             {
                 throw new RecordNotFoundException("No matching UserRoles found to detach.");
             }
+            #endregion Validations
 
             foreach (var userRole in userRolesResult.Data)
             {
@@ -558,6 +573,11 @@ namespace BS.Services.RoleService.Models
 
         public async Task<ResponseGetRole> GetRole(string roleId, CancellationToken cancellationToken)
         {
+            if(string.IsNullOrEmpty(roleId))
+            {
+                throw new ArgumentException("Role ID can't be null");
+            }
+
             var result= await _unitOfWork.role.GetSingleAsync(cancellationToken,x=>x.Id == roleId && x.IsActive);
             if (result.Status)
             {
@@ -666,6 +686,7 @@ namespace BS.Services.RoleService.Models
 
         public async Task<bool> UpdateRole(RequestUpdateRole request, string userId, CancellationToken cancellationToken)
         {
+            #region Validations
             var getterResult = await _unitOfWork.role.GetByIdAsync(request.RoleId, cancellationToken);
             if (getterResult.Status == false)
             {
@@ -676,6 +697,12 @@ namespace BS.Services.RoleService.Models
             {
                 throw new InvalidOperationException("Can not update SuperAdmin role");
             }
+            var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.RoleId == role.Id && x.UserId == userId);
+            if(userRolesResult.Data != null)
+            {
+                throw new InvalidOperationException("Can not update own role");
+            }
+            #endregion Validations
 
             role.Name = request.RoleName;
             role.UpdatedBy = userId;
@@ -755,9 +782,6 @@ namespace BS.Services.RoleService.Models
                 response.ActionsAssociatedWithRole.AddRange(roleActions);
             }
             #endregion Find RoleActions
-
-
-
 
             return response;
         }
