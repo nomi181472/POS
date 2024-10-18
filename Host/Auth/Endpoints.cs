@@ -4,6 +4,7 @@ using Auth.Common.Auth;
 using Auth.Common.Constant;
 using Auth.Common.Filters;
 using Auth.Features.ActionsManagement;
+using Auth.Features.AdminDashboardManagement;
 using Auth.Features.AuthManagement;
 using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
@@ -39,6 +40,7 @@ public static class Endpoints
         endpoints.MapRoleManagementEndpoints();
         endpoints.MapActionsManagementEndpoints();
         endpoints.MapUserManagement();
+        endpoints.MapAdminDashboardEndpoints();
     }
     private static void MapUserManagement(this IEndpointRouteBuilder app)
     {
@@ -105,11 +107,21 @@ public static class Endpoints
             .MapEndpoint<GetActionsDetailsById>()
             .MapEndpoint<GetAllFeatures>();
     }
-    
-   
-   
 
-    
+    private static void MapAdminDashboardEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(IAdminDashboardFeature)}")
+            .WithTags("IAdminDashboardFeature");
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<GetNewUsersByMonth>()
+            .MapEndpoint<GetReportedBugsByMonth>()
+            ;
+    }
+
+
+
+
 
     private static RouteGroupBuilder MapPublicGroup(this IEndpointRouteBuilder app, string? prefix = null)
     {
