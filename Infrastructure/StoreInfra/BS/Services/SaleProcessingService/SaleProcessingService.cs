@@ -272,6 +272,13 @@ namespace BS.Services.SaleProcessingService
             {
                 throw new ArgumentException("Total amount must be greater than 0.");
             }
+            if (request.IsLayaway || request.IsPartial)
+            {
+                if (request.DownPayment <= 0)
+                {
+                    throw new ArgumentException("Downpayment Value must be > 0 if Is Layaway or IsPartial");
+                }
+            }
             #endregion
 
             #region Create Order
@@ -301,14 +308,16 @@ namespace BS.Services.SaleProcessingService
             }
             await _unitOfWork.CommitAsync(cancellationToken);
             #endregion
+
             await _paymentManagementService.AddSurchargeDiscount(request, orderInit, userId, cancellationToken);
             var order = await _unitOfWork.OrderRepo.GetByIdAsync(orderId, cancellationToken);
             if (order.Data == null)
             {
                 throw new RecordNotFoundException("Something went wrong");
             }
-            #region Return response
-            if (order.Data.PaidAmount == order.Data.TotalAmount)
+            
+            #region Total or Downpayment Status
+            if (order.Data.PaidAmount == order.Data.TotalAmount || order.Data.PaidAmount == request.DownPayment)
             {
                 order.Data.IsPaid = true;
                 await _unitOfWork.OrderRepo.UpdateAsync(order.Data, userId, cancellationToken);

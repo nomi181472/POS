@@ -90,17 +90,18 @@ namespace BS.Services.PaymentManagementService
                         order.PaidAmount += splitPayment.PaidAmount;
                     }
 
-                    /*if (remainingAmount > 0)
+                    if (remainingAmount > 0)
                     {
-                        if (request.IsCredit == true)
+                        if (request.IsPartial || request.IsLayaway)
                         {
+                            // TODO: save CreditAmount in Credit entity
                             response.CreditAmount = remainingAmount;
                         }
                         else
                         {
                             response.RemainingAmounnt = remainingAmount;
                         }
-                    }*/
+                    }
                 }
             }
 
