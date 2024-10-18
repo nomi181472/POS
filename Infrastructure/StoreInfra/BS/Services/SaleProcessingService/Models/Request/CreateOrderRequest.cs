@@ -11,7 +11,12 @@ namespace BS.Services.SaleProcessingService.Models.Request
         public virtual string? CartId { get; set; }
         public virtual List<SplitPaymentRequest>? OrderSplitPayments { get; set; }
         public virtual int TotalAmount { get; set; }
+
+        public virtual double DownPayment { get; set; }
+        public virtual bool IsLayaway { get; set; } = false;
+        public virtual bool IsPartial { get; set; } = false;
     }
+
 
     public class SplitPaymentRequest
     {
