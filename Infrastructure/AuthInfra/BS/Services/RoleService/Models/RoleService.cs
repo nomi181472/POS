@@ -41,7 +41,7 @@ namespace BS.Services.RoleService.Models
                 throw new ArgumentNullException("Duplicate actions are not allowed.");
             }
             var userRoleResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.UserId == userId && x.RoleId == request.RoleId);
-            if(userRoleResult.Data != null)
+            if(userRoleResult.Data.Count() != 0)
             {
                 throw new ArgumentNullException("Can't assign actions to own role");
             }
@@ -698,7 +698,7 @@ namespace BS.Services.RoleService.Models
                 throw new InvalidOperationException("Can not update SuperAdmin role");
             }
             var userRolesResult = await _unitOfWork.userRole.GetAsync(cancellationToken, x => x.RoleId == role.Id && x.UserId == userId);
-            if(userRolesResult.Data != null)
+            if(userRolesResult.Data.Count() != 0)
             {
                 throw new InvalidOperationException("Can not update own role");
             }
