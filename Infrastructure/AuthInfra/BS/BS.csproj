@@ -12,6 +12,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.5.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
 		<ProjectReference Include="..\..\..\NATSNotificationSystem\NATSNotificationSystem.csproj" />
 		<ProjectReference Include="..\..\..\SessionManager\SessionManager.csproj" />
 		<ProjectReference Include="..\..\..\Utility\EndpointExposerGRPC\EndpointGRPC.csproj" />
