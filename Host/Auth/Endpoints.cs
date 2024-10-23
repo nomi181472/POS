@@ -105,7 +105,8 @@ public static class Endpoints
             .MapEndpoint<RemoveActionTag>()
             .MapEndpoint<GetActionById>()
             .MapEndpoint<GetActionsDetailsById>()
-            .MapEndpoint<GetAllFeatures>();
+            .MapEndpoint<GetAllFeatures>()
+            .MapEndpoint<UpdateAction>();
     }
 
     private static void MapAdminDashboardEndpoints(this IEndpointRouteBuilder app)
