@@ -65,6 +65,30 @@ namespace BS.Services.ActionsService
 
 
 
+        public async Task<bool> UpdateAction(RequestUpdateAction request, string userId, CancellationToken cancellationToken)
+        {
+            #region Request Validations
+            if (request == null || string.IsNullOrWhiteSpace(request.Id) || string.IsNullOrWhiteSpace(request.Name))
+            {
+                throw new ArgumentException("Id or Name can't be null");
+            }
+            var actionResult = await _unitOfWork.action.GetByIdAsync(request.Id, cancellationToken);
+            if (actionResult.Data == null)
+            {
+                throw new RecordNotFoundException("No action found with Id");
+            }
+            #endregion Request Validations
+
+            actionResult.Data.Name = request.Name;
+            actionResult.Data.UpdatedDate = DateTime.Now;
+            actionResult.Data.UpdatedBy = userId;
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return true;
+        }
+
+
+
         public async Task<bool> DeleteAction(string actionId, string userId, CancellationToken cancellationToken)
         {
             if (actionId == null)
