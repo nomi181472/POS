@@ -60,7 +60,7 @@ namespace Auth.Features.UserManagement
             }
             catch (InvalidOperationException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(false, false, message, statusCode, null);
