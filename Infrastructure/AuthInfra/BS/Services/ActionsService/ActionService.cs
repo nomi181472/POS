@@ -78,6 +78,19 @@ namespace BS.Services.ActionsService
                 throw new RecordNotFoundException("No record found with such action ID");
             }
 
+            #region Delete Respective RoleActions
+            var roleActionResult = await _unitOfWork.roleAction.GetAsync(cancellationToken, x => x.ActionId == actionId);
+            if (roleActionResult.Data.Count() > 0)
+            {
+                foreach (var roleAction in roleActionResult.Data)
+                {
+                    roleAction.IsActive = false;
+                    roleAction.UpdatedDate = DateTime.UtcNow;
+                    roleAction.UpdatedBy = userId;
+                }
+            }
+            #endregion Delete Respective RoleActions
+
             getterResult.Data.IsActive = false;
             getterResult.Data.UpdatedBy = userId;
             getterResult.Data.UpdatedDate = DateTime.UtcNow;
@@ -124,6 +137,19 @@ namespace BS.Services.ActionsService
                 updatedActions.IsActive = false;
                 updatedActions.UpdatedBy = userId;
                 updatedActions.UpdatedDate = DateTime.UtcNow;
+
+                #region Delete Respective RoleActions
+                var roleActionResult = await _unitOfWork.roleAction.GetAsync(cancellationToken, x => x.ActionId == actionId);
+                if (roleActionResult.Data.Count() > 0)
+                {
+                    foreach (var roleAction in roleActionResult.Data)
+                    {
+                        roleAction.IsActive = false;
+                        roleAction.UpdatedDate = DateTime.UtcNow;
+                        roleAction.UpdatedBy = userId;
+                    }
+                }
+                #endregion Delete Respective RoleActions
 
                 actionsToDelete.Add(updatedActions);
             }
