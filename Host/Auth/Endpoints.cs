@@ -96,6 +96,7 @@ public static class Endpoints
 
         endpoints.MapAuthorizedGroup()
             .MapEndpoint<AddActionsInRole>()
+            .MapEndpoint<AddListOfActions>()
             .MapEndpoint<AddActions>()
             .MapEndpoint<AppendActionTag>()
             .MapEndpoint<DeleteAction>()
