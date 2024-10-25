@@ -1,41 +1,45 @@
-﻿using AttendanceService.Common;
-using Auth.Middlewares;
-using BS.CustomExceptions.Common;
-using BS.CustomExceptions.CustomExceptionMessage;
-using BS.Services.RoleService.Models;
+﻿using BS.Services.ActionsService.Models.Request;
+using BS.Services.ActionsService.Models.Response;
+using BS.Services.ActionsService;
+using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
+using Auth.Extensions.RouteHandler;
+using Auth.Middlewares;
+using AttendanceService.Common;
+using BS.CustomExceptions.Common;
+using BS.CustomExceptions.CustomExceptionMessage;
 
-namespace Auth.Features.RoleManagement
+namespace Auth.Features.ActionsManagement
 {
-    public class DetachUserRoleByUserId : IRoleManagementFeature
+    public class AddListOfActions : IActionsFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPatch($"/{nameof(DetachUserRoleByUserId)}", Handle)
-            .WithSummary("Delete Role Details")
-            .Produces(HTTPStatusCode200.Ok)
-            .Produces(HTTPStatusCode400.NotFound)
+            .MapPost($"/{nameof(AddListOfActions)}", Handle)
+            .WithSummary("Add List of Actions")
+            .Produces(200)
             .Produces<bool>();
 
-        private static async Task<IResult> Handle(string roleId, string userToDetach, IUserContext userContext, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
+        private static async Task<IResult> Handle(RequestAddListOfActions request, IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
-            int statusCode = HTTPStatusCode200.Ok;
+            int statusCode = HTTPStatusCode200.Created;
             string message = "Success";
             try
             {
-                var result = await roleService.DetachUserRoleByUserId(roleId, userToDetach, userContext.Data.UserId, cancellationToken);
+                var result = await actionService.AddListOfActions(request, userContext.Data.UserId, cancellationToken);
+                //var token = jwt.GenerateToken(new Common.JWT.UserPayload() { Id = result.UserId, RoleIds = result.RoleIds });
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
             }
-            catch (ArgumentException e)
+            catch (RecordNotFoundException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
-            catch (RecordNotFoundException e)
+            catch (ArgumentException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(true, false, message, statusCode, null);

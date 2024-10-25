@@ -39,7 +39,7 @@ namespace Auth.Features.RoleManagement
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
             catch (Exception e)
             {

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Grpc.Core.Metadata;
 
 namespace BS.Services.ActionsService
 {
@@ -58,9 +59,62 @@ namespace BS.Services.ActionsService
 
 
 
-        public  bool IsActionsAvailable(string name)
+        public async Task<bool> AddListOfActions(RequestAddListOfActions request, string userId, CancellationToken cancellationToken)
+        {
+            if (request == null || request.Actions == null || !request.Actions.Any())
+            {
+                throw new ArgumentNullException("Actions can't be null or empty");
+            }
+
+            foreach (var action in request.Actions)
+            {
+                if (string.IsNullOrWhiteSpace(action.Name) || string.IsNullOrWhiteSpace(action.Tag))
+                {
+                    throw new ArgumentNullException("Name and Tag can't be null");
+                }
+
+                var entity = action.ToDomain(userId);
+                entity.UpdatedBy = userId;
+                entity.UpdatedDate = DateTime.Now;
+                entity.IsArchived = false;
+                entity.IsActive = true;
+
+                await _unitOfWork.action.AddAsync(entity, userId, cancellationToken);
+            }
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return true;
+        }
+
+
+
+        public bool IsActionsAvailable(string name)
         {
             return _unitOfWork.action.Any(a => a.Name.ToLower() == name.ToLower() && a.IsActive).Data;
+        }
+
+
+
+        public async Task<bool> UpdateAction(RequestUpdateAction request, string userId, CancellationToken cancellationToken)
+        {
+            #region Request Validations
+            if (request == null || string.IsNullOrWhiteSpace(request.Id) || string.IsNullOrWhiteSpace(request.Name))
+            {
+                throw new ArgumentException("Id or Name can't be null");
+            }
+            var actionResult = await _unitOfWork.action.GetByIdAsync(request.Id, cancellationToken);
+            if (actionResult.Data == null)
+            {
+                throw new RecordNotFoundException("No action found with Id");
+            }
+            #endregion Request Validations
+
+            actionResult.Data.Name = request.Name;
+            actionResult.Data.UpdatedDate = DateTime.Now;
+            actionResult.Data.UpdatedBy = userId;
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return true;
         }
 
 

@@ -1,41 +1,52 @@
 ﻿using AttendanceService.Common;
+using Auth.Extensions.RouteHandler;
 using Auth.Middlewares;
 using BS.CustomExceptions.Common;
 using BS.CustomExceptions.CustomExceptionMessage;
-using BS.Services.RoleService.Models;
+using BS.Services.ActionsService;
+using BS.Services.ActionsService.Models.Request;
+using FluentValidation;
 using Logger;
 using PaymentGateway.API.Common;
 
-namespace Auth.Features.RoleManagement
+namespace Auth.Features.ActionsManagement
 {
-    public class DetachUserRoleByUserId : IRoleManagementFeature
+    public class UpdateAction : IActionsFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPatch($"/{nameof(DetachUserRoleByUserId)}", Handle)
-            .WithSummary("Delete Role Details")
-            .Produces(HTTPStatusCode200.Ok)
-            .Produces(HTTPStatusCode400.NotFound)
+            .MapPatch($"/{nameof(UpdateAction)}", Handle)
+            .WithSummary("Add Role Details")
+            .WithRequestValidation<RequestUpdateAction>()
+            .Produces(200)
             .Produces<bool>();
 
-        private static async Task<IResult> Handle(string roleId, string userToDetach, IUserContext userContext, IRoleService roleService, ICustomLogger _logger, CancellationToken cancellationToken)
+        public class RequestValidator : AbstractValidator<RequestUpdateAction>
+        {
+            public RequestValidator()
+            {
+                //RuleFor(x => x.Email).EmailAddress().NotEmpty();
+            }
+        }
+
+        private static async Task<IResult> Handle(RequestUpdateAction request, IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)
         {
             int statusCode = HTTPStatusCode200.Ok;
             string message = "Success";
             try
             {
-                var result = await roleService.DetachUserRoleByUserId(roleId, userToDetach, userContext.Data.UserId, cancellationToken);
+                var result = await actionService.UpdateAction(request, userContext.Data.UserId, cancellationToken);
                 return ApiResponseHelper.Convert(true, true, message, statusCode, result);
-            }
-            catch (ArgumentException e)
-            {
-                statusCode = HTTPStatusCode400.NotFound;
-                message = e.Message;
-                _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
             catch (RecordNotFoundException e)
             {
                 statusCode = HTTPStatusCode400.NotFound;
+                message = e.Message;
+                _logger.LogError(message, e);
+                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+            }
+            catch (ArgumentException e)
+            {
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
                 return ApiResponseHelper.Convert(true, false, message, statusCode, null);

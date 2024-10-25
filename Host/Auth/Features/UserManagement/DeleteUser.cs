@@ -56,14 +56,14 @@ namespace Auth.Features.UserManagement
                 statusCode = HTTPStatusCode400.NotFound;
                 message = e.Message;
                 _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
             catch (InvalidOperationException e)
             {
-                statusCode = HTTPStatusCode400.NotFound;
+                statusCode = HTTPStatusCode400.BadRequest;
                 message = e.Message;
                 _logger.LogError(message, e);
-                return ApiResponseHelper.Convert(false, false, message, statusCode, null);
+                return ApiResponseHelper.Convert(true, false, message, statusCode, null);
             }
             catch (Exception e)
             {

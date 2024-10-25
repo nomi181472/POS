@@ -14,9 +14,11 @@ namespace BS.Services.ActionsService
     {
         bool IsActionsAvailable(string name);
         Task<bool> AddAction(RequestAddAction request, string UserId, CancellationToken cancellationToken);
+        Task<bool> AddListOfActions(RequestAddListOfActions request, string UserId, CancellationToken cancellationToken);
         Task<ResponseGetActionsDetailsById> GetActionsDetailsById(string actionId, CancellationToken cancellationToken);
         Task<List<ResponseGetAllActionDetails>> GetAllAction(string userId, CancellationToken CancellationToken);
         Task<ResponseGetAllActionDetails> GetActionById(string actionId, CancellationToken CancellationToken);
+        Task<bool> UpdateAction(RequestUpdateAction request, string userId, CancellationToken cancellationToken);
         Task<bool> DeleteAction(string actionId, string userId, CancellationToken CancellationToken);
         Task<bool> DeleteActions(string[] actionIds, string userId, CancellationToken CancellationToken);
         Task<bool> AppendActionTag(RequestAppendActionTag request, string userId, CancellationToken cancellationToken);
