@@ -15,6 +15,7 @@ namespace MapConfig
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseMiddleware<SessionMiddleware>();
             app.UseAuthorization();
             
             app.MapEndpoints();
