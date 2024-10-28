@@ -4,6 +4,7 @@ using BS.ExternalServices.GrpcClients;
 using BS.Services.ActionsService;
 using BS.Services.AdminDashboardService;
 using BS.Services.AuthService;
+using BS.Services.NotificationManagementService;
 using BS.Services.RoleService.Models;
 using BS.Services.UserService.Models;
 using DA;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.TryAddScoped<IActionControllerService, ActionControllerService>();
         services.TryAddScoped<IActionService, ActionService>();
         services.TryAddScoped<IAdminDashboardService, AdminDashboardService>();
+        services.TryAddScoped<INotificationManagementService, NotificationManagementService>();
 
         return services;
     }
