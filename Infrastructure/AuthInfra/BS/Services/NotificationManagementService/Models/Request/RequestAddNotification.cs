@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DM.DomainModels
+namespace BS.Services.NotificationManagementService.Models.Request
 {
-    public class Notification : Base<string>
+    public class RequestAddNotification
     {
-
         public string Title { get; set; }
         public string Message { get; set; }
         public string Description { get; set; }
@@ -17,12 +16,7 @@ namespace DM.DomainModels
         public string TargetNamespace { get; set; }
         public string SendToUserType { get; set; }
         public string Tag { get; set; }
-        
-        public virtual string  UserId { get; set; }
-        public virtual User User { get; set; }
-        
-        public  NotificationSeen? IsSeen { get; set; }
 
+        public virtual string UserId { get; set; }
     }
-    
 }
