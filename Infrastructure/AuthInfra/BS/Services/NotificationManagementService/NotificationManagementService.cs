@@ -1,4 +1,6 @@
 ﻿using BS.CustomExceptions.Common;
+using BS.Services.NotificationManagementService.Models;
+using BS.Services.NotificationManagementService.Models.Request;
 using BS.Services.NotificationManagementService.Models.Response;
 using DA;
 using DM.DomainModels;
@@ -22,20 +24,21 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<bool> AddNotification(Notification notification, string userId, CancellationToken cancellationToken)
+        public async Task<bool> AddNotification(RequestAddNotification request, string userId, CancellationToken cancellationToken)
         {
-            if (notification == null)
+            if (request == null)
             {
                 throw new ArgumentException("Notification can't be null");
             }
-            await _uow.notification.AddAsync(notification, userId, cancellationToken);
+            var entity = request.ToDomain(userId);
+            await _uow.notification.AddAsync(entity, userId, cancellationToken);
             await _uow.CommitAsync(cancellationToken);
             return true;
         }
 
 
 
-        public async Task<IEnumerable<ResponseNotificationLogs>> ListAll(CancellationToken cancellationToken)
+        public async Task<List<ResponseNotificationLogs>> ListAll(CancellationToken cancellationToken)
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
             var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"{nameof(NotificationSeen)}");
@@ -63,7 +66,7 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<IEnumerable<ResponseNotificationLogs>> ListNotificationUserWise(string userId, CancellationToken cancellationToken, int lastCount, int skipRecords)
+        public async Task<List<ResponseNotificationLogs>> ListNotificationUserWise(string userId, CancellationToken cancellationToken, int lastCount, int skipRecords)
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
             var query = _uow.notification.GetQueryable();
@@ -77,7 +80,7 @@ namespace BS.Services.NotificationManagementService
 
             if (result == null)
             {
-                return response;
+                throw new RecordNotFoundException("No notification records found");
             }
 
             response = result.Select(x => new ResponseNotificationLogs()
@@ -116,8 +119,10 @@ namespace BS.Services.NotificationManagementService
 
             await _uow.notificationSeen.AddAsync(notificationSeen, userId, cancellationToken);
             await _uow.CommitAsync();
-
             return true;
         }
+
+
+
     }
 }
