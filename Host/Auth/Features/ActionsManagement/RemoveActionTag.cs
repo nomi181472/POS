@@ -15,7 +15,7 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
                            .MapPatch($"/{nameof(RemoveActionTag)}", Handle)
-                           .WithSummary("Add Role Details")
+                           .WithSummary("remove tags from actions")
                            .WithRequestValidation<RequestRemoveActionTag>()
                            .Produces(200)
                            .Produces<bool>();

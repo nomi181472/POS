@@ -18,9 +18,12 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddActions)}", Handle)
-            .WithSummary("Add Role Details")
+            .WithSummary("Add Actions")
             .WithRequestValidation<RequestAddAction>()
             .Produces(200)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<ResponseAddAction>();
 
         public class RequestValidator : AbstractValidator<RequestAddAction>

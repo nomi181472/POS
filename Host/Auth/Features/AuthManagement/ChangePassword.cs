@@ -15,7 +15,7 @@ namespace Auth.Features.AuthManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
                             .MapPost($"/{nameof(ChangePassword)}", Handle)
-                            .WithSummary("Login a user")
+                            .WithSummary("Change the Password")
                             .WithRequestValidation<RequestChangePassword>()
                             .Produces(200)
                             .Produces<ResponseChangePassword>();

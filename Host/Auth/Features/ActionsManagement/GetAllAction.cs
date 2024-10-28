@@ -14,7 +14,7 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
                            .MapGet($"/{nameof(GetAllAction)}", Handle)
-                           .WithSummary("Add Role Details")
+                           .WithSummary("get all actions")
                            .Produces(200)
                            .Produces<ResponseGetAllActions>();
 

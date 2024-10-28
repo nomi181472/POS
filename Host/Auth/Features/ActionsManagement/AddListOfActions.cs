@@ -18,6 +18,9 @@ namespace Auth.Features.ActionsManagement
             .MapPost($"/{nameof(AddListOfActions)}", Handle)
             .WithSummary("Add List of Actions")
             .Produces(200)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
         private static async Task<IResult> Handle(RequestAddListOfActions request, IUserContext userContext, IActionService actionService, ICustomLogger _logger, CancellationToken cancellationToken)

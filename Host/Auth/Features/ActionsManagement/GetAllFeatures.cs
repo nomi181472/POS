@@ -12,7 +12,7 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
                            .MapGet($"/{nameof(GetAllFeatures)}", Handle)
-                           .WithSummary("Add Role Details")
+                           .WithSummary("get names of all features")
                            .Produces(200)
                            .Produces<ResponseGetAllFeatures>();
 

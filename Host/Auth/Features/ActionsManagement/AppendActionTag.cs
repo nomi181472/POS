@@ -16,9 +16,12 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AppendActionTag)}", Handle)
-            .WithSummary("Append Action Tags")
+            .WithSummary("Add a new tag to the list of tags in action")
             .WithRequestValidation<RequestAppendActionTag>()
             .Produces(200)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<ResponseAppendActionTag>();
 
         public class RequestValidator : AbstractValidator<RequestAppendActionTag>

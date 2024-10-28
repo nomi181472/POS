@@ -16,7 +16,7 @@ namespace Auth.Features.RoleManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(AddRole)}", Handle)
-            .WithSummary("update Role Details")
+            .WithSummary("Add Role Details")
             .WithRequestValidation<RequestAddRole>()
             .Produces(HTTPStatusCode200.Created)
             .Produces(HTTPStatusCode400.BadRequest)

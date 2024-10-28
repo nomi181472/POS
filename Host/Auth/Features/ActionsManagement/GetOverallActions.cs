@@ -24,7 +24,7 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapGet($"/{nameof(GetOverallActions)}", Handle)
-            .WithSummary("TestEndpoint")
+            .WithSummary("get list of endpoints in all projects")
             .Produces(200)
             .Produces(400);
 

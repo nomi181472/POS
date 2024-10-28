@@ -16,7 +16,7 @@ namespace Auth.Features.RoleManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPatch($"/{nameof(DeleteRole)}", Handle)
-            .WithSummary("Delete Role Details")
+            .WithSummary("Soft Delete a Role")
             .WithRequestValidation<RequestDeleteRole>()
             .Produces(HTTPStatusCode200.Ok)
             .Produces(HTTPStatusCode400.NotFound)

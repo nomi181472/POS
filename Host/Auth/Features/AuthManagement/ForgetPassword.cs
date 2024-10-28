@@ -15,7 +15,7 @@ namespace Auth.Features.AuthManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPost($"/{nameof(ForgetPassword)}", Handle)
-            .WithSummary("Send it to email")
+            .WithSummary("CURRENTLY UNIMPLEMENTED")
             .WithRequestValidation<RequestForgetPassword>()
             .Produces(200)
             .Produces<ResponseForgetPassword>();

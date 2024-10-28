@@ -13,6 +13,9 @@ namespace Auth.Features.ActionsManagement
             .MapGet($"/{nameof(GetActionsDetailsById)}/" + "{Id}", Handle)
             .WithSummary("Get Action Details by ID")
             .Produces(200)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
 

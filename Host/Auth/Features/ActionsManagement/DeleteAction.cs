@@ -14,9 +14,12 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPatch($"/{nameof(DeleteAction)}", Handle)
-            .WithSummary("Add Role Details")
+            .WithSummary("Delete an Action")
             .WithRequestValidation<string>()
             .Produces(200)
+            .Produces(400)
+            .Produces(404)
+            .Produces(500)
             .Produces<bool>();
 
         public class RequestValidator : AbstractValidator<string>

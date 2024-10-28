@@ -15,7 +15,7 @@ namespace Auth.Features.ActionsManagement
     {
         public static void Map(IEndpointRouteBuilder app) => app
             .MapPatch($"/{nameof(UpdateAction)}", Handle)
-            .WithSummary("Add Role Details")
+            .WithSummary("Update action name and tag")
             .WithRequestValidation<RequestUpdateAction>()
             .Produces(200)
             .Produces<bool>();
