@@ -15,7 +15,9 @@ namespace DA
         IGenericRepository<UserRole, string> userRole { get;  }
         IGenericRepository<RoleAction, string> roleAction { get;  }
         IGenericRepository<RefreshToken, string> refereshToken { get;  }
-      
+        IGenericRepository<Notification, string> notification { get; }
+        IGenericRepository<NotificationSeen, string> notificationSeen { get; }
+
         void Commit();
         Task CommitAsync(CancellationToken cancellationToken);
         Task CommitAsync();
