@@ -29,6 +29,8 @@ namespace DA
         public IGenericRepository<RoleAction, string> roleAction => new GenericRepository<RoleAction, string>(_db);
 
         public IGenericRepository<RefreshToken, string> refereshToken => new GenericRepository<RefreshToken, string>(_db);
+        public IGenericRepository<Notification, string> notification => new GenericRepository<Notification, string>(_db);
+        public IGenericRepository<NotificationSeen, string> notificationSeen => new GenericRepository<NotificationSeen, string>(_db);
 
         public void Commit()
         {
