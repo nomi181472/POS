@@ -22,6 +22,8 @@ namespace DA.AppDbContexts
         public DbSet<UserRole> userRoles { get; set; }
         public DbSet<Credential> Credential { get; set; }
         public DbSet<RefreshToken> RefereshToken { get; set; }
+        public DbSet<Notification> Notification { get; set; }
+        public DbSet<NotificationSeen> NotificationSeen { get; set; }
 
 
 
