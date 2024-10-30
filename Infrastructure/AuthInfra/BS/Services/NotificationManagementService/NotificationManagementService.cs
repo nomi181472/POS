@@ -48,7 +48,7 @@ namespace BS.Services.NotificationManagementService
         public async Task<List<ResponseNotificationLogs>> ListAll(CancellationToken cancellationToken)
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
-            var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"{nameof(NotificationSeen)}");
+            var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"IsSeen");
             if(result.Data == null || result.Data.Count() == 0)
             {
                 throw new RecordNotFoundException("no notification records found");

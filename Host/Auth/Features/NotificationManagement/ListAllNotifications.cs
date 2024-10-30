@@ -16,7 +16,7 @@ namespace Auth.Features.NotificationManagement
     public class ListAllNotifications : INotificationFeature
     {
         public static void Map(IEndpointRouteBuilder app) => app
-            .MapPost($"/{nameof(ListAllNotifications)}", Handle)
+            .MapGet($"/{nameof(ListAllNotifications)}", Handle)
             .WithSummary("List all Notification Details")
             .Produces(200)
             .Produces(404)
