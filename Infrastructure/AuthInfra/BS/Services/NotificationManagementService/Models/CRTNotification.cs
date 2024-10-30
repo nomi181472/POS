@@ -16,13 +16,18 @@ namespace BS.Services.NotificationManagementService.Models
             Notification notification = new Notification();
 
             notification.Title = request.Title;
+            notification.Message = request.Message;
             notification.Description = request.Description;
             notification.At = request.At;
 
+            notification.SendToUserType = request.SendToUserType;
             notification.TargetNamespace = request.TargetNamespace;
             notification.UserId = request.UserId;
             notification.Tag = request.Tag;
 
+            notification.Id = Guid.NewGuid().ToString();
+            notification.IsActive = true;
+            notification.IsArchived = false;
             notification.CreatedBy = userId;
             notification.UpdatedBy = userId;
             notification.CreatedDate = DateTime.UtcNow;

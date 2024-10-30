@@ -30,6 +30,13 @@ namespace BS.Services.NotificationManagementService
             {
                 throw new ArgumentException("Notification can't be null");
             }
+
+            var existingUser = await _uow.user.GetByIdAsync(request.UserId, cancellationToken);
+            if (existingUser.Data == null)
+            {
+                throw new RecordNotFoundException("no user with userId found");
+            }
+
             var entity = request.ToDomain(userId);
             await _uow.notification.AddAsync(entity, userId, cancellationToken);
             await _uow.CommitAsync(cancellationToken);
@@ -42,7 +49,7 @@ namespace BS.Services.NotificationManagementService
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
             var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"{nameof(NotificationSeen)}");
-            if(result.Data.Count() == 0)
+            if(result.Data == null || result.Data.Count() == 0)
             {
                 throw new RecordNotFoundException("no notification records found");
             }
@@ -102,18 +109,18 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<bool> UpdateOnClickNotification(string notificationId, string userId, CancellationToken cancellationToken)
+        public async Task<bool> UpdateOnClickNotification(RequestUpdateOnClickNotification request, string userId, CancellationToken cancellationToken)
         {
-            var result = await _uow.notificationSeen.GetByIdAsync(notificationId, cancellationToken);
+            var result = await _uow.notificationSeen.GetByIdAsync(request.NotificationId, cancellationToken);
             ArgumentFalseException.ThrowIfFalse(result.Status, result.Message);
 
             if (result.Data == null)
             {
-                return false;
+                throw new RecordNotFoundException("No record found");
             }
 
             NotificationSeen notificationSeen = new NotificationSeen();
-            notificationSeen.Id = notificationId;
+            notificationSeen.Id = request.NotificationId;
             notificationSeen.OnClickDate = DateTime.UtcNow;
             notificationSeen.By = userId;
 
