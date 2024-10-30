@@ -19,6 +19,6 @@ namespace BS.Services.NotificationManagementService
 
         Task<List<ResponseNotificationLogs>> ListNotificationUserWise(string userId, CancellationToken cancellationToken, int lastCount = 10, int skipRecords = 5);
 
-        Task<bool> UpdateOnClickNotification(string notificationId, string userId, CancellationToken cancellationToken);
+        Task<bool> UpdateOnClickNotification(RequestUpdateOnClickNotification request, string userId, CancellationToken cancellationToken);
     }
 }

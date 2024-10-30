@@ -6,6 +6,7 @@ using Auth.Common.Filters;
 using Auth.Features.ActionsManagement;
 using Auth.Features.AdminDashboardManagement;
 using Auth.Features.AuthManagement;
+using Auth.Features.NotificationManagement;
 using Auth.Features.RoleManagement;
 using Auth.Features.RouteManagement;
 using Auth.Features.UserManagement;
@@ -41,6 +42,7 @@ public static class Endpoints
         endpoints.MapActionsManagementEndpoints();
         endpoints.MapUserManagement();
         endpoints.MapAdminDashboardEndpoints();
+        endpoints.MapNotificationManagementEndpoints();
     }
     private static void MapUserManagement(this IEndpointRouteBuilder app)
     {
@@ -121,6 +123,18 @@ public static class Endpoints
             ;
     }
 
+    private static void MapNotificationManagementEndpoints(this IEndpointRouteBuilder app)
+    {
+        var endpoints = app.MapGroup($"/{nameof(INotificationFeature)}")
+            .WithTags("INotificationFeatures");
+
+        endpoints.MapAuthorizedGroup()
+            .MapEndpoint<AddNotification>()
+            .MapEndpoint<ListAllNotifications>()
+            .MapEndpoint<ListNotificationUserWise>()
+            .MapEndpoint<UpdateOnClickNotification>()
+            ;
+    }
 
 
 

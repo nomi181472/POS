@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DA.Models.DomainModelsConfigurations
 {
-    public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+    public class NotificationConfiguration : IEntityTypeConfiguration<NotificationSeen>
     {
-        public void Configure(EntityTypeBuilder<Notification> builder)
+        public void Configure(EntityTypeBuilder<NotificationSeen> builder)
         {
-            
+            builder.HasOne(x => x.Notification).WithOne(x => x.IsSeen).HasForeignKey<NotificationSeen>(x => x.NotificationId);
         }
     }
 }
