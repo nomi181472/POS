@@ -1,5 +1,7 @@
 using Auth;
+using Auth.AuthGrpc;
 using Auth.Middlewares;
+using AuthService;
 using DA.AppDbContexts;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ namespace MapConfig
             app.UseAuthorization();
             
             app.MapEndpoints();
+            app.MapGrpcService<NotificationGrpcImpl>();
             app.UseMiddleware<UserContextMiddleware>();
             await app.EnsureDatabaseCreated();
             app.UseCors(x => x

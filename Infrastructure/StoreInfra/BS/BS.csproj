@@ -8,7 +8,12 @@
 
   <ItemGroup>
     <None Remove="Protos\InventoryService.proto" />
+    <None Remove="Protos\NotificationStore.proto" />
     <None Remove="Protos\Store.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\NotificationStore.proto" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,9 +13,9 @@ namespace BS.Services.NotificationManagementService.Models.Request
         public string Description { get; set; }
         public DateTime At { get; set; }
 
-        public string TargetNamespace { get; set; }
-        public string SendToUserType { get; set; }
-        public string Tag { get; set; }
+        public string TargetNamespace { get; set; } = string.Empty;
+        public string SendToUserType { get; set; } = string.Empty;
+        public string Tag { get; set; } = string.Empty;
 
         public virtual string UserId { get; set; }
     }
