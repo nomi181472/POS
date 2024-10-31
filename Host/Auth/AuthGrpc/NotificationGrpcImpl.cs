@@ -19,12 +19,18 @@ namespace Auth.AuthGrpc
 
         public override async Task<NotificationAddResponse> SendNotification(NotificationAddRequest grpcRequest, ServerCallContext context)
         {
+            DateTime time = DateTime.UtcNow;
+            if(!DateTime.TryParse(grpcRequest.At,out time))
+            {
+                throw new ArgumentException("Incorrect date time");
+            }
+
             RequestAddNotification restRequest = new RequestAddNotification()
             {
                 Title = grpcRequest.Title,
                 Message = grpcRequest.Message,
                 Description = grpcRequest.Description,
-                At = DateTime.Parse(grpcRequest.At),
+                At = time,
                 TargetNamespace = grpcRequest.TargetNamespace,
                 SendToUserType = grpcRequest.SendToUserType,
                 Tag = grpcRequest.SendToUserType,
