@@ -1,0 +1,25 @@
+﻿syntax = "proto3";
+
+package AuthService;
+import "google/protobuf/empty.proto";
+
+service AuthServiceGrpc{
+    rpc SendNotification (NotificationAddRequest) returns (NotificationAddResponse);
+}
+
+
+message NotificationAddRequest{
+	    string Title = 1;
+        string Message = 2;
+        string Description = 3;
+        string At = 4;
+        string TargetNamespace = 5;
+        string SendToUserType = 6;
+        string Tag = 7;
+        string UserId = 8;
+}
+
+message NotificationAddResponse{
+	    bool message = 1;
+}
+

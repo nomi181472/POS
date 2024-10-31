@@ -26,6 +26,7 @@ using Auth.Features.UserManagement;
 using Auth.Middlewares;
 using StackExchange.Redis;
 using SessionManager;
+using Auth.AuthGrpc;
 namespace ConfigResource
 {
     public static class ConfigDI
@@ -48,6 +49,7 @@ namespace ConfigResource
             .AddBusinessLayer(configuration)
             .AddHelpers(configuration)
             .AddNatsService(configuration)
+            .AddEndpointGRPC(configuration, KConstant.ApiName, Assembly.GetExecutingAssembly(), typeof(IFeature))
             .AddValidatorUsingAssemblies( assemblies, featureType, validatorName,typeof(IValidator<>))
             .AddCors(options =>
             {
@@ -58,6 +60,8 @@ namespace ConfigResource
                           .AllowAnyHeader();
                 });
             });
+
+            services.AddTransient<NotificationGrpcImpl>();
 
             return services;
         }
