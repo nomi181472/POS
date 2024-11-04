@@ -8,6 +8,6 @@ namespace BS.Services.CustomerFeedbackService.Models.Response
 {
     public class ResponseAddCustomerFeedback
     {
-
+        public bool Message { get; set; }
     }
 }

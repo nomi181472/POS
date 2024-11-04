@@ -69,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Till.Test", "UnitTests\Till
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSNotificationSystem", "NATSNotificationSystem\NATSNotificationSystem.csproj", "{AACA6AC2-720D-49C6-812C-34009966984B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionManager", "SessionManager\SessionManager.csproj", "{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SessionManager", "SessionManager\SessionManager.csproj", "{E49889F0-BC4E-43EB-84E6-CBF6AA89A71A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

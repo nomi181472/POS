@@ -28,9 +28,9 @@ namespace BS.Services.AdminDashboardService
             {
                 throw new ArgumentException("Invalid month. Please provide a valid month in MM format.");
             }
-            int currentYear = DateTime.Now.Year;
-            var startDate = new DateTime(currentYear, month, 1);
-            var endDate = startDate.AddMonths(1).AddDays(-1);
+            int currentYear = DateTimeOffset.UtcNow.Year;
+            var startDate = new DateTimeOffset(new DateTime(currentYear, month, 1), TimeSpan.Zero);
+            var endDate = startDate.AddMonths(1).AddTicks(-1); // Get the last tick of the last day of the month
             #endregion Request Validations
 
             var userResults = await _unitOfWork.user.GetAsync(cancellationToken, x => x.CreatedDate >= startDate && x.CreatedDate <= endDate);
@@ -40,6 +40,7 @@ namespace BS.Services.AdminDashboardService
             }
             return userResults.Data.Count();
         }
+
 
 
 

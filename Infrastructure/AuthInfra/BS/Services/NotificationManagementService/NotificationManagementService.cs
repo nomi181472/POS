@@ -1,4 +1,6 @@
 ﻿using BS.CustomExceptions.Common;
+using BS.Services.NotificationManagementService.Models;
+using BS.Services.NotificationManagementService.Models.Request;
 using BS.Services.NotificationManagementService.Models.Response;
 using DA;
 using DM.DomainModels;
@@ -22,24 +24,32 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<bool> AddNotification(Notification notification, string userId, CancellationToken cancellationToken)
+        public async Task<bool> AddNotification(RequestAddNotification request, string userId, CancellationToken cancellationToken)
         {
-            if (notification == null)
+            if (request == null)
             {
                 throw new ArgumentException("Notification can't be null");
             }
-            await _uow.notification.AddAsync(notification, userId, cancellationToken);
+
+            var existingUser = await _uow.user.GetByIdAsync(request.UserId, cancellationToken);
+            if (existingUser.Data == null)
+            {
+                throw new RecordNotFoundException("no user with userId found");
+            }
+
+            var entity = request.ToDomain(userId);
+            await _uow.notification.AddAsync(entity, userId, cancellationToken);
             await _uow.CommitAsync(cancellationToken);
             return true;
         }
 
 
 
-        public async Task<IEnumerable<ResponseNotificationLogs>> ListAll(CancellationToken cancellationToken)
+        public async Task<List<ResponseNotificationLogs>> ListAll(CancellationToken cancellationToken)
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
-            var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"{nameof(NotificationSeen)}");
-            if(result.Data.Count() == 0)
+            var result = await _uow.notification.GetAsync(cancellationToken, includeProperties:$"IsSeen");
+            if(result.Data == null || result.Data.Count() == 0)
             {
                 throw new RecordNotFoundException("no notification records found");
             }
@@ -63,7 +73,7 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<IEnumerable<ResponseNotificationLogs>> ListNotificationUserWise(string userId, CancellationToken cancellationToken, int lastCount, int skipRecords)
+        public async Task<List<ResponseNotificationLogs>> ListNotificationUserWise(string userId, CancellationToken cancellationToken, int lastCount, int skipRecords)
         {
             List<ResponseNotificationLogs> response = new List<ResponseNotificationLogs>();
             var query = _uow.notification.GetQueryable();
@@ -77,7 +87,7 @@ namespace BS.Services.NotificationManagementService
 
             if (result == null)
             {
-                return response;
+                throw new RecordNotFoundException("No notification records found");
             }
 
             response = result.Select(x => new ResponseNotificationLogs()
@@ -99,25 +109,27 @@ namespace BS.Services.NotificationManagementService
 
 
 
-        public async Task<bool> UpdateOnClickNotification(string notificationId, string userId, CancellationToken cancellationToken)
+        public async Task<bool> UpdateOnClickNotification(RequestUpdateOnClickNotification request, string userId, CancellationToken cancellationToken)
         {
-            var result = await _uow.notificationSeen.GetByIdAsync(notificationId, cancellationToken);
+            var result = await _uow.notificationSeen.GetByIdAsync(request.NotificationId, cancellationToken);
             ArgumentFalseException.ThrowIfFalse(result.Status, result.Message);
 
             if (result.Data == null)
             {
-                return false;
+                throw new RecordNotFoundException("No record found");
             }
 
             NotificationSeen notificationSeen = new NotificationSeen();
-            notificationSeen.Id = notificationId;
+            notificationSeen.Id = request.NotificationId;
             notificationSeen.OnClickDate = DateTime.UtcNow;
             notificationSeen.By = userId;
 
             await _uow.notificationSeen.AddAsync(notificationSeen, userId, cancellationToken);
             await _uow.CommitAsync();
-
             return true;
         }
+
+
+
     }
 }
