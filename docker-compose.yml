@@ -1,55 +1,68 @@
-version: '3.8'  # Specify the docker-compose version
+version: '3.8'
 
 services:
 
   authdb:
     image: postgres:16.4
-    container_name: authdb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Pos!23
       POSTGRES_DB: AuthDB
     ports:
-      - "0.0.0.0:5436:5432"
+      - "5436:5432"
     volumes:
-      - ./auth_local_shared_db:/var/lib/postgresql/data
-
+      - auth_local_shared_db:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   hubdb:
     image: postgres:16.4
-    container_name: hubdb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Pos!23
       POSTGRES_DB: HubDB
     ports:
-      - "0.0.0.0:5435:5432"
+      - "5435:5432"
     volumes:
-      - ./hub_local_shared_db:/var/lib/postgresql/data
+      - hub_local_shared_db:/var/lib/postgresql/data
+    networks:
+      - app-network
 
-  
   storedb:
     image: postgres:16.4
-    container_name: storedb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Pos!23
       POSTGRES_DB: storeDB
     ports:
-      - "0.0.0.0:5437:5432"
+      - "5437:5432"
     volumes:
-      - ./store_local_shared_db:/var/lib/postgresql/data
-
+      - store_local_shared_db:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   store:
-    build:   # Build the image from the current directory (context)
-      context: .
-      dockerfile: ./Host/Till/Dockerfile
-    container_name: store_container 
+    image: storespecificimage # Use image from Docker Hub
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     ports:
-      - "0.0.0.0:6080:6080" 
-      - "0.0.0.0:6081:6081"  
-      - "0.0.0.0:6082:6082"
+      - "6080:6080"
+      - "6081:6081"
+      - "6082:6082"
     depends_on:  
       - storedb
     environment:
@@ -58,17 +71,19 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=12345
       - DB_NAME=storeDB
-
+    networks:
+      - app-network
 
   hub:
-    build:   # Build the image from the current directory (context)
-      context: .
-      dockerfile: ./Host/Hub/Dockerfile
-    container_name: hub_container 
+    image: hubspecificimage  # Use image from Docker Hub
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     ports:
-      - "0.0.0.0:9080:9080" 
-      - "0.0.0.0:9081:9081"  
-      - "0.0.0.0:9082:9082"
+      - "9080:9080"
+      - "9081:9081"
+      - "9082:9082"
     depends_on:  
       - hubdb
       - redis
@@ -78,48 +93,46 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=Pos!23
       - DB_NAME=HubDB
-
- 
+    networks:
+      - app-network
 
   auth:
-    build:   # Build the image from the current directory (context)
-      context: .
-      dockerfile: ./Host/Auth/Dockerfile
-    container_name: auth_container 
+    image: authspecificimage  # Use image from Docker Hub
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     ports:
-      - "0.0.0.0:7080:7080" 
-      - "0.0.0.0:7081:7081"  
-      - "0.0.0.0:7082:7082"
+      - "7080:7080"
+      - "7081:7081"
+      - "7082:7082"
     depends_on:  
       - authdb
     environment:
-      - DB_HOST=Authdb
+      - DB_HOST=authdb
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=Pos!23
       - DB_NAME=AuthDB
-
+    networks:
+      - app-network
 
   redis:
     image: redis:latest
-    container_name: redis_container
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
     ports:
-      - "6379:6379"  # Expose Redis on the default port
+      - "6379:6379"
+    networks:
+      - app-network
 
 volumes:
   auth_local_shared_db:
-    driver:
-      local
   hub_local_shared_db:
-    driver:
-      local
   store_local_shared_db:
-    driver:
-      local
-  
 
-
-
-
-
-
+networks:
+  app-network:
+    driver: overlay

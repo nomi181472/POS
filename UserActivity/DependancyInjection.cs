@@ -19,7 +19,7 @@ namespace UserActivity
             {
                 var multiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions()
                 {
-                    EndPoints = { "redis_container:6379" }
+                    EndPoints = { "redis:6379" }
                 });
 
                 return multiplexer;
