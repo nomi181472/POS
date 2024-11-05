@@ -15,9 +15,7 @@ services:
     ports:
       - "5436:5432"
     volumes:
-      - auth_local_shared_db:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - ./auth_local_shared_db:/var/lib/postgresql/data
 
   hubdb:
     image: postgres:16.4
@@ -32,9 +30,7 @@ services:
     ports:
       - "5435:5432"
     volumes:
-      - hub_local_shared_db:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - ./hub_local_shared_db:/var/lib/postgresql/data
 
   storedb:
     image: postgres:16.4
@@ -49,16 +45,14 @@ services:
     ports:
       - "5437:5432"
     volumes:
-      - store_local_shared_db:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - ./store_local_shared_db:/var/lib/postgresql/data
 
   store:
     image: storespecificimage # Use image from Docker Hub
     deploy:
       replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: on-failure 
     ports:
       - "6080:6080"
       - "6081:6081"
@@ -71,8 +65,6 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=12345
       - DB_NAME=storeDB
-    networks:
-      - app-network
 
   hub:
     image: hubspecificimage  # Use image from Docker Hub
@@ -93,15 +85,13 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=Pos!23
       - DB_NAME=HubDB
-    networks:
-      - app-network
 
   auth:
     image: authspecificimage  # Use image from Docker Hub
     deploy:
       replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: on-failure 
     ports:
       - "7080:7080"
       - "7081:7081"
@@ -114,8 +104,6 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=Pos!23
       - DB_NAME=AuthDB
-    networks:
-      - app-network
 
   redis:
     image: redis:latest
@@ -125,14 +113,14 @@ services:
         condition: on-failure
     ports:
       - "6379:6379"
-    networks:
-      - app-network
 
 volumes:
   auth_local_shared_db:
+    driver:
+      local
   hub_local_shared_db:
+    driver:
+      local
   store_local_shared_db:
-
-networks:
-  app-network:
-    driver: overlay
+    driver:
+      local
