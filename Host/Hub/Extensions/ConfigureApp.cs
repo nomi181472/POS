@@ -11,6 +11,11 @@ namespace Hub.Extensions
         public static async Task Configure(this WebApplication app)
         {
             //app.UseSerilogRequestLogging();
+            app.UseCors(x => x
+           .AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader());
+
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
@@ -22,10 +27,6 @@ namespace Hub.Extensions
             app.MapGrpcService<InventoryGrpcImpl>();
             app.MapEndpointsExposed();
             await app.EnsureDatabaseCreated();
-            app.UseCors(x => x
-              .AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
 
         }
 

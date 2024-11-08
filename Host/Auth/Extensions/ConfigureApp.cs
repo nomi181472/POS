@@ -13,6 +13,11 @@ namespace MapConfig
         public static async Task Configure(this WebApplication app)
         {
             //app.UseSerilogRequestLogging();
+            app.UseCors(x => x
+           .AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader());
+
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
@@ -23,11 +28,7 @@ namespace MapConfig
             app.MapGrpcService<NotificationGrpcImpl>();
             app.UseMiddleware<UserContextMiddleware>();
             await app.EnsureDatabaseCreated();
-            app.UseCors(x => x
-              .AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
-
+         
         }
         public static async Task GlobalExceptionHandler(this WebApplication app)
         {
