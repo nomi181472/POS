@@ -10,6 +10,11 @@ namespace Till.Extensions
     {
         public static async Task Configure(this WebApplication app)
         {
+            app.UseCors(x => x
+           .AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader());
+
             //app.UseSerilogRequestLogging();
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -20,10 +25,7 @@ namespace Till.Extensions
             app.MapEndpoints();
             app.UseMiddleware<UserContextMiddleware>();
             await app.EnsureDatabaseCreated();
-            app.UseCors(x => x
-              .AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
+
 
             //TODO: Add migration await app.EnsureDatabaseCreated();
 
